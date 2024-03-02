@@ -28,6 +28,15 @@
     ></v-btn>
 
     <v-btn
+          href="https://elysium-user-guide.vercel.app/"
+          target="_blank"
+          class="me-2"
+          large
+          icon="mdi-compass"
+          :active="false"
+    ></v-btn>
+
+    <v-btn
       class="me-2"
       large
       icon="mdi-cart"
@@ -68,13 +77,6 @@
           :to="item.link"
         >
           <v-list-item-title>{{ item.text }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item
-          prepend-icon="mdi-help"
-          href="https://elysium-user-guide.vercel.app/"
-          target="_blank"
-        >
-          <v-list-item-title>Help</v-list-item-title>
         </v-list-item>
         <v-list-item
           base-color="red"
