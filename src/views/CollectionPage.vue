@@ -15,7 +15,7 @@
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">All</v-tab>
         <v-tab :value="2">On Sale</v-tab>
-        <v-tab :value="3">Activity</v-tab>
+        <!-- <v-tab :value="3">Activity</v-tab> -->
       </v-tabs>
       <v-window v-model="tab">
         <v-window-item :value="1">
@@ -24,9 +24,9 @@
         <v-window-item :value="2">
           <OnSale :collectionAddress="collectionAddress" />
         </v-window-item>
-        <v-window-item :value="3">
+        <!-- <v-window-item :value="3">
           <Activity />
-        </v-window-item>
+        </v-window-item> -->
       </v-window>
     </v-card>
   </v-container>
@@ -48,14 +48,14 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import AllNFT from "@/components/collectionPage/allNFT.vue";
 import OnSale from "@/components/collectionPage/onSale.vue";
-import Activity from "@/components/collectionPage/activity.vue";
+// import Activity from "@/components/collectionPage/activity.vue";
 
 export default {
   name: "CollectionPage",
   components: {
     AllNFT,
     OnSale,
-    Activity,
+    // Activity,
   },
   setup() {
     const { getCollectionDetails } = useMarketStore();

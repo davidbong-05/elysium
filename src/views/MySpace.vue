@@ -5,7 +5,7 @@
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">Owned</v-tab>
         <v-tab :value="2">On Sale</v-tab>
-        <v-tab :value="3">Activity</v-tab>
+        <!-- <v-tab :value="3">Activity</v-tab> -->
       </v-tabs>
       <v-window v-model="tab">
         <v-window-item :value="1">
@@ -14,9 +14,9 @@
         <v-window-item :value="2">
           <OnSale :userAddress="userAddress" />
         </v-window-item>
-        <v-window-item :value="3">
+        <!-- <v-window-item :value="3">
           <Activity />
-        </v-window-item>
+        </v-window-item> -->
       </v-window>
     </v-card>
   </v-container>
@@ -38,7 +38,7 @@ import { useRoute } from "vue-router";
 import Profile from "@/components/mySpace/profile.vue";
 import OwnedNFT from "@/components/mySpace/ownedNFT.vue";
 import OnSale from "@/components/mySpace/onSale.vue";
-import Activity from "@/components/mySpace/activity.vue";
+// import Activity from "@/components/mySpace/activity.vue";
 
 export default {
   name: "MySpace",
@@ -46,7 +46,7 @@ export default {
     Profile,
     OwnedNFT,
     OnSale,
-    Activity,
+    // Activity,
   },
   setup() {
     const tab = ref(1);
