@@ -59,6 +59,7 @@ export default {
       { title: "Address", align: "start", key: "address" },
       { title: "Royalty (%)", align: "start", key: "royalty" },
       { title: "Royalty Recipient", align: "start", key: "royaltyRecipient" },
+      { title: "Royalty Recipient Name", align: "start", key: "royaltyRecipientName" },
       { title: "Follower", align: "start", key: "follower" },
       { title: "Actions", key: "actions", sortable: false },
     ];
@@ -69,16 +70,18 @@ export default {
       try {
         loading.value = true;
         const res = await axios.get("/api/collection/list");
+
         if (res) {
           collections.value = await Promise.all(
             res.data.map(async (i) => {
               const collectionDetails = await getCollectionDetails(i[0]);
-
+              console.log(collectionDetails.royaltyRecipient.toString());
               let collection = {
                 name: collectionDetails.name,
                 address: collectionDetails.address,
                 royalty: collectionDetails.royalty,
                 royaltyRecipient: collectionDetails.royaltyRecipient,
+                royaltyRecipientName: collectionDetails.royaltyRecipientName,
                 follower: i[1],
               };
               return collection;

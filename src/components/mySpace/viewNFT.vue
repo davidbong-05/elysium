@@ -17,15 +17,23 @@
       <v-card-subtitle>{{ nft.desc }}</v-card-subtitle>
       <div v-if="nft.price">
         <v-card-text>Seller:</v-card-text>
+        <v-card-subtitle> {{ nft.sellerName }}</v-card-subtitle>
         <v-card-subtitle> {{ nft.seller }}</v-card-subtitle>
       </div>
       <div v-else>
         <v-card-text>Owner:</v-card-text>
+        <v-card-subtitle> {{ nft.ownerName }}</v-card-subtitle>
         <v-card-subtitle> {{ nft.owner }}</v-card-subtitle>
       </div>
       <div>
         <v-card-text>Collection:</v-card-text>
+        <v-card-subtitle> {{ nft.collectionName }}</v-card-subtitle>
         <v-card-subtitle> {{ nft.collection }}</v-card-subtitle>
+      </div>
+      <div>
+        <v-card-text>Creator:</v-card-text>
+        <v-card-subtitle> {{ nft.collectionOwnerName }}</v-card-subtitle>
+        <v-card-subtitle> {{ nft.collectionOwner }}</v-card-subtitle>
       </div>
       <v-card-text v-if="nft.price">{{ nft.price }} ETH</v-card-text>
       <v-card-text>Royalty: {{ nft.royalty }} %</v-card-text>

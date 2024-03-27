@@ -219,6 +219,7 @@ export const useMarketStore = defineStore("user", () => {
           cover = await getCollectionCover(collectionAddress);
         }
         const royaltyFee = await nftContract.getRoyalty();
+        var royaltyRecipientAddress = await nftContract.getRoyaltyRecipient();
         const collection = {
           address: collectionAddress,
           cover: cover,
@@ -226,7 +227,8 @@ export const useMarketStore = defineStore("user", () => {
           name: await nftContract.name(),
           symbol: await nftContract.symbol(),
           royalty: BigInt(royaltyFee).toString(),
-          royaltyRecipient: await nftContract.getRoyaltyRecipient(),
+          royaltyRecipient: royaltyRecipientAddress,
+          royaltyRecipientName: (await axios.get("/api/user/name/" + royaltyRecipientAddress)).data,
           totalSupply: totalSupply.toString(),
         };
         console.log("collection", collection);
@@ -304,6 +306,7 @@ export const useMarketStore = defineStore("user", () => {
           const balance = await nftContract.balanceOf(address);
           console.log("Total NFTs owned:", balance.toString());
           const royaltyFee = await nftContract.getRoyalty();
+          const royaltyRecipient = await nftContract.getRoyaltyRecipient();
           for (let i = 0; i < balance; i++) {
             const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
             const owner = await nftContract.ownerOf(tokenId);
@@ -313,7 +316,11 @@ export const useMarketStore = defineStore("user", () => {
             const imgHash = meta.image;
             let nft = {
               owner: owner,
+              ownerName: (await axios.get("/api/user/name/" + owner)).data,
               collection: tokenAddress,
+              collectionName: await nftContract.name(),
+              collectionOwner: royaltyRecipient,
+              collectionOwnerName: (await axios.get("/api/user/name/" + royaltyRecipient)).data,
               tokenId: tokenId.toString(),
               tokenUri: "https://ipfs.io/ipfs/" + imgHash,
               tokenName: meta.name,
@@ -356,7 +363,9 @@ export const useMarketStore = defineStore("user", () => {
           const imgHash = meta.image;
           let nft = {
             owner: owner,
+            ownerName:(await axios.get("/api/user/name/" + owner.toLowerCase)).data,
             collection: tokenAddress,
+            collectionName: await nftContract.name(),
             tokenId: tokenId.toString(),
             tokenUri: "https://ipfs.io/ipfs/" + imgHash,
             tokenName: meta.name,
@@ -453,6 +462,7 @@ export const useMarketStore = defineStore("user", () => {
         const balance = await nftContract.balanceOf(marketContractAddress);
         console.log("Total NFTs listed:", balance.toString());
         const royaltyFee = await nftContract.getRoyalty();
+        const royaltyRecipient = await nftContract.getRoyaltyRecipient();
         for (let i = 0; i < balance; i++) {
           const tokenId = await nftContract.tokenOfOwnerByIndex(
             marketContractAddress,
@@ -466,14 +476,19 @@ export const useMarketStore = defineStore("user", () => {
           console.log("Getting nft #" + i + " meta data...");
           const meta = await getTokenMeta(tokenHash);
           const imgHash = meta.image;
+          var nftContractOwnerAddress = await nftContract.ownerOf(tokenId)
           let nft = {
             seller: marketItem.seller,
+            sellerName: (await axios.get("/api/user/name/" + marketItem.seller)).data,
             tokenId: tokenId.toString(),
             price: ethers.formatUnits(marketItem.price.toString(), "ether"),
             tokenUri: "https://ipfs.io/ipfs/" + imgHash,
             tokenName: meta.name,
             tokenDescription: meta.description,
             collection: collectionAddress,
+            collectionName: await nftContract.name(),
+            collectionOwner: royaltyRecipient,
+            collectionOwnerName: (await axios.get("/api/user/name/" + royaltyRecipient)).data,
             royalty: royaltyFee.toString(),
           };
           nfts.push(nft);

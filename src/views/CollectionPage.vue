@@ -7,7 +7,8 @@
         </v-card-title>
         <v-card-subtitle>{{ collectionDetails.address }}</v-card-subtitle>
         <v-card-text>Royalty: {{ collectionDetails.royalty }}%</v-card-text>
-        <v-card-text> Royalty Recipient: </v-card-text>
+        <v-card-text>Royalty Recipient: {{ collectionDetails.royaltyRecipientName }}</v-card-text>
+        <v-card-text> Royalty Recipient Address: </v-card-text>
         <v-card-subtitle>
           {{ collectionDetails.royaltyRecipient }}
         </v-card-subtitle>
