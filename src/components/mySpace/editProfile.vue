@@ -5,6 +5,14 @@
       <v-card-text>
         <v-text-field
           class="mb-2"
+          v-model="email"
+          label="Email"
+          outlined
+          required
+          disabled
+        ></v-text-field>
+        <v-text-field
+          class="mb-2"
           v-model="username"
           :rules="[rules.required, rules.username, rules.maxUsername]"
           label="Username *"
@@ -40,6 +48,7 @@ export default {
   props: ["user"],
   emits: ["onEdit"],
   setup(props) {
+    const email = props.user.email;
     const username = ref(props.user.username);
     const bio = ref(props.user.description);
 
@@ -61,6 +70,7 @@ export default {
       if (valid.value === true) {
         try {
           const res = await axios.put("/api/user", {
+            email: email,
             address: sessionStorage.getItem("address"),
             username: username.value,
             description: bio.value,
@@ -74,6 +84,7 @@ export default {
     };
 
     return {
+      email,
       username,
       bio,
       rules,
