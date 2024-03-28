@@ -1,5 +1,16 @@
 <template>
   <v-card theme="dark" width="350px">
+    <v-alert
+      v-if="alert.show"
+      class="my-3"
+      theme="dark"
+      :color="alert.color"
+      :icon="alert.icon"
+      :title="alert.title"
+      :text="alert.text"
+      variant="tonal"
+      density="compact"
+    ></v-alert>
     <v-card-title>Edit Profile</v-card-title>
     <v-form>
       <v-card-text>
@@ -41,17 +52,23 @@
   </v-card>
 </template>
 <script>
-import { ref, computed } from "vue";
+import { ref, computed  } from "vue";
 import axios from "axios";
 export default {
   name: "Edit Profile",
   props: ["user"],
   emits: ["onEdit"],
-  setup(props) {
+  setup(props, { emit }) {
     const email = props.user.email;
     const username = ref(props.user.username);
     const bio = ref(props.user.description);
-
+    const alert = ref({
+      show: false,
+      color: "",
+      icon: "",
+      title: "",
+      text: "",
+    });
     const rules = {
       required: (v) => !!v || "This field is required.",
       username: (v) => {
@@ -69,14 +86,41 @@ export default {
     const save = async () => {
       if (valid.value === true) {
         try {
-          const res = await axios.put("/api/user", {
+          let newDetail = {
             email: email,
             address: sessionStorage.getItem("address"),
             username: username.value,
             description: bio.value,
-          });
+          }
+          const res = await axios.put("/api/user", newDetail);
+          if(res.status == 200) {
+            emit('update:user', newDetail);
+            alert.value = {
+              show: true,
+              color: "success",
+              icon: "$success",
+              title: "Success",
+              text: "Profile Updated",
+            };
+          }
+          else{
+            alert.value = {
+              show: true,
+              color: "error",
+              icon: "$error",
+              title: "Oops...",
+              text: res.message,
+            };
+          }
           console.log(res);
         } catch (err) {
+          alert.value = {
+          show: true,
+          color: "error",
+          icon: "$error",
+          title: "Oops...",
+          text: "We are facing some issues please try again later...",
+        };
           console.log(err);
           console.log(err.response.data.message);
         }
@@ -84,6 +128,7 @@ export default {
     };
 
     return {
+      alert,
       email,
       username,
       bio,

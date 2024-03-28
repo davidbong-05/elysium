@@ -107,6 +107,7 @@
   >
     <edit-profile
       :user="user"
+      @update:user="updateUser"
       v-if="showEditProfile"
       @onEdit="() => (showEditProfile = !showEditProfile)"
     />
@@ -175,6 +176,11 @@ export default {
       }
     };
 
+    const updateUser = (newDetail) => {
+      user.value.username= newDetail.username;
+      user.value.description= newDetail.description;
+    };
+
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
       try {
@@ -224,6 +230,7 @@ export default {
       canFollow,
       follow,
       unfollow,
+      updateUser,
     };
   },
 };
