@@ -85,7 +85,8 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
+
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -93,6 +94,8 @@ export default {
   emits: ["onSignUp"],
   setup(props, { emit }) {
     const store = useMarketStore();
+    const { post } = useApiStore();
+
     const username = ref("");
     const desc = ref("");
     const email = ref("");
@@ -142,7 +145,7 @@ export default {
             "?square",
           description: desc.value,
         };
-        const res = await axios.post("/api/user", data);
+        const res = await post("/api/user", data);
         if (res.status === 200) {
           console.log(res.data);
           alert.value = {

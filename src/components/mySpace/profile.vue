@@ -126,7 +126,7 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useRoute } from "vue-router";
 import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
@@ -147,10 +147,11 @@ export default {
     const showEditProfile = ref(false);
     const showUploadProfile = ref(false);
     const canFollow = ref(true);
+    const { get, post, put } = useApiStore();
 
     const follow = async (target_address) => {
       try {
-        const res = await axios.put("/api/user/follow", {
+        const res = await put("/api/user/follow", {
           user_address: sessionStorage.getItem("address"),
           target_address: target_address,
         });
@@ -164,7 +165,7 @@ export default {
 
     const unfollow = async (target_address) => {
       try {
-        const res = await axios.put("/api/user/unfollow", {
+        const res = await put("/api/user/unfollow", {
           user_address: sessionStorage.getItem("address"),
           target_address: target_address,
         });
@@ -184,7 +185,7 @@ export default {
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
       try {
-        const res = await axios.get("/api/user/" + route.params.address);
+        const res = await get("/api/user/" + route.params.address);
         if (res.status === 200) {
           user.value = res.data;
           let original_address = res.data.address;
@@ -201,7 +202,7 @@ export default {
 
       try {
         console.log("session", sessionStorage.getItem("address"));
-        const res = await axios.post("/api/user/follow/check", {
+        const res = await post("/api/user/follow/check", {
           user_address: sessionStorage.getItem("address"),
           target_address: route.params.address,
         });

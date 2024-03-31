@@ -39,6 +39,7 @@ import Profile from "@/components/mySpace/profile.vue";
 import OwnedNFT from "@/components/mySpace/ownedNFT.vue";
 import OnSale from "@/components/mySpace/onSale.vue";
 // import Activity from "@/components/mySpace/activity.vue";
+import { useApiStore } from '@/stores/api';
 
 export default {
   name: "MySpace",
@@ -53,10 +54,11 @@ export default {
     const route = useRoute();
     const userExist = ref(true);
     const userAddress = route.params.address;
+    const { get } = useApiStore();
 
     onMounted(async () => {
       try {
-        const res = await axios.get("/api/user/" + route.params.address);
+        const res = await get("/api/user/" + route.params.address);
         if (res.status === 200) userExist.value = true;
       } catch (error) {
         if (error.response.status === 404) {

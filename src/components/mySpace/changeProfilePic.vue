@@ -28,11 +28,12 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 export default {
   name: "Edit Profile",
   emits: ["onEdit"],
   setup() {
+    const { put } = useApiStore();
     const profile_img = ref(null);
 
     const profile_img_preview = computed(() => {
@@ -45,7 +46,7 @@ export default {
 
     const save = async () => {
       try {
-        const res = await axios.put("/api/user/", {
+        const res = await put("/api/user/", {
           address: sessionStorage.getItem("address"),
           username: username.value,
           description: bio.value,

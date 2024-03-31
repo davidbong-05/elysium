@@ -84,7 +84,7 @@
 </template>
 <script>
 import { ref, onMounted, computed } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -93,6 +93,8 @@ export default {
   setup() {
     const cartItems = ref([]);
     const { getCartNFTs, checkoutNFTs } = useMarketStore();
+    const { post, put } = useApiStore();
+
     const alert = ref({
       show: false,
       color: "",
@@ -146,7 +148,7 @@ export default {
         newCartContents.push(cartContent);
       }
       try {
-        await axios.put("/api/cart", {
+        await put("/api/cart", {
           user_address: sessionStorage.getItem("address"),
           cart_content: newCartContents,
         });
@@ -159,7 +161,7 @@ export default {
 
     const clearCart = async () => {
       try {
-        await axios.post("/api/cart/clear", {
+        await post("/api/cart/clear", {
           user_address: sessionStorage.getItem("address"),
         });
         cartItems.value = [];
@@ -184,7 +186,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await axios.post("/api/cart", {
+        const res = await post("/api/cart", {
           user_address: sessionStorage.getItem("address"),
         });
         if (res.data.length === 0) {

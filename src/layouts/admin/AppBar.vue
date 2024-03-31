@@ -55,7 +55,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
 import { storeToRefs } from "pinia";
 
@@ -65,6 +65,7 @@ export default {
   setup(props, { emit }) {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
+    const { get } = useApiStore();
 
     const menu = [
       {
@@ -106,7 +107,7 @@ export default {
       await marketStore.connectWallet();
       //check if user previously signed up
       try {
-        const res = await axios.get("/api/user/" + account.value);
+        const res = await get("/api/user/" + account.value);
         sessionStorage.setItem("address", account.value);
         sessionStorage.setItem("pfp", res.data.profile_url);
         pfp_url.value = sessionStorage.getItem("pfp");

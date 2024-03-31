@@ -133,7 +133,7 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -142,6 +142,8 @@ export default {
   emits: ["onClose"],
   setup(props) {
     const { linkCollection, listNFT, unListNFT, buyNFT } = useMarketStore();
+    const { post, put } = useApiStore();
+
     const price = ref();
     const showForm = ref(false);
     const isLoading = ref(false);
@@ -251,7 +253,7 @@ export default {
     let nfts = ref([]);
     const addCart = async (nftCollection, nftId) => {
       try {
-        const res = await axios.post("/api/cart", {
+        const res = await post("/api/cart", {
           user_address: sessionStorage.getItem("address"),
         });
         nfts.value = res.data;
@@ -272,7 +274,7 @@ export default {
         if (!exist) {
           nfts.value.push({ collection: nftCollection, tokenId: nftId });
           try {
-            const res = await axios.put("/api/cart", {
+            const res = await put("/api/cart", {
               user_address: sessionStorage.getItem("address"),
               cart_content: nfts.value,
             });

@@ -29,7 +29,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
 import { VDataTable } from "vuetify/labs/VDataTable";
 
@@ -39,6 +39,8 @@ export default {
   },
   setup() {
     const { getCollectionDetails } = useMarketStore();
+    const { get } = useApiStore();
+
     const breadcrumbItems = [
       {
         title: "Dashboard",
@@ -69,7 +71,7 @@ export default {
     onMounted(async () => {
       try {
         loading.value = true;
-        const res = await axios.get("/api/collection/list");
+        const res = await get("/api/collection/list");
 
         if (res) {
           collections.value = await Promise.all(

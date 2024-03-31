@@ -63,8 +63,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import axios from "axios";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
+import { useApiStore } from '@/stores/api';
 
 export default {
   name: "TopUser",
@@ -75,13 +75,13 @@ export default {
     const isExist = ref(true);
     const isLoading = ref(true);
     const topUsers = ref([]);
-
+    const { get } = useApiStore();
     onMounted(async () => {
       try {
-        const res = await axios.get("/api/user/topUser");
+        const res = await get("/api/user/topUser");
         if (res.status === 200)
           for (const item of res.data) {
-            const user = await axios.get("/api/user/" + item[0]);
+            const user = await get("/api/user/" + item[0]);
             user.data.link = `/user/${item[0]}`;
             user.data.followers = item[1];
             topUsers.value.push(user.data);

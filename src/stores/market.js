@@ -5,6 +5,7 @@ import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json"
 import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ref } from "vue";
 import axios from "axios";
+import { useApiStore } from '@/stores/api';
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -14,6 +15,7 @@ const apiSecret = import.meta.env.VITE_PINATA_API_SECRET;
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
+  const { get, post, put } = useApiStore();
 
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
@@ -54,9 +56,9 @@ export const useMarketStore = defineStore("user", () => {
     console.log(newCollections);
 
     try {
-      const res = await axios.put("/api/collection/", data);
+      const res = await put("/api/collection/", data);
       if (res.data === "404") {
-        const newCollection = await axios.post("/api/collection/", data);
+        const newCollection = await post("/api/collection/", data);
         console.log("new collection", newCollection);
       }
       return 200;
@@ -68,7 +70,7 @@ export const useMarketStore = defineStore("user", () => {
 
   const getLinkedCollection = async (user_address) => {
     try {
-      const res = await axios.get("/api/collection/" + user_address);
+      const res = await get("/api/collection/" + user_address);
       if (res.status === 200) return res.data;
     } catch (err) {
       if (err.response.status === 404) {
@@ -80,7 +82,7 @@ export const useMarketStore = defineStore("user", () => {
 
   const getAllLinkedCollection = async () => {
     try {
-      const res = await axios.get("/api/collection/");
+      const res = await get("/api/collection/");
       if (res.status === 200) {
         return res.data;
       }
@@ -100,7 +102,7 @@ export const useMarketStore = defineStore("user", () => {
       nft_collection: newCollections,
     };
     try {
-      const res = await axios.put("/api/collection/", data);
+      const res = await put("/api/collection/", data);
       console.log("res", res);
       return 200;
     } catch (err) {
@@ -228,7 +230,7 @@ export const useMarketStore = defineStore("user", () => {
           symbol: await nftContract.symbol(),
           royalty: BigInt(royaltyFee).toString(),
           royaltyRecipient: royaltyRecipientAddress,
-          royaltyRecipientName: (await axios.get("/api/user/name/" + royaltyRecipientAddress)).data,
+          royaltyRecipientName: (await get("/api/user/name/" + royaltyRecipientAddress)).data,
           totalSupply: totalSupply.toString(),
         };
         console.log("collection", collection);
@@ -316,11 +318,11 @@ export const useMarketStore = defineStore("user", () => {
             const imgHash = meta.image;
             let nft = {
               owner: owner,
-              ownerName: (await axios.get("/api/user/name/" + owner)).data,
+              ownerName: (await get("/api/user/name/" + owner)).data,
               collection: tokenAddress,
               collectionName: await nftContract.name(),
               collectionOwner: royaltyRecipient,
-              collectionOwnerName: (await axios.get("/api/user/name/" + royaltyRecipient)).data,
+              collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
               tokenId: tokenId.toString(),
               tokenUri: "https://ipfs.io/ipfs/" + imgHash,
               tokenName: meta.name,
@@ -363,7 +365,7 @@ export const useMarketStore = defineStore("user", () => {
           const imgHash = meta.image;
           let nft = {
             owner: owner,
-            ownerName:(await axios.get("/api/user/name/" + owner.toLowerCase)).data,
+            ownerName:(await get("/api/user/name/" + owner.toLowerCase)).data,
             collection: tokenAddress,
             collectionName: await nftContract.name(),
             tokenId: tokenId.toString(),
@@ -479,7 +481,7 @@ export const useMarketStore = defineStore("user", () => {
           var nftContractOwnerAddress = await nftContract.ownerOf(tokenId)
           let nft = {
             seller: marketItem.seller,
-            sellerName: (await axios.get("/api/user/name/" + marketItem.seller)).data,
+            sellerName: (await get("/api/user/name/" + marketItem.seller)).data,
             tokenId: tokenId.toString(),
             price: ethers.formatUnits(marketItem.price.toString(), "ether"),
             tokenUri: "https://ipfs.io/ipfs/" + imgHash,
@@ -488,7 +490,7 @@ export const useMarketStore = defineStore("user", () => {
             collection: collectionAddress,
             collectionName: await nftContract.name(),
             collectionOwner: royaltyRecipient,
-            collectionOwnerName: (await axios.get("/api/user/name/" + royaltyRecipient)).data,
+            collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
             royalty: royaltyFee.toString(),
           };
           nfts.push(nft);

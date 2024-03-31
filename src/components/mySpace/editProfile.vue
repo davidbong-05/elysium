@@ -53,12 +53,13 @@
 </template>
 <script>
 import { ref, computed  } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 export default {
   name: "Edit Profile",
   props: ["user"],
   emits: ["onEdit"],
   setup(props, { emit }) {
+    const { put } = useApiStore();
     const email = props.user.email;
     const username = ref(props.user.username);
     const bio = ref(props.user.description);
@@ -92,7 +93,7 @@ export default {
             username: username.value,
             description: bio.value,
           }
-          const res = await axios.put("/api/user", newDetail);
+          const res = await put("/api/user", newDetail);
           if(res.status == 200) {
             emit('update:user', newDetail);
             alert.value = {

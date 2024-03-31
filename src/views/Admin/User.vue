@@ -30,13 +30,14 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { VDataTable } from "vuetify/labs/VDataTable";
 export default {
   components: {
     VDataTable,
   },
   setup() {
+    const { get } = useApiStore();
     const breadcrumbItems = [
       {
         title: "Dashboard",
@@ -61,7 +62,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await axios.get("/api/user/");
+        const res = await get("/api/user/");
         if (res) {
           users.value = await Promise.all(
             res.data.map(async (i) => {

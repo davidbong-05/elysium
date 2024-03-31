@@ -65,7 +65,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 
@@ -79,10 +79,11 @@ export default {
     const isLoading = ref(true);
     const { getCollectionDetails } = useMarketStore();
     const topCollections = ref([]);
+    const { get } = useApiStore();
 
     onMounted(async () => {
       try {
-        const res = await axios.get("/api/collection/topCollection");
+        const res = await get("/api/collection/topCollection");
 
         if (res.status === 200) {
           for (const item of res.data) {
