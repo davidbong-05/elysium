@@ -71,6 +71,12 @@
 
       <v-list bg-color="background">
         <v-list-item
+          prepend-icon="mdi-space-invaders"
+          :href="profileLink"
+        >
+          <v-list-item-title>My Space</v-list-item-title>
+        </v-list-item>
+        <v-list-item
           v-for="(item, i) in menu"
           :key="i"
           :prepend-icon="item.icon"
@@ -105,12 +111,8 @@ export default {
     const { account } = storeToRefs(marketStore);
     const { get } = useApiStore();
 
+    const profileLink = "/user/" + sessionStorage.getItem("address");
     const menu = [
-      {
-        text: "My Space",
-        icon: "mdi-space-invaders",
-        link: ref("/user/" + sessionStorage.getItem("address")),
-      },
       {
         text: "My Collection",
         icon: "mdi-cards",
@@ -183,6 +185,7 @@ export default {
     };
 
     return {
+      profileLink,
       menu,
       isConnected,
       pfp_url,
