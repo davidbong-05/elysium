@@ -59,6 +59,7 @@
       </v-hover>
       <v-card-title>@{{ user.username }}</v-card-title>
       <v-card-subtitle>{{ address }}</v-card-subtitle>
+      <v-card-subtitle>{{ user.description }}</v-card-subtitle>
     </v-col>
     <v-col md="6" cols="12">
       <v-row class="mt-4 text-center">
