@@ -1,14 +1,21 @@
 <template>
   <v-hover v-slot="{ isHovering, props }">
-    <v-img
+    <!-- <v-img
       width="100%"
       height="60vh"
       cover
       :class="{ 'on-hover': isHovering }"
       :src="user.background_url"
       v-bind="props"
+    > -->
+    <v-img
+      width="100%"
+      height="60vh"
+      cover
+      :src="user.background_url"
+      v-bind="props"
     >
-      <div class="d-flex justify-end">
+      <!-- <div class="d-flex justify-end">
         <v-btn
           variant="text"
           :class="{ 'show-btns': isHovering }"
@@ -16,7 +23,7 @@
           icon="mdi-image-edit"
           v-if="canEdit"
         ></v-btn>
-      </div>
+      </div> -->
     </v-img>
   </v-hover>
   <v-row>
@@ -37,17 +44,16 @@
           <v-img
             cover
             :src="user.profile_url"
-            :class="{ 'on-hover': isHovering }"
             class="d-flex align-center"
           >
-            <v-btn
+            <!-- <v-btn
               variant="text"
               :class="{ 'show-btns': isHovering }"
               color="rgba(255, 255, 255, 0)"
               icon="mdi-camera"
               v-if="canEdit"
               @click="() => (showUploadProfile = !showUploadProfile)"
-            ></v-btn>
+            ></v-btn> -->
           </v-img>
         </v-avatar>
       </v-hover>
@@ -112,7 +118,7 @@
       @onEdit="() => (showEditProfile = !showEditProfile)"
     />
   </v-overlay>
-  <v-overlay
+  <!-- <v-overlay
     v-model="showUploadProfile"
     location-strategy="connected"
     class="d-flex justify-center align-center"
@@ -121,7 +127,7 @@
       v-if="showUploadProfile"
       @onEdit="() => (showUploadProfile = !showUploadProfile)"
     />
-  </v-overlay>
+  </v-overlay> -->
 </template>
 
 <script>
@@ -145,7 +151,7 @@ export default {
     const followers = 10;
     const following = 20;
     const showEditProfile = ref(false);
-    const showUploadProfile = ref(false);
+    // const showUploadProfile = ref(false);
     const canFollow = ref(true);
     const { get, post, put } = useApiStore();
 
@@ -226,7 +232,7 @@ export default {
       followers,
       following,
       showEditProfile,
-      showUploadProfile,
+      // showUploadProfile,
       canEdit,
       canFollow,
       follow,
