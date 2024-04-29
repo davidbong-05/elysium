@@ -64,15 +64,15 @@
     <v-col md="6" cols="12">
       <v-row class="mt-4 text-center">
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ ownedQty }}</v-card-text>
+          <v-card-text class="text-h5">{{ owned_nfts_count }}</v-card-text>
           <v-card-subtitle>Owned NFTs</v-card-subtitle>
         </v-col>
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ followers }}</v-card-text>
+          <v-card-text class="text-h5">{{ user.followers_count }}</v-card-text>
           <v-card-subtitle>Followers</v-card-subtitle>
         </v-col>
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ following }}</v-card-text>
+          <v-card-text class="text-h5">{{ followings_count }}</v-card-text>
           <v-card-subtitle>Following</v-card-subtitle>
         </v-col>
       </v-row>
@@ -148,9 +148,8 @@ export default {
     const route = useRoute();
     const user = ref({});
     const address = ref("");
-    const ownedQty = 5;
-    const followers = 10;
-    const following = 20;
+    const owned_nfts_count = 5;
+    const followings_count = ref(0);
     const showEditProfile = ref(false);
     // const showUploadProfile = ref(false);
     const canFollow = ref(true);
@@ -203,6 +202,7 @@ export default {
           );
           address.value = truncated_address1 + "..." + truncated_address2;
         }
+        followings_count.value = user.value.following.length;
       } catch (error) {
         console.error(error);
       }
@@ -229,9 +229,8 @@ export default {
     return {
       user,
       address,
-      ownedQty,
-      followers,
-      following,
+      owned_nfts_count,
+      followings_count,
       showEditProfile,
       // showUploadProfile,
       canEdit,
