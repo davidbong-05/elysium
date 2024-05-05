@@ -69,6 +69,19 @@ export const useMarketStore = defineStore("user", () => {
       }
     }
 
+  const ping = async() =>
+      {
+        try {
+          const res = await post("/api/auth/ping", {
+            user_address: sessionStorage.getItem("address"),
+            session_id :sessionStorage.getItem("session_id"),
+          });
+        } catch (err) {
+          console.log(err);
+          console.log(err.response.message);
+        }
+      }
+
   const linkCollection = async (user_address, address) => {
     let newCollections = await getLinkedCollection(user_address);
     if (newCollections.length > 0) {
@@ -731,6 +744,7 @@ export const useMarketStore = defineStore("user", () => {
     connectWallet,
     login,
     logout,
+    ping,
     linkCollection,
     getLinkedCollection,
     getAllLinkedCollection,

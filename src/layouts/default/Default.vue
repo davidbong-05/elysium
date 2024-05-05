@@ -50,11 +50,11 @@ export default {
   setup() {
     const showSignUp = ref(false);
     const showCart = ref(false);
-    const { logout } = useMarketStore();
+    const { ping } = useMarketStore();
 
     window.onbeforeunload  = (event) => {
-      //TODO: find a way to log out when user close all instance of tabs
-      // logout();
+      //TODO: find a proper way to log out when user close all instance of tabs
+      ping();
     }
     return {
       showSignUp,
