@@ -37,6 +37,7 @@ import DefaultBar from "./AppBar.vue";
 import DefaultFooter from "./AppFooter.vue";
 import SignUp from "@/views/SignUp.vue";
 import MyCart from "@/views/MyCart.vue";
+import { useMarketStore } from '@/stores/market';
 
 export default {
   name: "Default",
@@ -49,7 +50,11 @@ export default {
   setup() {
     const showSignUp = ref(false);
     const showCart = ref(false);
+    const { logout } = useMarketStore();
 
+    window.onbeforeunload  = (event) => {
+      logout();
+    }
     return {
       showSignUp,
       showCart,

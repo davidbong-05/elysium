@@ -38,6 +38,37 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const login = async(address) =>
+    {
+      try {
+        const res = await post("/api/auth/login", {
+          user_address: address,
+        });
+        sessionStorage.setItem("address", address);
+        sessionStorage.setItem("pfp", res.data.profile_url);
+        sessionStorage.setItem("session_id", res.data.session_id);
+        return res.status;
+      } catch (err) {
+        console.log(err);
+        console.log(err.response.message);
+      }
+    }
+
+  const logout = async() =>
+    {
+      try {
+        const res = await post("/api/auth/logout", {
+          user_address: sessionStorage.getItem("address"),
+          session_id :sessionStorage.getItem("session_id"),
+        });
+        sessionStorage.clear();
+        console.log(res);
+      } catch (err) {
+        console.log(err);
+        console.log(err.response.message);
+      }
+    }
+
   const linkCollection = async (user_address, address) => {
     let newCollections = await getLinkedCollection(user_address);
     if (newCollections.length > 0) {
@@ -698,6 +729,8 @@ export const useMarketStore = defineStore("user", () => {
     loading,
     // market,
     connectWallet,
+    login,
+    logout,
     linkCollection,
     getLinkedCollection,
     getAllLinkedCollection,

@@ -109,7 +109,6 @@ export default {
   setup(props, { emit }) {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
-    const { get } = useApiStore();
 
     const profileLink = "/user/" + sessionStorage.getItem("address");
     const menu = [
@@ -156,29 +155,28 @@ export default {
     };
 
     const login = async () => {
-      //connect wallet
-      await marketStore.connectWallet();
-      //check if user previously signed up
       try {
-        const res = await get("/api/user/" + account.value);
-        sessionStorage.setItem("address", account.value);
-        sessionStorage.setItem("pfp", res.data.profile_url);
-        menu[0].link.value = "/user/" + account.value;
-        pfp_url.value = sessionStorage.getItem("pfp");
-        isConnected.value = true;
-      } catch (error) {
-        console.log(error);
-        //if user not found, show sign up page
-        if (error.response.status === 404) {
-          emit("onSignUp", true);
-        } else {
-          console.error(error);
+        await marketStore.connectWallet();
+
+        var status = await marketStore.login(account.value);
+        //check if user previously signed up
+        if(status === 200) {
+          pfp_url.value = sessionStorage.getItem("pfp");
+          isConnected.value = true;
         }
+        else if (status === 404) {
+            emit("onSignUp", true);
+        }
+        else {
+          console.log("Server error please try again later...");
+        }
+      } catch (error) {
+        console.log(error.response.status);
       }
     };
 
     const logout = () => {
-      sessionStorage.clear();
+      marketStore.logout();
       //TODO clear account.value in pinia and disconnect wallet
       isConnected.value = false;
       router.push("/");
