@@ -53,7 +53,8 @@ export default {
     const { logout } = useMarketStore();
 
     window.onbeforeunload  = (event) => {
-      logout();
+      //TODO: find a way to log out when user close all instance of tabs
+      // logout();
     }
     return {
       showSignUp,
