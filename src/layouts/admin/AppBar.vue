@@ -33,6 +33,19 @@
 
       <v-list bg-color="background">
         <v-list-item
+          v-if="isAdmin"
+          prepend-icon="mdi-view-dashboard"
+          to="/admin/dashboard"
+        >
+          <v-list-item-title>Admin Dashboard</v-list-item-title>
+        </v-list-item>
+        <v-list-item
+          prepend-icon="mdi-space-invaders"
+          :href="profileLink"
+        >
+          <v-list-item-title>My Space</v-list-item-title>
+        </v-list-item>
+        <v-list-item
           v-for="(item, i) in menu"
           :key="i"
           :prepend-icon="item.icon"
@@ -66,19 +79,29 @@ export default {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
 
+    const profileLink = "/user/" + sessionStorage.getItem("address");
+    const isAdmin = sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin";
     const menu = [
       {
-        text: "Setting",
-        icon: "mdi-cog",
-        // link: "/setting",
-        link: "/admin",
+        text: "My Collection",
+        icon: "mdi-cards",
+        link: "/user/collection/",
       },
       {
-        text: "Help",
-        icon: "mdi-help",
-        // link: "/help",
-        link: "/admin",
+        text: "Create NFT",
+        icon: "mdi-pencil-ruler",
+        link: "/create-nft",
       },
+      // {
+      //   text: "Manage Wallet",
+      //   icon: "mdi-wallet",
+      //   // link: "/wallet",
+      // },
+      // {
+      //   text: "Setting",
+      //   icon: "mdi-cog",
+      //   // link: "/setting",
+      // },
     ];
 
     const pfp_url = ref("");
@@ -129,6 +152,8 @@ export default {
     };
 
     return {
+      profileLink,
+      isAdmin,
       menu,
       isConnected,
       pfp_url,

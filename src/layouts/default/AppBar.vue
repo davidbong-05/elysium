@@ -71,6 +71,13 @@
 
       <v-list bg-color="background">
         <v-list-item
+          v-if="isAdmin"
+          prepend-icon="mdi-view-dashboard"
+          to="/admin/dashboard"
+        >
+          <v-list-item-title>Admin Dashboard</v-list-item-title>
+        </v-list-item>
+        <v-list-item
           prepend-icon="mdi-space-invaders"
           :href="profileLink"
         >
@@ -111,6 +118,7 @@ export default {
     const { account } = storeToRefs(marketStore);
 
     const profileLink = "/user/" + sessionStorage.getItem("address");
+    const isAdmin = sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin";
     const menu = [
       {
         text: "My Collection",
@@ -184,6 +192,7 @@ export default {
 
     return {
       profileLink,
+      isAdmin,
       menu,
       isConnected,
       pfp_url,
