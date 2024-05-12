@@ -46,6 +46,7 @@ export const useMarketStore = defineStore("user", () => {
         });
         sessionStorage.setItem("address", address);
         sessionStorage.setItem("pfp", res.data.profile_url);
+        sessionStorage.setItem("role", res.data.role ?? "user");
         sessionStorage.setItem("session_id", res.data.session_id);
         return res.status;
       } catch (err) {

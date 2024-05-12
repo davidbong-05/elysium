@@ -59,6 +59,12 @@ const routes = [
   {
     path: "/admin",
     component: () => import("@/layouts/admin/View.vue"),
+    beforeEnter: (to, from) => {
+      if(sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin"){
+        return true
+      }
+      return '/'
+    },
     children: [
       {
         path: "",
