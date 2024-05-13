@@ -286,6 +286,7 @@ export const useMarketStore = defineStore("user", () => {
     } catch (error) {
       console.log(error);
     }
+    return null;
   };
 
   const getCollectionCover = async (tokenAddress) => {
@@ -345,37 +346,44 @@ export const useMarketStore = defineStore("user", () => {
 
         const nfts = [];
         for (const tokenAddress of linkedCollection) {
-          const nftContract = new ethers.Contract(
-            tokenAddress,
-            nftContractABI.abi,
-            provider
-          );
-          const balance = await nftContract.balanceOf(address);
-          console.log("Total NFTs owned:", balance.toString());
-          const royaltyFee = await nftContract.getRoyalty();
-          const royaltyRecipient = await nftContract.getRoyaltyRecipient();
-          for (let i = 0; i < balance; i++) {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
-            const owner = await nftContract.ownerOf(tokenId);
-            const tokenHash = await nftContract.tokenURI(tokenId);
-            console.log("Getting nft #" + i + " meta data...");
-            const meta = await getTokenMeta(tokenHash);
-            const imgHash = meta.image;
-            let nft = {
-              owner: owner,
-              ownerName: (await get("/api/user/name/" + owner)).data,
-              collection: tokenAddress,
-              collectionName: await nftContract.name(),
-              collectionOwner: royaltyRecipient,
-              collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
-              tokenId: tokenId.toString(),
-              tokenUri: "https://ipfs.io/ipfs/" + imgHash,
-              tokenName: meta.name,
-              tokenDescription: meta.description,
-              royalty: royaltyFee.toString(),
-            };
-            nfts.push(nft);
+          try{
+            const nftContract = new ethers.Contract(
+              tokenAddress,
+              nftContractABI.abi,
+              provider
+            );
+            const balance = await nftContract.balanceOf(address);
+            console.log("Total NFTs owned:", balance.toString());
+            const royaltyFee = await nftContract.getRoyalty();
+            const royaltyRecipient = await nftContract.getRoyaltyRecipient();
+            for (let i = 0; i < balance; i++) {
+              const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
+              const owner = await nftContract.ownerOf(tokenId);
+              const tokenHash = await nftContract.tokenURI(tokenId);
+              console.log("Getting nft #" + i + " meta data...");
+              const meta = await getTokenMeta(tokenHash);
+              const imgHash = meta.image;
+              let nft = {
+                owner: owner,
+                ownerName: (await get("/api/user/name/" + owner)).data,
+                collection: tokenAddress,
+                collectionName: await nftContract.name(),
+                collectionOwner: royaltyRecipient,
+                collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
+                tokenId: tokenId.toString(),
+                tokenUri: "https://ipfs.io/ipfs/" + imgHash,
+                tokenName: meta.name,
+                tokenDescription: meta.description,
+                royalty: royaltyFee.toString(),
+              };
+              nfts.push(nft);
+            }
           }
+          catch(error){
+            console.log("There's an issue with this address: " + tokenAddress);
+            continue
+          }
+
         }
         if (nfts.length > 0) {
           return nfts;

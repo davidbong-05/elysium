@@ -212,8 +212,18 @@ export default {
         const res = await getLinkedCollection(ownerAddress);
         if (res != "404") {
           for (const item of res) {
-            let collection = await getCollectionDetails(item);
-            collections.push(collection);
+            try
+            {
+              let collection = await getCollectionDetails(item);
+              if(collection != null)
+              {
+                collections.push(collection);
+              }
+            }
+            catch(error) {
+              console.log("There's an issue with this address: "+ item);
+              continue;
+            }
           }
         }
         linkedCollection.value = collections;

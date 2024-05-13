@@ -88,7 +88,7 @@ export default {
         if (res.status === 200) {
           for (const item of res.data) {
             let collectionItem = await getCollectionDetails(item[0]);
-            if (collectionItem.totalSupply == 0) continue;
+            if (collectionItem == null || collectionItem.totalSupply == 0) continue;
             collectionItem.link = `/collection/${item[0]}`;
             collectionItem.counts = item[1];
             topCollections.value.push(collectionItem);
