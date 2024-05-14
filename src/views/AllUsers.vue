@@ -30,11 +30,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useApiStore } from '@/stores/api';
-import { VDataTable } from "vuetify/labs/VDataTable";
 export default {
-  components: {
-    VDataTable,
-  },
   setup() {
     const { get } = useApiStore();
     const itemsPerPage = ref(5);

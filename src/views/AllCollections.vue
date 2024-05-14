@@ -31,12 +31,7 @@
 import { ref, onMounted } from "vue";
 import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
-import { VDataTable } from "vuetify/labs/VDataTable";
-
 export default {
-  components: {
-    VDataTable,
-  },
   setup() {
     const { getCollectionDetails } = useMarketStore();
     const { get } = useApiStore();
