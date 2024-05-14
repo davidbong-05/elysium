@@ -75,21 +75,16 @@ export const useMarketStore = defineStore("user", () => {
 
   const login = async(address) =>
     {
-      try {
         const res = await post("/api/auth/login", {
           user_address: address,
         });
+
         sessionStorage.setItem("address", address);
         sessionStorage.setItem("pfp", res.data.profile_url);
         sessionStorage.setItem("role", res.data.role ?? "user");
         sessionStorage.setItem("session_id", res.data.session_id);
         return res.status;
-      } catch (err) {
-        console.log(err);
-        console.log(err.response.message);
-      }
     }
-
   const logout = async() =>
     {
       try {

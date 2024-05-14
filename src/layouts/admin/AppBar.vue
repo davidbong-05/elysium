@@ -134,14 +134,14 @@ export default {
           pfp_url.value = sessionStorage.getItem("pfp");
           isConnected.value = true;
         }
-        else if (status == 404) {
+      } catch (error) {
+        if (error.response?.status == 404) {
             emit("onSignUp", true);
         }
         else {
           console.log("Server error please try again later...");
         }
-      } catch (error) {
-        console.log(error.response.status);
+        console.log(error);
       }
     };
 

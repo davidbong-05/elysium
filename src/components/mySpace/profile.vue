@@ -203,6 +203,7 @@ export default {
           address.value = truncated_address1 + "..." + truncated_address2;
         }
         followings_count.value = user.value.following.length;
+        user.value.followers_count = user.value.followers_count ?? 0;
       } catch (error) {
         console.error(error);
       }
