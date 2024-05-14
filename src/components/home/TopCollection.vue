@@ -67,13 +67,9 @@
 import { ref, onMounted } from "vue";
 import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 
 export default {
   name: "TopCollection",
-  components: {
-    VSkeletonLoader,
-  },
   setup() {
     const isExist = ref(true);
     const isLoading = ref(true);
