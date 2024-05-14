@@ -57,13 +57,19 @@ VITE_PINATA_API_SECRET="<your pinata api secret>"
 ELYSIUM_API_URL = <your elysium api url>
 ```
 
-Step 4: Run the project
+Step 4 (Optional): If you are hosting online, you will need to change the proxy here:
+
+```bash
+.\elysium\public\_redirects
+```
+
+Step 5 Run the project
 
 ```bash
 npm run dev
 ```
 
-Step 5: Open the project in your browser
+Step 6: Open the project in your browser
 
 ```bash
 http://localhost:5173/
