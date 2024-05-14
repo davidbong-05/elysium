@@ -33,6 +33,41 @@ export const useMarketStore = defineStore("user", () => {
       });
       console.log("Connected: ", myAccounts[0]);
       account.value = myAccounts[0];
+
+      const polygonNetwork = {
+        chainId: '0x13882',
+        chainName: 'POLYGON AMOY TESTNET',
+        nativeCurrency: {
+          name: 'MATIC',
+          symbol: 'MATIC',
+          decimals: 18,
+        },
+        rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+        blockExplorerUrls: ['https://www.oklink.com/amoy'],
+      };
+
+      // Switch to Polygon network
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: polygonNetwork.chainId }],
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [polygonNetwork],
+            });
+          } catch (addError) {
+            console.error('Failed to add the network to MetaMask:', addError);
+          }
+        } else {
+          console.error('Failed to switch to the network:', switchError);
+        }
+      }
+
     } catch (error) {
       console.log(error);
     }
