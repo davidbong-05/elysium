@@ -64,11 +64,11 @@
     <v-col md="6" cols="12">
       <v-row class="mt-4 text-center">
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ owned_nfts_count }}</v-card-text>
-          <v-card-subtitle>Owned NFTs</v-card-subtitle>
+          <v-card-text class="text-h5">{{ owned_collections_count }}</v-card-text>
+          <v-card-subtitle>Owned Collections</v-card-subtitle>
         </v-col>
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ user.followers_count }}</v-card-text>
+          <v-card-text class="text-h5">{{ followers_count }}</v-card-text>
           <v-card-subtitle>Followers</v-card-subtitle>
         </v-col>
         <v-col cols="4">
@@ -133,10 +133,11 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { useApiStore } from '@/stores/api';
 import { useRoute } from "vue-router";
 import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
+import { useApiStore } from '@/stores/api';
+import { useMarketStore } from "@/stores/market";
 
 export default {
   name: "Profile",
@@ -148,11 +149,13 @@ export default {
     const route = useRoute();
     const user = ref({});
     const address = ref("");
-    const owned_nfts_count = 5;
+    const owned_collections_count = ref(0);
+    const followers_count = ref(0);
     const followings_count = ref(0);
     const showEditProfile = ref(false);
     // const showUploadProfile = ref(false);
     const canFollow = ref(true);
+    const { getMyCollection } = useMarketStore();
     const { get, post, put } = useApiStore();
 
     const follow = async (target_address) => {
@@ -202,8 +205,9 @@ export default {
           );
           address.value = truncated_address1 + "..." + truncated_address2;
         }
+        followers_count.value  = user.value.followers_count ?? 0;
         followings_count.value = user.value.following.length;
-        user.value.followers_count = user.value.followers_count ?? 0;
+        owned_collections_count.value = (await getMyCollection()).length;
       } catch (error) {
         console.error(error);
       }
@@ -230,7 +234,8 @@ export default {
     return {
       user,
       address,
-      owned_nfts_count,
+      owned_collections_count,
+      followers_count,
       followings_count,
       showEditProfile,
       // showUploadProfile,
