@@ -37,7 +37,6 @@ import DefaultBar from "./AppBar.vue";
 import DefaultFooter from "./AppFooter.vue";
 import SignUp from "@/views/SignUp.vue";
 import MyCart from "@/views/MyCart.vue";
-import { useMarketStore } from '@/stores/market';
 
 export default {
   name: "Default",
@@ -50,12 +49,7 @@ export default {
   setup() {
     const showSignUp = ref(false);
     const showCart = ref(false);
-    const { ping } = useMarketStore();
 
-    window.onbeforeunload  = (event) => {
-      //TODO: find a proper way to log out when user close all instance of tabs
-      ping();
-    }
     return {
       showSignUp,
       showCart,
