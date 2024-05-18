@@ -33,7 +33,6 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import axios from "axios";
 import { useRoute } from "vue-router";
 import Profile from "@/components/mySpace/profile.vue";
 import OwnedNFT from "@/components/mySpace/ownedNFT.vue";

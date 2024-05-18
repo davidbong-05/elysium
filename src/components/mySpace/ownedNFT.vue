@@ -163,7 +163,7 @@ import filterMenu from "@/components/mySpace/filterMenu.vue";
 import ViewNFT from "@/components/mySpace/viewNFT.vue";
 
 export default {
-  tokenName: "OwnedNFT",
+  name: "OwnedNFT",
   props: ["userAddress"],
   components: {
     filterMenu,
