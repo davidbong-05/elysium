@@ -43,7 +43,7 @@
                 <v-file-input
                   class="my-4"
                   v-model="file"
-                  :rules="[rules.required, rules.fileType]"
+                  :rules="[rules.required, rules.filesType]"
                   label="File"
                   show-size
                   variant="outlined"
@@ -225,7 +225,11 @@ export default {
       },
       fileType: (v) => {
         const pattern = /image/;
-        return pattern.test(v[0].type) || "Image only. (jpg, jpeg, png)";
+        return pattern.test(v.type) || "Image only. (jpg, jpeg, png)";
+      },
+
+      filesType: (v) => {
+        return rules.fileType(v[0])
       },
       minPrice: (v) => v >= 0.001 || "Min 0.001 ETH",
     };
@@ -252,10 +256,9 @@ export default {
         );
       }
     });
-
     const previewImg = computed(() => {
       if (file.value) {
-        return URL.createObjectURL(file.value[0]);
+        return URL.createObjectURL(file.value);
       }
       return "";
     });
@@ -265,7 +268,7 @@ export default {
         console.log("submit");
         isLoading.value = true;
         loadingMsg.value = "Uploading the file to IPFS...";
-        const fileData = await uploadFileToIPFS(file.value[0]);
+        const fileData = await uploadFileToIPFS(file.value);
         console.log("fileData.IpfsHash", fileData.IpfsHash);
         const json = {
           name: name.value,
