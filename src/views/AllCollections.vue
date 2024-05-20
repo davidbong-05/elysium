@@ -8,7 +8,6 @@
         :items-length="collections.length"
         :items="collections"
         :loading="loading"
-        item-value="address"
         class="elevation-1"
       >
         <template v-slot:item.actions="{ item }">
@@ -17,7 +16,7 @@
             color="primary"
             variant="outlined"
             size="small"
-            :to="'/collection/' + item.value"
+            :to="'/collection/' + item.address"
           >
             View
           </v-btn>
