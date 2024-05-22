@@ -132,39 +132,61 @@ export default {
     });
 
     const submit = async () => {
-      if (valid.value === true) {
-        const data = {
-          username: username.value,
-          address: store.account,
-          email: email.value,
-          profile_url:
-            "https://source.boringavatars.com/beam/250/" + username.value,
-          background_url:
-            "https://source.boringavatars.com/pixel/500/" +
-            username.value +
-            "?square",
-          description: desc.value,
-        };
-        const res = await post("/api/user", data);
-        if (res.status === 200) {
-          console.log(res.data);
+      try
+      {
+        if (valid.value === true) {
+          const data = {
+            username: username.value,
+            address: store.account,
+            email: email.value,
+            profile_url:
+              "https://source.boringavatars.com/beam/250/" + username.value,
+            background_url:
+              "https://source.boringavatars.com/pixel/500/" +
+              username.value +
+              "?square",
+            description: desc.value,
+          };
+          const res = await post("/api/user", data);
+          if (res.status === 200) {
+            console.log(res.data);
+            alert.value = {
+              show: true,
+              color: "success",
+              icon: "$success",
+              title: "Success",
+              text: "Sign Up Successfully! Press the Connect button again to login",
+            };
+          }
+        } else {
           alert.value = {
             show: true,
-            color: "success",
-            icon: "$success",
-            title: "Success",
-            text: "Sign Up Successfully! Press the Connect button again to login",
+            color: "error",
+            icon: "$error",
+            title: "Oops...",
+            text: "Please check your input and try again",
+          };
+          console.log("Invalid", valid.value);
+        }
+      } catch (error) {
+        console.log(error);
+        if(error.response.status === 400){
+          alert.value = {
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Oops...",
+            text: error.response.data.message,
+          };
+        } else {
+          alert.value = {
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Oops...",
+            text: "Something went wrong. Please try again later",
           };
         }
-      } else {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "Please check your input and try again",
-        };
-        console.log("Invalid", valid.value);
       }
     };
 
