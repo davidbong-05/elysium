@@ -33,6 +33,14 @@ const routes = [
           ),
       },
       {
+        path: "/user/verify/",
+        name: "Verify",
+        component: () =>
+          import(
+            /* webpackChunkName: "VerificationPage" */ "@/views/VerificationPage.vue"
+          ),
+      },
+      {
         path: "/create-nft",
         name: "CreateNFT",
         component: () =>

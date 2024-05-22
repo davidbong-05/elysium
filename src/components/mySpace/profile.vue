@@ -57,7 +57,9 @@
           </v-img>
         </v-avatar>
       </v-hover>
-      <v-card-title>@{{ user.username }}</v-card-title>
+      <v-card-title>@{{ user.username }}
+            <v-icon v-if="isVerified" class="ms-2" icon="mdi-marker-check" size="s"></v-icon>
+      </v-card-title>
       <v-card-subtitle>{{ address }}</v-card-subtitle>
       <v-card-subtitle>{{ user.description }}</v-card-subtitle>
     </v-col>
@@ -77,10 +79,17 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col class="d-flex justify-center align-center" lg="2" md="2" cols="12">
+    <v-col class="d-flex justify-center  flex-column  align-center" lg="2" md="2" cols="12">
       <v-btn
         class="mx-2"
-        width="80%"
+        variant="outlined"
+        v-if="canEdit && !isVerified"
+        @click="getVerified()"
+      >
+        Get Verified
+      </v-btn>
+      <v-btn
+        class="mt-2"
         color="primary"
         variant="flat"
         v-if="canEdit"
@@ -90,7 +99,6 @@
       </v-btn>
       <v-btn
         class="mx-2"
-        width="80%"
         color="white"
         @click="follow(user.address)"
         v-else-if="canFollow"
@@ -98,7 +106,6 @@
       </v-btn>
       <v-btn
         class="mx-2"
-        width="80%"
         variant="outlined"
         color="white"
         @click="unfollow(user.address)"
@@ -145,10 +152,12 @@ export default {
     EditProfile,
     changeProfilePic,
   },
-  setup() {
+  emits: ["onAlert"],
+  setup(props, { emit }) {
     const route = useRoute();
     const user = ref({});
     const address = ref("");
+    const isVerified = ref(false);
     const owned_collections_count = ref(0);
     const followers_count = ref(0);
     const followings_count = ref(0);
@@ -157,6 +166,52 @@ export default {
     const canFollow = ref(true);
     const { getMyCollection } = useMarketStore();
     const { get, post, put } = useApiStore();
+
+    const alert = ref({
+      show: false,
+      color: "",
+      icon: "",
+      title: "",
+      text: "",
+    });
+
+
+    const getVerified = async () => {
+      try {
+        var data = {
+          email: user.value.email,
+        };
+        const res = await post("/api/auth/send-verification-email", data);
+        if(res.status === 200) {
+          alert.value = {
+            show: true,
+            color: "success",
+            icon: "$success",
+            title: "Success",
+            text: "A verification code has been sent to your email.",
+          };
+        } else{
+          alert.value = {
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Error",
+            text: res.data.message,
+          };
+        }
+      } catch (err) {
+        alert.value = {
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Error",
+            text: err.response.data.message,
+          };
+        console.log(err);
+        console.log(err.response.message);
+      }
+      emit('onAlert', alert.value);
+    };
 
     const follow = async (target_address) => {
       try {
@@ -205,6 +260,7 @@ export default {
           );
           address.value = truncated_address1 + "..." + truncated_address2;
         }
+        isVerified.value = user.value.verifiedAt != null;
         followers_count.value  = user.value.followers_count ?? 0;
         followings_count.value = user.value.following.length;
         owned_collections_count.value = (await getMyCollection()).length;
@@ -234,6 +290,7 @@ export default {
     return {
       user,
       address,
+      isVerified,
       owned_collections_count,
       followers_count,
       followings_count,
@@ -241,6 +298,7 @@ export default {
       // showUploadProfile,
       canEdit,
       canFollow,
+      getVerified,
       follow,
       unfollow,
       updateUser,

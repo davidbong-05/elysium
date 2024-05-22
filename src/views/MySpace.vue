@@ -1,7 +1,18 @@
 <template>
   <v-container fluid v-if="userExist">
+      <v-alert
+        class="mb-2"
+        theme="dark"
+        v-if="alert.show"
+        :color="alert.color"
+        :icon="alert.icon"
+        :title="alert.title"
+        :text="alert.text"
+        variant="tonal"
+        density="compact"
+      ></v-alert>
     <v-card class="mx-auto" color="background">
-      <profile />
+      <profile @onAlert="newAlert"/>
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">Owned</v-tab>
         <v-tab :value="2">On Sale</v-tab>
@@ -48,12 +59,24 @@ export default {
     OnSale,
     // Activity,
   },
-  setup() {
+  setup(prop) {
     const tab = ref(1);
     const route = useRoute();
     const userExist = ref(true);
     const userAddress = route.params.address;
     const { get } = useApiStore();
+
+    const alert = ref({
+      show: false,
+      color: "",
+      icon: "",
+      title: "",
+      text: "",
+    });
+
+    const newAlert = (alertDetail) => {
+      alert.value = alertDetail;
+    };
 
     onMounted(async () => {
       try {
@@ -68,9 +91,11 @@ export default {
     });
 
     return {
+      alert,
       tab,
       userExist,
       userAddress,
+      newAlert,
     };
   },
 };
