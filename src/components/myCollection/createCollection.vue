@@ -22,7 +22,7 @@
       variant="tonal"
       density="compact"
     ></v-alert>
-    <v-form @submit.prevent v-if="alert.title != 'Success'">
+    <v-form @submit.prevent v-if="alert.title != 'Success' && isVerified">
       <v-card-text>
         <v-text-field
           class="mb-2"
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -98,6 +98,7 @@ export default {
     const { createNFTCollection } = useMarketStore();
     // data
     const wallet = sessionStorage.getItem("address");
+    const isVerified = sessionStorage.getItem("role") != 'unverified-user';
     const name = ref("");
     const symbol = ref("");
     const royalty = ref("");
@@ -129,6 +130,7 @@ export default {
 
     const valid = computed(() => {
       return (
+        isVerified &&
         name.value.length > 0 &&
         symbol.value.length > 0 &&
         royalty.value.length > 0 &&
@@ -188,7 +190,20 @@ export default {
       }
     };
 
+    onMounted(async () => {
+      if(!isVerified) {
+        alert.value = {
+          show: true,
+          color: "error",
+          icon: "$error",
+          title: "Oops...",
+          text: "Please verify your email first.",
+        };
+      }
+    });
+
     return {
+      isVerified,
       wallet,
       name,
       symbol,

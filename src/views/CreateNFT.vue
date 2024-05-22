@@ -11,7 +11,7 @@
       variant="tonal"
       density="compact"
     ></v-alert>
-    <v-row>
+    <v-row v-if="isVerified">
       <v-col md="8" cols="12">
         <v-card variant="outlined" theme="dark">
           <div v-if="!isLoading">
@@ -192,6 +192,7 @@ export default {
     } = useMarketStore();
 
     const wallet = sessionStorage.getItem("address");
+    const isVerified = sessionStorage.getItem("role") != 'unverified-user';
     const isLoading = ref(false);
     const loadingMsg = ref("nothing");
     const collections = ref([]);
@@ -237,6 +238,7 @@ export default {
     const valid = computed(() => {
       if (onSale.value === "Yes") {
         return (
+          isVerified &&
           name.value.length >= 3 &&
           name.value.length <= 25 &&
           description.value.length >= 3 &&
@@ -247,6 +249,7 @@ export default {
         );
       } else {
         return (
+          isVerified &&
           name.value.length >= 3 &&
           name.value.length <= 25 &&
           description.value.length >= 3 &&
@@ -372,6 +375,15 @@ export default {
           selectedCollection.value.name = collections.value[0].name;
           isLoading.value = false;
         }
+        if(!isVerified) {
+          alert.value = {
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Oops...",
+            text: "Please verify your email first.",
+          };
+        }
       } catch (err) {
         alert.value = {
           show: true,
@@ -386,6 +398,7 @@ export default {
 
     return {
       wallet,
+      isVerified,
       isLoading,
       loadingMsg,
       selectedCollection,
