@@ -154,7 +154,7 @@ export default {
   },
   emits: ["onAlert"],
   setup(props, { emit }) {
-    const route = useRoute();
+    const router = useRoute();
     const user = ref({});
     const address = ref("");
     const isVerified = ref(false);
@@ -181,6 +181,7 @@ export default {
         var data = {
           email: user.value.email,
         };
+
         const res = await post("/api/auth/send-verification-email", data);
         if(res.status === 200) {
           alert.value = {
@@ -190,6 +191,7 @@ export default {
             title: "Success",
             text: "A verification code has been sent to your email.",
           };
+          window.location.href = "/user/verify";
         } else{
           alert.value = {
             show: true,
@@ -200,6 +202,7 @@ export default {
           };
         }
       } catch (err) {
+        console.log(err);
         alert.value = {
             show: true,
             color: "error",
@@ -207,8 +210,6 @@ export default {
             title: "Error",
             text: err.response.data.message,
           };
-        console.log(err);
-        console.log(err.response.message);
       }
       emit('onAlert', alert.value);
     };
@@ -249,7 +250,7 @@ export default {
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
       try {
-        const res = await get("/api/user/" + route.params.address);
+        const res = await get("/api/user/" + router.params.address);
         if (res.status === 200) {
           user.value = res.data;
           let original_address = res.data.address;
@@ -272,7 +273,7 @@ export default {
         console.log("session", sessionStorage.getItem("address"));
         const res = await post("/api/user/follow/check", {
           user_address: sessionStorage.getItem("address"),
-          target_address: route.params.address,
+          target_address: router.params.address,
         });
         if (res.data === true) {
           canFollow.value = false;
@@ -284,7 +285,7 @@ export default {
     });
 
     const canEdit = computed(() => {
-      return route.params.address === sessionStorage.getItem("address");
+      return router.params.address === sessionStorage.getItem("address");
     });
 
     return {

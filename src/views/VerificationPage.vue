@@ -15,7 +15,7 @@
       <v-col md="8" cols="12">
         <v-card variant="outlined" theme="dark">
           <div v-if="!isLoading">
-            <v-card-title class="text-white"> Verify your email</v-card-title>
+            <v-card-title class="text-white">Please check your email for the verification token:</v-card-title>
             <v-form @submit.prevent>
               <v-card-text>
                 <v-text-field
