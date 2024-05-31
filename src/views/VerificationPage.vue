@@ -40,6 +40,7 @@
                   label="Token"
                   variant="outlined"
                   density="compact"
+                  :rules="[rules.required]"
                   required
                 ></v-text-field>
               </v-card-text>
@@ -83,7 +84,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useApiStore } from '@/stores/api';
 
@@ -108,51 +109,68 @@ export default {
     const isVerified = ref(false);
     const address = sessionStorage.getItem("address");
     const token = ref("");
+    const rules = {
+      required: (v) => !!v && v == "" || "This field is required.",
+    };
+
+    const valid = computed(() => {
+      return rules.required(token) && rules.required(email.value);
+    });
 
     const submit = async () => {
-      try {
-        isLoading.value = true;
-        loadingMsg.value = "Verifing your token...";
-        const data = {
-          address: address,
-          email: email.value,
-          token: token.value,
-        };
-        const res = await post("/api/auth/verify", data);
-        if(res.status === 200){
-          const res2 = await get("/api/user/" + address);
-          sessionStorage.setItem("role", res2.data.role);
-          alert.value = {
-            show: true,
-            color: "success",
-            icon: "$success",
-            title: "Success",
-            text: "Your email is verified!",
+      if (valid.value === true) {
+        try {
+          isLoading.value = true;
+          loadingMsg.value = "Verifing your token...";
+          const data = {
+            address: address,
+            email: email.value,
+            token: token.value,
           };
+          // const res = await post("/api/auth/verify", data);
+          if(res.status === 200){
+            const res2 = await get("/api/user/" + address);
+            sessionStorage.setItem("role", res2.data.role);
+            alert.value = {
+              show: true,
+              color: "success",
+              icon: "$success",
+              title: "Success",
+              text: "Your email is verified!",
+            };
+          }
+        } catch (err) {
+          if(err.response.status < 500){
+            alert.value = {
+              show: true,
+              color: "error",
+              icon: "$error",
+              title: "Oops...",
+              text: err.response.data,
+            };
+          }
+          else{
+            alert.value = {
+              show: true,
+              color: "error",
+              icon: "$error",
+              title: "Oops...",
+              text: "We are facing some issues please try again later...",
+            };
+          }
+          console.log(err);
         }
-      } catch (err) {
-        if(err.response.status < 500){
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: err.response.data,
-          };
-        }
-        else{
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: "We are facing some issues please try again later...",
-          };
-        }
-        console.log(err);
+        isLoading.value = false;
+        reset();
+      } else {
+        alert.value = {
+              show: true,
+              color: "error",
+              icon: "$error",
+              title: "Please check your input...",
+              text: "Token is required",
+            };
       }
-      isLoading.value = false;
-      reset();
     }
     const reset = () => {
       token.value = "";
@@ -197,6 +215,7 @@ export default {
       email,
       address,
       token,
+      rules,
       submit,
       reset
     };
