@@ -175,6 +175,7 @@ export default {
     const selectedView = ref("smallIcon");
     const showNFTDetail = ref(false);
     const loading = ref(true);
+    var userAddress = props.userAddress;
 
     // computed
     const iconSize = computed(() =>
@@ -190,7 +191,11 @@ export default {
     };
 
     onMounted(async () => {
-      const res = await getOwnedNFTs(props.userAddress);
+      if(!userAddress || userAddress === '')
+      {
+        userAddress = sessionStorage.getItem('address');
+      }
+      const res = await getOwnedNFTs(userAddress);
       loading.value = false;
       console.log("Owned", res);
       if (res) {

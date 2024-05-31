@@ -145,6 +145,7 @@ import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
 import { useApiStore } from '@/stores/api';
 import { useMarketStore } from "@/stores/market";
+import { setDevtoolsHook } from "vue";
 
 export default {
   name: "Profile",
@@ -152,6 +153,7 @@ export default {
     EditProfile,
     changeProfilePic,
   },
+  props: ["userAddress"],
   emits: ["onAlert"],
   setup(props, { emit }) {
     const router = useRoute();
@@ -162,6 +164,7 @@ export default {
     const followers_count = ref(0);
     const followings_count = ref(0);
     const showEditProfile = ref(false);
+    var userAddress = props.userAddress;
     // const showUploadProfile = ref(false);
     const canFollow = ref(true);
     const { getMyCollection } = useMarketStore();
@@ -249,8 +252,12 @@ export default {
 
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
+      if(!userAddress || userAddress === '')
+      {
+        userAddress = sessionStorage.getItem('address');
+      }
       try {
-        const res = await get("/api/user/" + router.params.address);
+        const res = await get("/api/user/" + userAddress);
         if (res.status === 200) {
           user.value = res.data;
           let original_address = res.data.address;
@@ -285,7 +292,7 @@ export default {
     });
 
     const canEdit = computed(() => {
-      return router.params.address === sessionStorage.getItem("address");
+      return userAddress === "";
     });
 
     return {

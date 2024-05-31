@@ -12,7 +12,7 @@
         density="compact"
       ></v-alert>
     <v-card class="mx-auto" color="background">
-      <profile @onAlert="newAlert"/>
+      <profile :userAddress="userAddress" @onAlert="newAlert" />
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">Owned</v-tab>
         <v-tab :value="2">On Sale</v-tab>
@@ -63,7 +63,7 @@ export default {
     const tab = ref(1);
     const route = useRoute();
     const userExist = ref(true);
-    const userAddress = route.params.address;
+    const userAddress = route.params.address ?? sessionStorage.getItem("address");
     const { get } = useApiStore();
 
     const alert = ref({
@@ -80,7 +80,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await get("/api/user/" + route.params.address);
+        const res = await get("/api/user/" + userAddress);
         if (res.status === 200) userExist.value = true;
       } catch (error) {
         if (error.response.status === 404) {

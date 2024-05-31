@@ -40,12 +40,6 @@
           <v-list-item-title>Admin Dashboard</v-list-item-title>
         </v-list-item>
         <v-list-item
-          prepend-icon="mdi-space-invaders"
-          :href="profileLink"
-        >
-          <v-list-item-title>My Space</v-list-item-title>
-        </v-list-item>
-        <v-list-item
           v-for="(item, i) in menu"
           :key="i"
           :prepend-icon="item.icon"
@@ -78,10 +72,13 @@ export default {
   setup(props, { emit }) {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
-
-    const profileLink = "/user/" + sessionStorage.getItem("address");
     const isAdmin = sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin";
     const menu = [
+      {
+        text: "My Space",
+        icon: "mdi-space-invaders",
+        link: "/user/",
+      },
       {
         text: "My Collection",
         icon: "mdi-cards",
@@ -152,7 +149,6 @@ export default {
     };
 
     return {
-      profileLink,
       isAdmin,
       menu,
       isConnected,
