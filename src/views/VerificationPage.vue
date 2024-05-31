@@ -120,6 +120,8 @@ export default {
         };
         const res = await post("/api/auth/verify", data);
         if(res.status === 200){
+          const res2 = await get("/api/user/" + address);
+          sessionStorage.setItem("role", res2.data.role);
           alert.value = {
             show: true,
             color: "success",
