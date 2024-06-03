@@ -92,7 +92,7 @@ export default {
   emits: ["onShowCart"],
   setup() {
     const cartItems = ref([]);
-    const { getCartNFTs, checkoutNFTs } = useMarketStore();
+    const { setAlert, getCartNFTs, checkoutNFTs } = useMarketStore();
     const { post, put } = useApiStore();
 
     const alert = ref({
@@ -113,26 +113,6 @@ export default {
       return price.toString();
     });
 
-    const setAlert = (status, msg) => {
-      if (status === "error") {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: msg,
-        };
-      } else if (status === "success") {
-        alert.value = {
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-          text: msg,
-        };
-      }
-    };
-
     const removeCartItem = async (tokenIndex) => {
       cartItems.value.splice(tokenIndex, 1);
       if (cartItems.value.length === 0) {
@@ -152,9 +132,9 @@ export default {
           user_address: sessionStorage.getItem("address"),
           cart_content: newCartContents,
         });
-        setAlert("success", "Item removed from cart");
+        alert.value = setAlert("success", "Item removed from cart");
       } catch (err) {
-        setAlert("error", "Oops... Something went wrong");
+        alert.value = setAlert("error", "Oops... Something went wrong");
         console.log(err);
       }
     };
@@ -165,21 +145,29 @@ export default {
           user_address: sessionStorage.getItem("address"),
         });
         cartItems.value = [];
-        setAlert("success", "Cart cleared");
+        alert.value = setAlert("success", "Cart cleared");
       } catch (err) {
-        setAlert("error", "Oops... Something went wrong");
+        alert.value = setAlert("error", "Oops... Something went wrong");
         console.log(err);
       }
     };
 
     const checkout = async () => {
       try {
-        await checkoutNFTs(cartItems.value, totalPrice.value);
-        await clearCart();
-        cartItems.value = [];
-        setAlert("success", "Checkout successful");
+        const res = await checkoutNFTs(cartItems.value, totalPrice.value);
+        if(res === "ACTION_REJECTED")
+        {
+          alert.value = setAlert(
+            "info",
+            "You had rejected the transaction."
+          );
+        } else {
+          await clearCart();
+          cartItems.value = [];
+          alert.value = setAlert("success", "Checkout successful");
+        }
       } catch (err) {
-        setAlert("error", "Oops... Something went wrong");
+        alert.value = setAlert("error", "Oops... Something went wrong");
         console.log(err);
       }
     };

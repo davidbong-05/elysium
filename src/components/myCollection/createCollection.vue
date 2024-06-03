@@ -95,7 +95,7 @@ export default {
   name: "createCollection",
   emits: ["onShowForm"],
   setup() {
-    const { createNFTCollection } = useMarketStore();
+    const { setAlert, createNFTCollection } = useMarketStore();
     // data
     const wallet = sessionStorage.getItem("address");
     const isVerified = sessionStorage.getItem("role") != 'unverified-user';
@@ -154,51 +154,46 @@ export default {
     const submit = async () => {
       if (valid.value === true) {
         try {
-          const created = await createNFTCollection(
+          const res = await createNFTCollection(
             name.value,
             symbol.value,
             royalty.value,
             wallet
           );
-          alert.value = {
-            show: true,
-            color: "success",
-            icon: "$success",
-            title: "Success",
-            text: "NFT created successfully!",
-          };
-          console.log(created);
+          if(res === "ACTION_REJECTED") {
+            alert.value = setAlert(
+              "info",
+              "You had rejected the transaction."
+            );
+          } else {
+            alert.value = setAlert(
+              "success",
+              "NFT created successfully!"
+            );
+            console.log(res);
+          }
         } catch (err) {
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: "We are facing some issues please try again later...",
-          };
+          alert.value = setAlert(
+            "error",
+            "We are facing some issues please try again later..."
+          );
           console.log(err);
         }
       } else {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "Please check your input and try again",
-        };
+        alert.value = setAlert(
+          "error",
+          "Please check your input and try again"
+        );
         console.log("Invalid", valid.value);
       }
     };
 
     onMounted(async () => {
       if(!isVerified) {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "Please verify your email first.",
-        };
+        alert.value = setAlert(
+          "error",
+          "Please verify your email first."
+        );
       }
     });
 

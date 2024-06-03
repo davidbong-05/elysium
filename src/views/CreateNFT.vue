@@ -183,6 +183,7 @@ export default {
   components: {},
   setup() {
     const {
+      setAlert,
       uploadFileToIPFS,
       uploadJSONToIPFS,
       getMyCollection,
@@ -268,7 +269,6 @@ export default {
 
     const submit = async () => {
       if (valid.value === true) {
-        console.log("submit");
         isLoading.value = true;
         loadingMsg.value = "Uploading the file to IPFS...";
         const fileData = await uploadFileToIPFS(file.value);
@@ -281,56 +281,53 @@ export default {
         const jsonFile = await uploadJSONToIPFS(json);
         console.log("file", jsonFile.IpfsHash);
         loadingMsg.value = "Minting the NFT...";
-        const tokenId = await mintNFT(
+        const res = await mintNFT(
           sessionStorage.getItem("address"),
           selectedCollection.value.address,
           jsonFile.IpfsHash
         );
-        // const tokenId = await mintNFT(
-        //   sessionStorage.getItem("address"),
-        //   selectedCollection.value.address,
-        //   "QmRaWcj4SsKuYyaemp7upnjHxk44AtC13JBvzwGH3YbJzc"
-        // );
-
-        console.log("mint", tokenId);
-
-        if (onSale.value === "Yes") {
-          try {
-            loadingMsg.value = "Listing the NFT on sale...";
-            const res = await listNFT(
-              selectedCollection.value.address,
-              tokenId,
-              price.value.toString()
-            );
-            console.log("listed on sale", res);
-          } catch (err) {
-            alert.value = {
-              show: true,
-              color: "error",
-              icon: "$error",
-              title: "Oops...",
-              text: "We are facing some issues please try again later...",
-            };
-            console.log(err);
+        if(res === "ACTION_REJECTED") {
+          alert.value = setAlert(
+            "info",
+            "You had rejected the transaction."
+          );
+        } else {
+          console.log("mint", res);
+          if (onSale.value === "Yes") {
+            try {
+              loadingMsg.value = "Listing the NFT on sale...";
+              const res = await listNFT(
+                selectedCollection.value.address,
+                res,
+                price.value.toString()
+              );
+              if(res === "ACTION_REJECTED") {
+                alert.value = setAlert(
+                  "info",
+                  "You had rejected the transaction. Failed to listed on sales."
+                );
+              }
+              console.log("listed on sale", res);
+            } catch (err) {
+              alert.value = setAlert(
+              "error",
+              "We are facing some issues please try again later..."
+              );
+              console.log(err);
+            }
           }
+          alert.value = setAlert(
+            "success",
+            "NFT Minted Successfully"
+          );
+          reset();
         }
-        alert.value = {
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-          text: "NFT Minted Successfully",
-        };
         isLoading.value = false;
-        reset();
       } else {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "Please check your input and try again",
-        };
+        alert.value = setAlert(
+          "error",
+          "Please check your input and try again"
+        );
         console.log("Invalid", valid.value);
       }
     };
@@ -350,13 +347,10 @@ export default {
         loadingMsg.value = "Fetching your collections...";
         const res = await getMyCollection();
         if (res.length === 0) {
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: "You don't have any collection. Please create one first.",
-          };
+          alert.value = setAlert(
+            "error",
+            "You don't have any collection. Please create one first."
+          );
           loadingMsg.value = "Redirecting to create collection page...";
           setTimeout(() => {
             window.location.href = "/user/collection/";
@@ -376,22 +370,16 @@ export default {
           isLoading.value = false;
         }
         if(!isVerified) {
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: "Please verify your email first.",
-          };
+          alert.value =  setAlert(
+            "error",
+            "Please verify your email first."
+          );
         }
       } catch (err) {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "We are facing some issues please try again later...",
-        };
+        alert.value = setAlert(
+            "error",
+            "We are facing some issues please try again later..."
+          );
         console.log(err);
       }
     });

@@ -141,7 +141,7 @@ export default {
   props: ["nft"],
   emits: ["onClose"],
   setup(props) {
-    const { linkCollection, listNFT, unListNFT, buyNFT } = useMarketStore();
+    const { setAlert, linkCollection, listNFT, unListNFT, buyNFT } = useMarketStore();
     const { post, put } = useApiStore();
 
     const price = ref();
@@ -170,38 +170,26 @@ export default {
       else return false;
     });
 
-    const setAlert = (status, msg) => {
-      if (status === "error") {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: msg,
-        };
-      } else if (status === "success") {
-        alert.value = {
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-          text: msg,
-        };
-      }
-    };
-
     const sell = async (nftCollection, nftId) => {
       try {
         isLoading.value = true;
-        await listNFT(nftCollection, nftId, price.value.toString());
-        setAlert(
-          "success",
-          "Successfully listed NFT for sale! Please refresh page to update"
-        );
+        const res = await listNFT(nftCollection, nftId, price.value.toString());
+        if(res === "ACTION_REJECTED")
+        {
+          alert.value = setAlert(
+            "info",
+            "You had rejected the transaction."
+          );
+        } else {
+          alert.value = setAlert(
+            "success",
+            "Successfully listed NFT for sale! Please refresh page to update"
+          );
+        }
         isLoading.value = false;
         isUpdate.value = true;
       } catch (err) {
-        setAlert(
+        alert.value = setAlert(
           "error",
           "We are facing some issues please try again later..."
         );
@@ -213,15 +201,22 @@ export default {
       try {
         isLoading.value = true;
         const res = await unListNFT(nftCollection, nftId);
-        console.log(res);
-        setAlert(
-          "success",
-          "Successfully remove NFT from listing! Please refresh page to update"
-        );
+        if(res === "ACTION_REJECTED")
+        {
+          alert.value = setAlert(
+            "info",
+            "You had rejected the transaction."
+          );
+        } else {
+          alert.value = setAlert(
+            "success",
+            "Successfully remove NFT from listing! Please refresh page to update"
+          );
+        }
         isLoading.value = false;
         isUpdate.value = true;
       } catch (err) {
-        setAlert(
+        alert.value = setAlert(
           "error",
           "We are facing some issues please try again later..."
         );
@@ -233,16 +228,24 @@ export default {
       try {
         isLoading.value = true;
         const res = await buyNFT(nftCollection, nftId, nftPrice);
-        console.log(res);
-        await linkCollection(sessionStorage.getItem("address"), nftCollection);
-        setAlert(
-          "success",
-          "Successfully purchased NFT! Please refresh page to update"
-        );
+        if(res === "ACTION_REJECTED")
+        {
+          alert.value = setAlert(
+            "info",
+            "You had rejected the transaction."
+          );
+        }else{
+          await linkCollection(sessionStorage.getItem("address"), nftCollection);
+          alert.value = setAlert(
+            "success",
+            "Successfully purchased NFT! Please refresh page to update"
+          );
+        }
+
         isLoading.value = false;
         isUpdate.value = true;
       } catch (err) {
-        setAlert(
+        alert.value = setAlert(
           "error",
           "We are facing some issues please try again later..."
         );
@@ -265,7 +268,7 @@ export default {
               element.tokenId === nftId
             ) {
               exist = true;
-              setAlert("error", "NFT already in cart... ");
+              alert.value = setAlert("error", "NFT already in cart... ");
               console.log("NFT already in cart");
               break;
             }
@@ -278,9 +281,9 @@ export default {
               user_address: sessionStorage.getItem("address"),
               cart_content: nfts.value,
             });
-            setAlert("success", "Successfully added to cart!");
+            alert.value = setAlert("success", "Successfully added to cart!");
           } catch (err) {
-            setAlert(
+            alert.value = setAlert(
               "error",
               "We are facing some issues please try again later..."
             );
@@ -288,7 +291,7 @@ export default {
           }
         }
       } catch (err) {
-        setAlert(
+        alert.value = setAlert(
           "error",
           "We are facing some issues please try again later..."
         );

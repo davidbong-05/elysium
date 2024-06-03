@@ -21,6 +21,43 @@ export const useMarketStore = defineStore("user", () => {
   //   console.log("setLoader", value);
   //   loading.value = value;
   // }
+  var alert = ref({
+    show: false,
+    color: "",
+    icon: "",
+    title: "",
+    text: "",
+  });
+
+  const setAlert = (status, msg) => {
+
+    if (status === "error") {
+      alert = {
+        show: true,
+        color: "error",
+        icon: "$error",
+        title: "Oops...",
+        text: msg,
+      };
+    } else if (status === "success") {
+      alert = {
+        show: true,
+        color: "success",
+        icon: "$success",
+        title: "Success",
+        text: msg,
+      };
+    } else if (status === "info") {
+      alert = {
+        show: true,
+        color: "info",
+        icon: "$info",
+        title: "Info",
+        text: msg,
+      };
+    }
+    return alert;
+  };
 
   const connectWallet = async () => {
     try {
@@ -257,7 +294,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      return error.code;
     }
   };
 
@@ -364,7 +401,9 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Ethereum object d" + error);
+
+      return error.code;
     }
   };
 
@@ -502,7 +541,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      return error.code;
     }
   };
 
@@ -525,7 +564,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      return error.code;
     }
   };
 
@@ -669,9 +708,9 @@ export const useMarketStore = defineStore("user", () => {
         const tokenTxn = await marketContract.buyNFT(tokenAddress, tokenId, {
           value: price,
         });
-        console.log(tokenTxn);
+        return tokenTxn;
       } catch (err) {
-        console.log(err);
+        return err.code;
       }
     }
   };
@@ -780,6 +819,7 @@ export const useMarketStore = defineStore("user", () => {
     // setLoader,
     loading,
     // market,
+    setAlert,
     connectWallet,
     login,
     logout,
