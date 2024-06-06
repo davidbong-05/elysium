@@ -5,7 +5,7 @@ import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json"
 import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ref } from "vue";
 import axios from "axios";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -30,7 +30,6 @@ export const useMarketStore = defineStore("user", () => {
   });
 
   const setAlert = (status, msg) => {
-
     if (status === "error") {
       alert = {
         show: true,
@@ -72,21 +71,21 @@ export const useMarketStore = defineStore("user", () => {
       account.value = myAccounts[0];
 
       const polygonNetwork = {
-        chainId: '0x13882',
-        chainName: 'POLYGON AMOY TESTNET',
+        chainId: "0x13882",
+        chainName: "POLYGON AMOY TESTNET",
         nativeCurrency: {
-          name: 'MATIC',
-          symbol: 'MATIC',
+          name: "MATIC",
+          symbol: "MATIC",
           decimals: 18,
         },
-        rpcUrls: ['https://rpc-amoy.polygon.technology/'],
-        blockExplorerUrls: ['https://www.oklink.com/amoy'],
+        rpcUrls: ["https://rpc-amoy.polygon.technology/"],
+        blockExplorerUrls: ["https://www.oklink.com/amoy"],
       };
 
       // Switch to Polygon network
       try {
         await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
+          method: "wallet_switchEthereumChain",
           params: [{ chainId: polygonNetwork.chainId }],
         });
       } catch (switchError) {
@@ -94,61 +93,57 @@ export const useMarketStore = defineStore("user", () => {
         if (switchError.code === 4902) {
           try {
             await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
+              method: "wallet_addEthereumChain",
               params: [polygonNetwork],
             });
           } catch (addError) {
-            console.error('Failed to add the network to MetaMask:', addError);
+            console.error("Failed to add the network to MetaMask:", addError);
           }
         } else {
-          console.error('Failed to switch to the network:', switchError);
+          console.error("Failed to switch to the network:", switchError);
         }
       }
-
     } catch (error) {
       console.log(error);
     }
   };
 
-  const login = async(address) =>
-    {
-        const res = await post("/api/auth/login", {
-          user_address: address,
-        });
+  const login = async (address) => {
+    const res = await post("/api/auth/login", {
+      user_address: address,
+    });
 
-        sessionStorage.setItem("address", address);
-        sessionStorage.setItem("pfp", res.data.profile_url);
-        sessionStorage.setItem("role", res.data.role ?? "unverified-user");
-        sessionStorage.setItem("session_id", res.data.session_id);
-        return res.status;
+    sessionStorage.setItem("address", address);
+    sessionStorage.setItem("pfp", res.data.profile_url);
+    sessionStorage.setItem("role", res.data.role ?? "unverified-user");
+    sessionStorage.setItem("session_id", res.data.session_id);
+    return res.status;
+  };
+  const logout = async () => {
+    try {
+      const res = await post("/api/auth/logout", {
+        user_address: sessionStorage.getItem("address"),
+        session_id: sessionStorage.getItem("session_id"),
+      });
+      sessionStorage.clear();
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+      console.log(err.response.message);
     }
-  const logout = async() =>
-    {
-      try {
-        const res = await post("/api/auth/logout", {
-          user_address: sessionStorage.getItem("address"),
-          session_id :sessionStorage.getItem("session_id"),
-        });
-        sessionStorage.clear();
-        console.log(res);
-      } catch (err) {
-        console.log(err);
-        console.log(err.response.message);
-      }
-    }
+  };
 
-  const ping = async() =>
-      {
-        try {
-          const res = await post("/api/auth/ping", {
-            user_address: sessionStorage.getItem("address"),
-            session_id :sessionStorage.getItem("session_id"),
-          });
-        } catch (err) {
-          console.log(err);
-          console.log(err.response.message);
-        }
-      }
+  const ping = async () => {
+    try {
+      const res = await post("/api/auth/ping", {
+        user_address: sessionStorage.getItem("address"),
+        session_id: sessionStorage.getItem("session_id"),
+      });
+    } catch (err) {
+      console.log(err);
+      console.log(err.response.message);
+    }
+  };
 
   const linkCollection = async (user_address, address) => {
     let newCollections = await getLinkedCollection(user_address);
@@ -342,7 +337,9 @@ export const useMarketStore = defineStore("user", () => {
           symbol: await nftContract.symbol(),
           royalty: BigInt(royaltyFee).toString(),
           royaltyRecipient: royaltyRecipientAddress,
-          royaltyRecipientName: (await get("/api/user/name/" + royaltyRecipientAddress)).data,
+          royaltyRecipientName: (
+            await get("/api/user/name/" + royaltyRecipientAddress)
+          ).data,
           totalSupply: totalSupply.toString(),
         };
         console.log("collection", collection);
@@ -407,6 +404,44 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const getOwnedNFTsCount = async (address) => {
+    try {
+      if (window.ethereum) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const linkedCollection = await getLinkedCollection(address);
+
+        var nftsCount = 0;
+        for (const tokenAddress of linkedCollection) {
+          try {
+            const nftContract = new ethers.Contract(
+              tokenAddress,
+              nftContractABI.abi,
+              provider
+            );
+            const balance = await nftContract.balanceOf(address);
+            nftsCount += Number(balance);
+            console.log(
+              "Total NFTs owned (" + tokenAddress + "):" + balance.toString()
+            );
+          } catch (error) {
+            console.log(
+              "There's an issue with this address: " +
+                tokenAddress +
+                ":" +
+                error
+            );
+            continue;
+          }
+        }
+        return nftsCount;
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getOwnedNFTs = async (address) => {
     try {
       if (window.ethereum) {
@@ -415,7 +450,7 @@ export const useMarketStore = defineStore("user", () => {
 
         const nfts = [];
         for (const tokenAddress of linkedCollection) {
-          try{
+          try {
             const nftContract = new ethers.Contract(
               tokenAddress,
               nftContractABI.abi,
@@ -438,7 +473,9 @@ export const useMarketStore = defineStore("user", () => {
                 collection: tokenAddress,
                 collectionName: await nftContract.name(),
                 collectionOwner: royaltyRecipient,
-                collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
+                collectionOwnerName: (
+                  await get("/api/user/name/" + royaltyRecipient)
+                ).data,
                 tokenId: tokenId.toString(),
                 tokenUri: "https://ipfs.io/ipfs/" + imgHash,
                 tokenName: meta.name,
@@ -447,12 +484,10 @@ export const useMarketStore = defineStore("user", () => {
               };
               nfts.push(nft);
             }
-          }
-          catch(error){
+          } catch (error) {
             console.log("There's an issue with this address: " + tokenAddress);
-            continue
+            continue;
           }
-
         }
         if (nfts.length > 0) {
           return nfts;
@@ -487,7 +522,7 @@ export const useMarketStore = defineStore("user", () => {
           const imgHash = meta.image;
           let nft = {
             owner: owner,
-            ownerName:(await get("/api/user/name/" + owner.toLowerCase)).data,
+            ownerName: (await get("/api/user/name/" + owner.toLowerCase)).data,
             collection: tokenAddress,
             collectionName: await nftContract.name(),
             tokenId: tokenId.toString(),
@@ -600,7 +635,7 @@ export const useMarketStore = defineStore("user", () => {
           console.log("Getting nft #" + i + " meta data...");
           const meta = await getTokenMeta(tokenHash);
           const imgHash = meta.image;
-          var nftContractOwnerAddress = await nftContract.ownerOf(tokenId)
+          var nftContractOwnerAddress = await nftContract.ownerOf(tokenId);
           let nft = {
             seller: marketItem.seller,
             sellerName: (await get("/api/user/name/" + marketItem.seller)).data,
@@ -612,7 +647,9 @@ export const useMarketStore = defineStore("user", () => {
             collection: collectionAddress,
             collectionName: await nftContract.name(),
             collectionOwner: royaltyRecipient,
-            collectionOwnerName: (await get("/api/user/name/" + royaltyRecipient)).data,
+            collectionOwnerName: (
+              await get("/api/user/name/" + royaltyRecipient)
+            ).data,
             royalty: royaltyFee.toString(),
           };
           nfts.push(nft);
@@ -835,6 +872,7 @@ export const useMarketStore = defineStore("user", () => {
     getCollectionDetails,
     mintNFT,
     getOwnedNFTs,
+    getOwnedNFTsCount,
     getCollectionNFTs,
     listNFT,
     unListNFT,

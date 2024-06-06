@@ -41,11 +41,7 @@
           style="border: 3px solid #fff; border-radius: 100%"
           v-bind="props"
         >
-          <v-img
-            cover
-            :src="user.profile_url"
-            class="d-flex align-center"
-          >
+          <v-img cover :src="user.profile_url" class="d-flex align-center">
             <!-- <v-btn
               variant="text"
               :class="{ 'show-btns': isHovering }"
@@ -57,8 +53,14 @@
           </v-img>
         </v-avatar>
       </v-hover>
-      <v-card-title>@{{ user.username }}
-            <v-icon v-if="isVerified" class="ms-2" icon="mdi-marker-check" size="s"></v-icon>
+      <v-card-title
+        >@{{ user.username }}
+        <v-icon
+          v-if="isVerified"
+          class="ms-2"
+          icon="mdi-marker-check"
+          size="s"
+        ></v-icon>
       </v-card-title>
       <v-card-subtitle>{{ address }}</v-card-subtitle>
       <v-card-subtitle>{{ user.description }}</v-card-subtitle>
@@ -66,8 +68,8 @@
     <v-col md="6" cols="12">
       <v-row class="mt-4 text-center">
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ owned_collections_count }}</v-card-text>
-          <v-card-subtitle>Owned Collections</v-card-subtitle>
+          <v-card-text class="text-h5">{{ owned_nfts_count }}</v-card-text>
+          <v-card-subtitle>Owned NFTs</v-card-subtitle>
         </v-col>
         <v-col cols="4">
           <v-card-text class="text-h5">{{ followers_count }}</v-card-text>
@@ -79,7 +81,12 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col class="d-flex justify-center  flex-column  align-center" lg="2" md="2" cols="12">
+    <v-col
+      class="d-flex justify-center flex-column align-center"
+      lg="2"
+      md="2"
+      cols="12"
+    >
       <v-btn
         class="mx-2"
         variant="outlined"
@@ -143,7 +150,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import { setDevtoolsHook } from "vue";
 
@@ -160,14 +167,14 @@ export default {
     const user = ref({});
     const address = ref("");
     const isVerified = ref(false);
-    const owned_collections_count = ref(0);
+    const owned_nfts_count = ref(0);
     const followers_count = ref(0);
     const followings_count = ref(0);
     const showEditProfile = ref(false);
     var userAddress = props.userAddress;
     // const showUploadProfile = ref(false);
     const canFollow = ref(true);
-    const { getMyCollection } = useMarketStore();
+    const { getOwnedNFTsCount } = useMarketStore();
     const { get, post, put } = useApiStore();
 
     const alert = ref({
@@ -178,7 +185,6 @@ export default {
       text: "",
     });
 
-
     const getVerified = async () => {
       try {
         var data = {
@@ -186,7 +192,7 @@ export default {
         };
 
         const res = await post("/api/auth/send-verification-email", data);
-        if(res.status === 200) {
+        if (res.status === 200) {
           alert.value = {
             show: true,
             color: "success",
@@ -195,7 +201,7 @@ export default {
             text: "A verification code has been sent to your email.",
           };
           window.location.href = "/user/verify";
-        } else{
+        } else {
           alert.value = {
             show: true,
             color: "error",
@@ -207,14 +213,14 @@ export default {
       } catch (err) {
         console.log(err);
         alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Error",
-            text: err.response.data.message,
-          };
+          show: true,
+          color: "error",
+          icon: "$error",
+          title: "Error",
+          text: err.response.data.message,
+        };
       }
-      emit('onAlert', alert.value);
+      emit("onAlert", alert.value);
     };
 
     const follow = async (target_address) => {
@@ -246,15 +252,14 @@ export default {
     };
 
     const updateUser = (newDetail) => {
-      user.value.username= newDetail.username;
-      user.value.description= newDetail.description;
+      user.value.username = newDetail.username;
+      user.value.description = newDetail.description;
     };
 
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
-      if(!userAddress || userAddress === '')
-      {
-        userAddress = sessionStorage.getItem('address');
+      if (!userAddress || userAddress === "") {
+        userAddress = sessionStorage.getItem("address");
       }
       try {
         const res = await get("/api/user/" + userAddress);
@@ -269,9 +274,9 @@ export default {
           address.value = truncated_address1 + "..." + truncated_address2;
         }
         isVerified.value = user.value.verifiedAt != null;
-        followers_count.value  = user.value.followers_count ?? 0;
+        followers_count.value = user.value.followers_count ?? 0;
         followings_count.value = user.value.following.length;
-        owned_collections_count.value = (await getMyCollection()).length;
+        owned_nfts_count.value = await getOwnedNFTsCount(userAddress);
       } catch (error) {
         console.error(error);
       }
@@ -299,7 +304,7 @@ export default {
       user,
       address,
       isVerified,
-      owned_collections_count,
+      owned_nfts_count,
       followers_count,
       followings_count,
       showEditProfile,
