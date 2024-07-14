@@ -84,7 +84,7 @@
 </template>
 <script>
 import { ref, onMounted, computed } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -155,12 +155,9 @@ export default {
     const checkout = async () => {
       try {
         const res = await checkoutNFTs(cartItems.value, totalPrice.value);
-        if(res === "ACTION_REJECTED")
-        {
-          alert.value = setAlert(
-            "info",
-            "You had rejected the transaction."
-          );
+        console.log(res);
+        if (res === "ACTION_REJECTED") {
+          alert.value = setAlert("info", "You had rejected the transaction.");
         } else {
           await clearCart();
           cartItems.value = [];

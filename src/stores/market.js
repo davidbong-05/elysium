@@ -782,6 +782,9 @@ export const useMarketStore = defineStore("user", () => {
           }
         );
         await tokenTxn.wait();
+        for (const tokenAdress of tokenAddresses) {
+          linkCollection(sessionStorage.getItem("address"), tokenAdress);
+        }
       } catch (err) {
         console.log(err);
       }
