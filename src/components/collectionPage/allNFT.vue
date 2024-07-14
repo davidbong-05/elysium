@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col class="d-flex" md="7" cols="12">
+      <!-- <v-col class="d-flex" md="10" cols="12">
         <filterMenu :showStatus="true" />
         <v-text-field
           append-inner-icon="mdi-magnify"
@@ -13,9 +13,9 @@
           variant="outlined"
           class="ms-4"
         ></v-text-field>
-      </v-col>
-      <v-col class="d-flex" md="5" cols="12">
-        <v-select
+      </v-col> -->
+      <v-col class="d-flex justify-end" md="12" cols="12">
+        <!-- <v-select
           :items="[
             'Recently Created',
             'Recently Listed',
@@ -32,7 +32,7 @@
           density="compact"
           style="max-width: 200px"
           class="ms-md-auto"
-        ></v-select>
+        ></v-select> -->
         <v-btn-toggle
           class="ms-4"
           v-model="selectedView"

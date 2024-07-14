@@ -5,7 +5,7 @@
       <span class="d-none d-sm-inline-block ms-3">Elysium</span>
     </v-app-bar-title>
 
-    <div class="d-none d-sm-flex w-50">
+    <!-- <div class="d-none d-sm-flex w-50">
       <v-text-field
         append-icon="mdi-magnify"
         label="Search"
@@ -17,7 +17,7 @@
     </div>
     <div class="d-flex d-sm-none w-10 justify-end">
       <v-btn icon="mdi-magnify"></v-btn>
-    </div>
+    </div> -->
 
     <v-btn
       to="/"
@@ -28,12 +28,12 @@
     ></v-btn>
 
     <v-btn
-          href="https://elysium-user-guide.vercel.app/"
-          target="_blank"
-          class="me-2"
-          large
-          icon="mdi-compass"
-          :active="false"
+      href="https://elysium-user-guide.vercel.app/"
+      target="_blank"
+      class="me-2"
+      large
+      icon="mdi-compass"
+      :active="false"
     ></v-btn>
 
     <v-btn
@@ -109,7 +109,9 @@ export default {
   setup(props, { emit }) {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
-    const isAdmin = sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin";
+    const isAdmin =
+      sessionStorage.getItem("role") === "admin" ||
+      sessionStorage.getItem("role") === "superadmin";
     const menu = [
       {
         text: "My Space",
@@ -164,15 +166,14 @@ export default {
 
         var status = await marketStore.login(account.value);
         //check if user previously signed up
-        if(status === 200) {
+        if (status === 200) {
           pfp_url.value = sessionStorage.getItem("pfp");
           isConnected.value = true;
         }
       } catch (error) {
         if (error.response?.status === 404) {
-            emit("onSignUp", true);
-        }
-        else {
+          emit("onSignUp", true);
+        } else {
           console.log("Server error please try again later...");
         }
         console.log(error);
