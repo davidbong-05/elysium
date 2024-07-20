@@ -36,14 +36,14 @@
       :active="false"
     ></v-btn>
 
-    <v-btn
+    <!-- <v-btn
       class="me-2"
       large
       icon="mdi-cart"
       :active="false"
       @click="$emit('onShowCart')"
       v-if="isConnected"
-    ></v-btn>
+    ></v-btn> -->
 
     <v-btn
       class="me-2"

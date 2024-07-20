@@ -101,14 +101,14 @@
       >
         Buy
       </v-btn>
-      <v-btn
+      <!-- <v-btn
         color="primary"
         variant="outlined"
         v-if="!isSeller && nft.price && !isUpdate && !isLoading"
         @click="addCart(nft.collection, nft.tokenId)"
       >
         Add Cart
-      </v-btn>
+      </v-btn> -->
       <v-btn
         v-if="showForm && !isUpdate && !isLoading"
         @click="showForm = false"
@@ -127,7 +127,7 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -136,7 +136,8 @@ export default {
   emits: ["onClose"],
   setup(props) {
     const { post, put } = useApiStore();
-    const { setAlert, linkCollection, listNFT, unListNFT, buyNFT } = useMarketStore();
+    const { setAlert, linkCollection, listNFT, unListNFT, buyNFT } =
+      useMarketStore();
     const price = ref();
     const showForm = ref(false);
     const isLoading = ref(false);
@@ -167,12 +168,8 @@ export default {
       try {
         isLoading.value = true;
         const res = await listNFT(nftCollection, nftId, price.value.toString());
-        if(res === "ACTION_REJECTED")
-        {
-          alert.value = setAlert(
-            "info",
-            "You had rejected the transaction."
-          );
+        if (res === "ACTION_REJECTED") {
+          alert.value = setAlert("info", "You had rejected the transaction.");
         } else {
           alert.value = setAlert(
             "success",
@@ -194,12 +191,8 @@ export default {
       try {
         isLoading.value = true;
         const res = await unListNFT(nftCollection, nftId);
-        if(res === "ACTION_REJECTED")
-        {
-          alert.value = setAlert(
-            "info",
-            "You had rejected the transaction."
-          );
+        if (res === "ACTION_REJECTED") {
+          alert.value = setAlert("info", "You had rejected the transaction.");
         } else {
           alert.value = setAlert(
             "success",
@@ -222,14 +215,13 @@ export default {
         isLoading.value = true;
         const res = await buyNFT(nftCollection, nftId, nftPrice);
         console.log(res);
-        if(res === "ACTION_REJECTED")
-        {
-          alert.value = setAlert(
-            "info",
-            "You had rejected the transaction."
+        if (res === "ACTION_REJECTED") {
+          alert.value = setAlert("info", "You had rejected the transaction.");
+        } else {
+          await linkCollection(
+            sessionStorage.getItem("address"),
+            nftCollection
           );
-        }else{
-          await linkCollection(sessionStorage.getItem("address"), nftCollection);
           alert.value = setAlert(
             "success",
             "Successfully purchased NFT! Please refresh page to update"
