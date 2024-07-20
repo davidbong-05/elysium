@@ -117,8 +117,9 @@ export default {
       maxUsername: (v) => v.length <= 25 || "Max 25 characters.",
       maxBio: (v) => v.length <= 150 || "Max 150 characters.",
       email: () => {
-        const pattern =
-          /^[^\s@]+@(siswa\.unimas\.my)|(davidbong05@gmail\.com)$/;
+        // const pattern =
+        //   /^[^\s@]+@(siswa\.unimas\.my)|(davidbong05@gmail\.com)$/;
+        const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return pattern.test(email.value) || "Please enter a valid siswa email.";
       },
     };
