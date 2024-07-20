@@ -86,17 +86,21 @@ export default {
         if (res) {
           collections.value = await Promise.all(
             res.data.map(async (i) => {
-              const collectionDetails = await getCollectionDetails(i[0]);
-              console.log(collectionDetails.royaltyRecipient.toString());
-              let collection = {
-                name: collectionDetails.name,
-                address: collectionDetails.address,
-                royalty: collectionDetails.royalty,
-                royaltyRecipient: collectionDetails.royaltyRecipient,
-                royaltyRecipientName: collectionDetails.royaltyRecipientName,
-                follower: i[1],
-              };
-              return collection;
+              try {
+                const collectionDetails = await getCollectionDetails(i[0]);
+                console.log(collectionDetails.royaltyRecipient.toString());
+                let collection = {
+                  name: collectionDetails.name,
+                  address: collectionDetails.address,
+                  royalty: collectionDetails.royalty,
+                  royaltyRecipient: collectionDetails.royaltyRecipient,
+                  royaltyRecipientName: collectionDetails.royaltyRecipientName,
+                  follower: i[1],
+                };
+                return collection;
+              } catch (error) {
+                console.error(error);
+              }
             })
           );
         }
