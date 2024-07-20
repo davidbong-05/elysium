@@ -85,7 +85,7 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 
 import { useMarketStore } from "@/stores/market";
 
@@ -117,7 +117,8 @@ export default {
       maxUsername: (v) => v.length <= 25 || "Max 25 characters.",
       maxBio: (v) => v.length <= 150 || "Max 150 characters.",
       email: () => {
-        const pattern = /^[^\s@]+@(siswa\.unimas\.my)|(davidbong05@gmail\.com)$/;
+        const pattern =
+          /^[^\s@]+@(siswa\.unimas\.my)|(davidbong05@gmail\.com)$/;
         return pattern.test(email.value) || "Please enter a valid siswa email.";
       },
     };
@@ -132,8 +133,7 @@ export default {
     });
 
     const submit = async () => {
-      try
-      {
+      try {
         if (valid.value === true) {
           const data = {
             username: username.value,
@@ -170,7 +170,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        if(error.response.status === 400){
+        if (error.response.status === 400) {
           alert.value = {
             show: true,
             color: "error",
