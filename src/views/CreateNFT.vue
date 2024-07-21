@@ -293,18 +293,18 @@ export default {
           if (onSale.value === "Yes") {
             try {
               loadingMsg.value = "Listing the NFT on sale...";
-              const res = await listNFT(
+              const res2 = await listNFT(
                 selectedCollection.value.address,
                 res,
                 price.value.toString()
               );
-              if (res === "ACTION_REJECTED") {
+              if (res2 === "ACTION_REJECTED") {
                 alert.value = setAlert(
                   "info",
                   "You had rejected the transaction. Failed to listed on sales."
                 );
               }
-              console.log("listed on sale", res);
+              console.log("listed on sale", res2);
             } catch (err) {
               alert.value = setAlert(
                 "error",
