@@ -253,7 +253,9 @@ export const useMarketStore = defineStore("user", () => {
 
   const getTokenMeta = async (tokenHash) => {
     try {
-      const res = await axios.get("https://ipfs.io/ipfs/" + tokenHash);
+      const res = await axios.get(
+        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + tokenHash
+      );
       return res.data;
     } catch (error) {
       console.log(error);
@@ -366,7 +368,9 @@ export const useMarketStore = defineStore("user", () => {
         const tokenHash = await nftContract.tokenURI(tokenId);
         const meta = await getTokenMeta(tokenHash);
         const imgHash = meta.image;
-        return "https://ipfs.io/ipfs/" + imgHash;
+        return (
+          "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
+        );
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -477,7 +481,9 @@ export const useMarketStore = defineStore("user", () => {
                   await get("/api/user/name/" + royaltyRecipient)
                 ).data,
                 tokenId: tokenId.toString(),
-                tokenUri: "https://ipfs.io/ipfs/" + imgHash,
+                tokenUri:
+                  "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+                  imgHash,
                 tokenName: meta.name,
                 tokenDescription: meta.description,
                 royalty: royaltyFee.toString(),
@@ -526,7 +532,9 @@ export const useMarketStore = defineStore("user", () => {
             collection: tokenAddress,
             collectionName: await nftContract.name(),
             tokenId: tokenId.toString(),
-            tokenUri: "https://ipfs.io/ipfs/" + imgHash,
+            tokenUri:
+              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+              imgHash,
             tokenName: meta.name,
             tokenDescription: meta.description,
             royalty: royaltyFee.toString(),
@@ -641,7 +649,9 @@ export const useMarketStore = defineStore("user", () => {
             sellerName: (await get("/api/user/name/" + marketItem.seller)).data,
             tokenId: tokenId.toString(),
             price: ethers.formatUnits(marketItem.price.toString(), "ether"),
-            tokenUri: "https://ipfs.io/ipfs/" + imgHash,
+            tokenUri:
+              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+              imgHash,
             tokenName: meta.name,
             tokenDescription: meta.description,
             collection: collectionAddress,
@@ -715,7 +725,9 @@ export const useMarketStore = defineStore("user", () => {
             seller: marketItem.seller,
             tokenId: item.tokenId,
             price: ethers.formatUnits(marketItem.price.toString(), "ether"),
-            tokenUri: "https://ipfs.io/ipfs/" + imgHash,
+            tokenUri:
+              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+              imgHash,
             tokenName: meta.name,
             tokenDescription: meta.description,
           };
