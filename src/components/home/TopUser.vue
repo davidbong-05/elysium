@@ -1,16 +1,8 @@
 <template>
   <div v-if="isExist">
-    <div class="mt-4 d-flex justify-space-between align-center">
-      <div class="font-weight-bold text-h4">Most Popular Users</div>
-      <v-btn
-        class="text-decoration-underline"
-        color="primary"
-        variant="text"
-        size="small"
-        to="users"
-      >
-        View All
-      </v-btn>
+    <div class="mt-4 d-flex align-center">
+      <div class="font-weight-bold text-h4 mr-4">Most Popular Users</div>
+      <v-btn color="primary" size="small" to="users"> View All </v-btn>
     </div>
     <v-row class="mt-5" v-if="isLoading || topUsers.length">
       <v-col cols="12" md="4" v-for="item in topUsers" :key="item.address">
@@ -19,7 +11,9 @@
           <v-card-title class="text-h5">{{ item.username }}</v-card-title>
           <v-card-text>{{ item.address }}</v-card-text>
           <v-card-actions class="d-flex justify-space-between mx-2">
-            <v-btn variant="outlined">{{ item.followers_count }} Followers</v-btn>
+            <v-btn variant="outlined"
+              >{{ item.followers_count }} Followers</v-btn
+            >
             <v-btn class="w-50" variant="outlined" :to="item.link">View</v-btn>
           </v-card-actions>
         </v-card>
@@ -63,7 +57,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 
 export default {
   name: "TopUser",

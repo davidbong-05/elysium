@@ -1,16 +1,8 @@
 <template>
   <div v-if="isExist">
-    <div class="mt-4 d-flex justify-space-between align-center">
-      <div class="font-weight-bold text-h4 mt-4">Top Collection</div>
-      <v-btn
-        class="text-decoration-underline"
-        color="primary"
-        variant="text"
-        size="small"
-        to="collections"
-      >
-        View All
-      </v-btn>
+    <div class="mt-4 d-flex align-center">
+      <div class="font-weight-bold text-h4 mr-4">Top Collection</div>
+      <v-btn color="primary" size="small" to="collections"> View All </v-btn>
     </div>
     <v-row class="mt-5" v-if="isLoading || topCollections.length">
       <v-col
@@ -65,7 +57,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 
 export default {
@@ -84,7 +76,8 @@ export default {
         if (res.status === 200) {
           for (const item of res.data) {
             let collectionItem = await getCollectionDetails(item[0]);
-            if (collectionItem == null || collectionItem.totalSupply == 0) continue;
+            if (collectionItem == null || collectionItem.totalSupply == 0)
+              continue;
             collectionItem.link = `/collection/${item[0]}`;
             collectionItem.counts = item[1];
             topCollections.value.push(collectionItem);
