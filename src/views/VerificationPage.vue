@@ -115,7 +115,7 @@ export default {
     };
 
     const valid = computed(() => {
-      return rules.required(token);
+      return rules.required(token.value) && rules.required(email.value);
     });
 
     const submit = async () => {
