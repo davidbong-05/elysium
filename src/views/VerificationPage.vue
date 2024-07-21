@@ -1,5 +1,5 @@
 <template>
- <v-container>
+  <v-container>
     <v-alert
       v-if="alert.show"
       class="my-3"
@@ -15,7 +15,9 @@
       <v-col md="8" cols="12">
         <v-card variant="outlined" theme="dark">
           <div v-if="!isLoading">
-            <v-card-title class="text-white">Please check your email for the verification token:</v-card-title>
+            <v-card-title class="text-white"
+              >Please check your email for the verification token:</v-card-title
+            >
             <v-form @submit.prevent>
               <v-card-text>
                 <v-text-field
@@ -86,12 +88,11 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 
 export default {
   name: "VerificationPage",
-  components: {
-  },
+  components: {},
   setup() {
     const route = useRoute();
     const { get, post } = useApiStore();
@@ -110,11 +111,11 @@ export default {
     const address = sessionStorage.getItem("address");
     const token = ref("");
     const rules = {
-      required: (v) => !!v && v == "" || "This field is required.",
+      required: (v) => (!!v && v == "") || "This field is required.",
     };
 
     const valid = computed(() => {
-      return rules.required(token) && rules.required(email.value);
+      return rules.required(token);
     });
 
     const submit = async () => {
@@ -128,7 +129,7 @@ export default {
             token: token.value,
           };
           // const res = await post("/api/auth/verify", data);
-          if(res.status === 200){
+          if (res.status === 200) {
             const res2 = await get("/api/user/" + address);
             sessionStorage.setItem("role", res2.data.role);
             alert.value = {
@@ -140,7 +141,7 @@ export default {
             };
           }
         } catch (err) {
-          if(err.response.status < 500){
+          if (err.response.status < 500) {
             alert.value = {
               show: true,
               color: "error",
@@ -148,8 +149,7 @@ export default {
               title: "Oops...",
               text: err.response.data,
             };
-          }
-          else{
+          } else {
             alert.value = {
               show: true,
               color: "error",
@@ -164,21 +164,21 @@ export default {
         reset();
       } else {
         alert.value = {
-              show: true,
-              color: "error",
-              icon: "$error",
-              title: "Please check your input...",
-              text: "Token is required",
-            };
+          show: true,
+          color: "error",
+          icon: "$error",
+          title: "Please check your input...",
+          text: "Token is required",
+        };
       }
-    }
+    };
     const reset = () => {
       token.value = "";
     };
 
     onMounted(async () => {
       try {
-        if(!address) {
+        if (!address) {
           alert.value = {
             show: true,
             color: "error",
@@ -193,7 +193,7 @@ export default {
           email.value = res.data.email;
           isVerified.value = res.data.verifiedAt != null;
         }
-        if(isVerified.value) {
+        if (isVerified.value) {
           alert.value = {
             show: true,
             color: "white",
@@ -217,7 +217,7 @@ export default {
       token,
       rules,
       submit,
-      reset
+      reset,
     };
   },
 };
