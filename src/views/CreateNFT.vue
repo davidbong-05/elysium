@@ -74,7 +74,7 @@
                   density="compact"
                   required
                 ></v-textarea>
-                <div class="d-flex justify-space-between align-center">
+                <!-- <div class="d-flex justify-space-between align-center">
                   <div>
                     <v-label>List it for Sale on Elysium?</v-label>
                   </div>
@@ -87,7 +87,7 @@
                       density="compact"
                     ></v-switch>
                   </div>
-                </div>
+                </div> -->
                 <v-text-field
                   class="my-4"
                   v-model="price"
