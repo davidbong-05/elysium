@@ -111,11 +111,11 @@ export default {
     const address = sessionStorage.getItem("address");
     const token = ref("");
     const rules = {
-      required: (v) => (!!v && v == "") || "This field is required.",
+      required: (v) => (!!v && v != "undefined") || "This field is required.",
     };
 
     const valid = computed(() => {
-      return rules.required(token.value) && rules.required(email.value);
+      return true;
     });
 
     const submit = async () => {
@@ -128,7 +128,7 @@ export default {
             email: email.value,
             token: token.value,
           };
-          // const res = await post("/api/auth/verify", data);
+          const res = await post("/api/auth/verify", data);
           if (res.status === 200) {
             const res2 = await get("/api/user/" + address);
             sessionStorage.setItem("role", res2.data.role);
