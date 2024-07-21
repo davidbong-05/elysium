@@ -193,7 +193,7 @@ export default {
     } = useMarketStore();
 
     const wallet = sessionStorage.getItem("address");
-    const isVerified = sessionStorage.getItem("role") != 'unverified-user';
+    const isVerified = sessionStorage.getItem("role") != "unverified-user";
     const isLoading = ref(false);
     const loadingMsg = ref("nothing");
     const collections = ref([]);
@@ -231,7 +231,7 @@ export default {
       },
 
       filesType: (v) => {
-        return rules.fileType(v[0])
+        return rules.fileType(v[0]);
       },
       minPrice: (v) => v >= 0.001 || "Min 0.001 ETH",
     };
@@ -286,11 +286,8 @@ export default {
           selectedCollection.value.address,
           jsonFile.IpfsHash
         );
-        if(res === "ACTION_REJECTED") {
-          alert.value = setAlert(
-            "info",
-            "You had rejected the transaction."
-          );
+        if (res === "ACTION_REJECTED") {
+          alert.value = setAlert("info", "You had rejected the transaction.");
         } else {
           console.log("mint", res);
           if (onSale.value === "Yes") {
@@ -301,7 +298,7 @@ export default {
                 res,
                 price.value.toString()
               );
-              if(res === "ACTION_REJECTED") {
+              if (res === "ACTION_REJECTED") {
                 alert.value = setAlert(
                   "info",
                   "You had rejected the transaction. Failed to listed on sales."
@@ -310,16 +307,13 @@ export default {
               console.log("listed on sale", res);
             } catch (err) {
               alert.value = setAlert(
-              "error",
-              "We are facing some issues please try again later..."
+                "error",
+                "We are facing some issues please try again later..."
               );
               console.log(err);
             }
           }
-          alert.value = setAlert(
-            "success",
-            "NFT Minted Successfully"
-          );
+          alert.value = setAlert("success", "NFT Minted Successfully");
           reset();
         }
         isLoading.value = false;
@@ -369,17 +363,14 @@ export default {
           selectedCollection.value.name = collections.value[0].name;
           isLoading.value = false;
         }
-        if(!isVerified) {
-          alert.value =  setAlert(
-            "error",
-            "Please verify your email first."
-          );
+        if (!isVerified) {
+          alert.value = setAlert("error", "Please verify your email first.");
         }
       } catch (err) {
         alert.value = setAlert(
-            "error",
-            "We are facing some issues please try again later..."
-          );
+          "error",
+          "We are facing some issues please try again later..."
+        );
         console.log(err);
       }
     });
