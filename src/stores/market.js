@@ -528,7 +528,7 @@ export const useMarketStore = defineStore("user", () => {
           const imgHash = meta.image;
           let nft = {
             owner: owner,
-            ownerName: (await get("/api/user/name/" + owner.toLowerCase)).data,
+            ownerName: (await get("/api/user/name/" + owner)).data,
             collection: tokenAddress,
             collectionName: await nftContract.name(),
             tokenId: tokenId.toString(),
