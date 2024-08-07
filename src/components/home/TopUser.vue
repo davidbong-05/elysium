@@ -7,7 +7,8 @@
     <v-row class="mt-5" v-if="isLoading || topUsers.length">
       <v-col cols="12" md="4" v-for="item in topUsers" :key="item.address">
         <v-card class="mx-auto py-3" max-width="344" color="black">
-          <v-img :src="item.profile_url" height="200px"></v-img>
+          <Avatar :name="item.username" variant="beam" size="95%" />
+          <!-- <v-img :src="item.profile_url" height="200px"></v-img> -->
           <v-card-title class="text-h5">{{ item.username }}</v-card-title>
           <v-card-text>{{ item.address }}</v-card-text>
           <v-card-actions class="d-flex justify-space-between mx-2">
@@ -58,9 +59,13 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useApiStore } from "@/stores/api";
+import Avatar from "vue-boring-avatars";
 
 export default {
   name: "TopUser",
+  components: {
+    Avatar,
+  },
   setup() {
     const isExist = ref(true);
     const isLoading = ref(true);

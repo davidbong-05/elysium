@@ -8,14 +8,15 @@
       :src="user.background_url"
       v-bind="props"
     > -->
-    <v-img
+    <Avatar :name="user.username" variant="pixel" size="100%" square />
+    <!-- <v-img
       width="100%"
       height="60vh"
       cover
       :src="user.background_url"
       v-bind="props"
-    >
-      <!-- <div class="d-flex justify-end">
+    > -->
+    <!-- <div class="d-flex justify-end">
         <v-btn
           variant="text"
           :class="{ 'show-btns': isHovering }"
@@ -24,7 +25,7 @@
           v-if="canEdit"
         ></v-btn>
       </div> -->
-    </v-img>
+    <!-- </v-img> -->
   </v-hover>
   <v-row>
     <v-col
@@ -41,8 +42,9 @@
           style="border: 3px solid #fff; border-radius: 100%"
           v-bind="props"
         >
-          <v-img cover :src="user.profile_url" class="d-flex align-center">
-            <!-- <v-btn
+          <Avatar :name="user.username" variant="beam" size="100%" />
+          <!-- <v-img cover :src="user.profile_url" class="d-flex align-center"> -->
+          <!-- <v-btn
               variant="text"
               :class="{ 'show-btns': isHovering }"
               color="rgba(255, 255, 255, 0)"
@@ -50,7 +52,7 @@
               v-if="canEdit"
               @click="() => (showUploadProfile = !showUploadProfile)"
             ></v-btn> -->
-          </v-img>
+          <!-- </v-img> -->
         </v-avatar>
       </v-hover>
       <v-card-title
@@ -152,11 +154,12 @@ import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
-import { setDevtoolsHook } from "vue";
+import Avatar from "vue-boring-avatars";
 
 export default {
   name: "Profile",
   components: {
+    Avatar,
     EditProfile,
     changeProfilePic,
   },
