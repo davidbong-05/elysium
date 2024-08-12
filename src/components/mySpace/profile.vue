@@ -1,6 +1,6 @@
 <template>
-  <v-hover v-slot="{ isHovering, props }">
-    <!-- <v-img
+  <!-- <v-hover v-slot="{ isHovering, props }"> -->
+  <!-- <v-img
       width="100%"
       height="60vh"
       cover
@@ -8,15 +8,15 @@
       :src="user.background_url"
       v-bind="props"
     > -->
-    <Avatar :name="user.username" variant="pixel" size="100%" square />
-    <!-- <v-img
+  <v-card height="35vh"> </v-card>
+  <!-- <v-img
       width="100%"
       height="60vh"
       cover
       :src="user.background_url"
       v-bind="props"
     > -->
-    <!-- <div class="d-flex justify-end">
+  <!-- <div class="d-flex justify-end">
         <v-btn
           variant="text"
           :class="{ 'show-btns': isHovering }"
@@ -25,8 +25,8 @@
           v-if="canEdit"
         ></v-btn>
       </div> -->
-    <!-- </v-img> -->
-  </v-hover>
+  <!-- </v-img> -->
+  <!-- </v-hover> -->
   <v-row>
     <v-col
       class="text-center"

@@ -60,11 +60,12 @@
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props">
           <v-avatar size="35">
-            <v-img
+            <Avatar :name="pfp_url" variant="beam" size="95%" />
+            <!-- <v-img
               style="border: 2px solid #fff; border-radius: 100%"
               :src="pfp_url"
               alt="Profile Picture"
-            />
+            /> -->
           </v-avatar>
         </v-btn>
       </template>
@@ -102,9 +103,13 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useMarketStore } from "@/stores/market";
 import { storeToRefs } from "pinia";
+import Avatar from "vue-boring-avatars";
 
 export default {
   name: "AppBar",
+  components: {
+    Avatar,
+  },
   emits: ["onShowCart", "onSignUp"],
   setup(props, { emit }) {
     const marketStore = useMarketStore();

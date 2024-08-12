@@ -114,6 +114,7 @@ export const useMarketStore = defineStore("user", () => {
     });
 
     sessionStorage.setItem("address", address);
+    sessionStorage.setItem("username", res.data.username);
     sessionStorage.setItem("pfp", res.data.profile_url);
     sessionStorage.setItem("role", res.data.role ?? "unverified-user");
     sessionStorage.setItem("session_id", res.data.session_id);
