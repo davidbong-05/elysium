@@ -4,7 +4,7 @@
       <admin-app-bar @onSignUp="(req) => (showSignUp = req)" />
       <admin-side-bar />
       <v-main>
-        <router-view />
+        <router-view :key="$route.fullPath" />
         <v-overlay
           v-model="showSignUp"
           location-strategy="connected"

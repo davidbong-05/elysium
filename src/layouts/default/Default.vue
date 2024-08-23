@@ -6,7 +6,7 @@
     />
 
     <v-main>
-      <router-view />
+      <router-view :key="$route.fullPath" />
       <v-overlay
         v-model="showCart"
         location-strategy="connected"
