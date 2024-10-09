@@ -71,7 +71,7 @@ export const useMarketStore = defineStore("user", () => {
       account.value = myAccounts[0];
 
       const polygonNetwork = {
-        chainId: "0x13882",
+        chainId: "80002",
         chainName: "POLYGON AMOY TESTNET",
         nativeCurrency: {
           name: "MATIC",
