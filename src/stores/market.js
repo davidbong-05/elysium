@@ -78,7 +78,7 @@ export const useMarketStore = defineStore("user", () => {
           symbol: "MATIC",
           decimals: 18,
         },
-        rpcUrls: ["https://rpc-amoy.polygon.technology/"],
+        rpcUrls: ["https://polygon-amoy.drpc.org"],
         blockExplorerUrls: ["https://www.oklink.com/amoy"],
       };
 
