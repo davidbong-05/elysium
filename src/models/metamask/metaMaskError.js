@@ -14,8 +14,8 @@ class MetaMaskReponse {
         typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;
 
       return new MetaMaskReponse({
-        code: data.code,
-        message: data.message,
+        code: data.code || "undefined_code",
+        message: data.message || null,
       });
     } catch (error) {
       console.error("Failed to parse User data:", error);

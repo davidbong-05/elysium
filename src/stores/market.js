@@ -7,6 +7,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
+import MetaMaskUtils from "@/utils/metaMaskUtils";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -56,56 +57,15 @@ export const useMarketStore = defineStore("user", () => {
         text: msg,
       };
     }
+    console.log(`💬 (${alert.title}) ${alert.text}`);
     return alert;
   };
 
   const connectWallet = async () => {
-    const polygonNetwork = {
-      chainId: "0x13882",
-      chainName: "POLYGON AMOY TESTNET",
-      nativeCurrency: {
-        name: "POL",
-        symbol: "POL",
-        decimals: 18,
-      },
-      rpcUrls: ["https://rpc-amoy.polygon.technology"],
-      blockExplorerUrls: ["https://www.oklink.com/amoy"],
-    };
-
-    // Switch to Polygon network
     try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: polygonNetwork.chainId }],
-      });
+      account.value = await MetaMaskUtils.connectWallet(setAlert);
     } catch (error) {
-      var switchError = MetaMaskReponse.parse(error);
-
-      // This error code indicates that the chain has not been added to MetaMask
-      if (switchError.isChainNotAddedError()) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [polygonNetwork],
-          });
-        } catch (addError) {
-          MetaMaskReponse.parse(addError);
-        }
-      }
-    }
-
-    try {
-      if (!window.ethereum) {
-        alert("Must connect to MetaMask!");
-        return;
-      }
-      const res = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log("Connected: ", res[0]);
-      account.value = res[0];
-    } catch (error) {
-      MetaMaskReponse.parse(error);
+      setAlert("error", error.message);
     }
   };
 
