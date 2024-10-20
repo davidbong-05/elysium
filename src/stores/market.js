@@ -6,6 +6,7 @@ import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
+import MetaMaskReponse from "@/models/metamask/metaMaskError";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -59,52 +60,52 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const connectWallet = async () => {
+    const polygonNetwork = {
+      chainId: "0x13882",
+      chainName: "POLYGON AMOY TESTNET",
+      nativeCurrency: {
+        name: "POL",
+        symbol: "POL",
+        decimals: 18,
+      },
+      rpcUrls: ["https://rpc-amoy.polygon.technology"],
+      blockExplorerUrls: ["https://www.oklink.com/amoy"],
+    };
+
+    // Switch to Polygon network
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: polygonNetwork.chainId }],
+      });
+    } catch (error) {
+      var switchError = MetaMaskReponse.parse(error);
+
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.isChainNotAddedError()) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [polygonNetwork],
+          });
+        } catch (addError) {
+          MetaMaskReponse.parse(addError);
+        }
+      }
+    }
+
     try {
       if (!window.ethereum) {
         alert("Must connect to MetaMask!");
         return;
       }
-      const myAccounts = await window.ethereum.request({
+      const res = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
-      console.log("Connected: ", myAccounts[0]);
-      account.value = myAccounts[0];
-
-      const polygonNetwork = {
-        chainId: "0x13882",
-        chainName: "POLYGON AMOY TESTNET",
-        nativeCurrency: {
-          name: "MATIC",
-          symbol: "MATIC",
-          decimals: 18,
-        },
-        rpcUrls: ["https://polygon-amoy.drpc.org"],
-        blockExplorerUrls: ["https://www.oklink.com/amoy"],
-      };
-
-      // Switch to Polygon network
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: polygonNetwork.chainId }],
-        });
-      } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask
-        if (switchError.code === 4902) {
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [polygonNetwork],
-            });
-          } catch (addError) {
-            console.error("Failed to add the network to MetaMask:", addError);
-          }
-        } else {
-          console.error("Failed to switch to the network:", switchError);
-        }
-      }
+      console.log("Connected: ", res[0]);
+      account.value = res[0];
     } catch (error) {
-      console.log(error);
+      MetaMaskReponse.parse(error);
     }
   };
 
@@ -292,7 +293,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      return error.code;
+      MetaMaskReponse.parse(error);
     }
   };
 
@@ -312,7 +313,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      MetaMaskReponse.parse(error);
     }
   };
 
@@ -403,8 +404,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log("Ethereum object d" + error);
-
+      MetaMaskReponse.parse(error);
       return error.code;
     }
   };
