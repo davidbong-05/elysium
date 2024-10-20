@@ -57,7 +57,7 @@ import { useApiStore } from "@/stores/api";
 export default {
   name: "Edit Profile",
   props: ["user"],
-  emits: ["onEdit"],
+  emits: ["onEdit", "update:user"],
   setup(props, { emit }) {
     const { put } = useApiStore();
     const email = props.user.email;
