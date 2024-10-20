@@ -109,9 +109,10 @@
       <v-btn
         class="mx-2"
         color="white"
+        :text="followBtnText"
         @click="follow(user.address)"
         v-else-if="canFollow"
-        >Follow
+      >
       </v-btn>
       <v-btn
         class="mx-2"
@@ -175,6 +176,7 @@ export default {
     // const showUploadProfile = ref(false);
     const canEdit = ref(false);
     const canFollow = ref(true);
+    const followBtnText = ref("FOLLOW");
     const { getOwnedNFTsCount } = useMarketStore();
     const { get, post, put } = useApiStore();
 
@@ -274,6 +276,9 @@ export default {
       }
 
       if (!canEdit.value) {
+        if (user.value.isFollowing(currentUser)) {
+          followBtnText.value = "FOLLOW BACK";
+        }
 
         try {
           console.log("session", currentUser);
@@ -305,6 +310,7 @@ export default {
       canEdit,
       canFollow,
       getVerified,
+      followBtnText,
       follow,
       unfollow,
       updateUser,

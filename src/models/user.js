@@ -89,6 +89,9 @@ class User {
     return this.address === address;
   }
 
+  isFollowing(address) {
+    return this.following.includes(address);
+  }
 
   displayInfo() {
     console.log(`✨ User: ${this.username}, Role: ${this.role}.`);
