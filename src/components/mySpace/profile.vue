@@ -58,27 +58,27 @@
       <v-card-title
         >@{{ user.username }}
         <v-icon
-          v-if="isVerified"
+          v-if="user.isVerified"
           class="ms-2"
           icon="mdi-marker-check"
           size="s"
         ></v-icon>
       </v-card-title>
-      <v-card-subtitle>{{ address }}</v-card-subtitle>
+      <v-card-subtitle>{{ user.truncated_address }}</v-card-subtitle>
       <v-card-subtitle>{{ user.description }}</v-card-subtitle>
     </v-col>
     <v-col md="6" cols="12">
       <v-row class="mt-4 text-center">
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ owned_nfts_count }}</v-card-text>
+          <v-card-text class="text-h5">{{ user.owned_nfts_count }}</v-card-text>
           <v-card-subtitle>Owned NFTs</v-card-subtitle>
         </v-col>
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ followers_count }}</v-card-text>
+          <v-card-text class="text-h5">{{ user.followers_count }}</v-card-text>
           <v-card-subtitle>Followers</v-card-subtitle>
         </v-col>
         <v-col cols="4">
-          <v-card-text class="text-h5">{{ followings_count }}</v-card-text>
+          <v-card-text class="text-h5">{{ user.followings_count }}</v-card-text>
           <v-card-subtitle>Following</v-card-subtitle>
         </v-col>
       </v-row>
@@ -92,7 +92,7 @@
       <v-btn
         class="mx-2"
         variant="outlined"
-        v-if="canEdit && !isVerified"
+        v-if="canEdit && !user.isVerified"
         @click="getVerified()"
       >
         Get Verified
@@ -148,8 +148,9 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import User from "@/models/user";
 import EditProfile from "@/components/mySpace/editProfile.vue";
 import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
 import { useApiStore } from "@/stores/api";
@@ -167,15 +168,12 @@ export default {
   emits: ["onAlert"],
   setup(props, { emit }) {
     const router = useRoute();
-    const user = ref({});
-    const address = ref("");
-    const isVerified = ref(false);
-    const owned_nfts_count = ref(0);
-    const followers_count = ref(0);
-    const followings_count = ref(0);
+    const user = ref(new User({ username: "User Not Found" }));
     const showEditProfile = ref(false);
+    const currentUser = sessionStorage.getItem("address");
     var userAddress = props.userAddress;
     // const showUploadProfile = ref(false);
+    const canEdit = ref(false);
     const canFollow = ref(true);
     const { getOwnedNFTsCount } = useMarketStore();
     const { get, post, put } = useApiStore();
@@ -229,7 +227,7 @@ export default {
     const follow = async (target_address) => {
       try {
         const res = await put("/api/user/follow", {
-          user_address: sessionStorage.getItem("address"),
+          user_address: currentUser,
           target_address: target_address,
         });
         console.log(res);
@@ -243,7 +241,7 @@ export default {
     const unfollow = async (target_address) => {
       try {
         const res = await put("/api/user/unfollow", {
-          user_address: sessionStorage.getItem("address"),
+          user_address: currentUser,
           target_address: target_address,
         });
         console.log(res);
@@ -255,61 +253,53 @@ export default {
     };
 
     const updateUser = (newDetail) => {
-      user.value.username = newDetail.username;
-      user.value.description = newDetail.description;
+      user.value.username = newDetail.username || user.value.username;
+      user.value.description = newDetail.description || user.value.description;
     };
 
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
       if (!userAddress || userAddress === "") {
-        userAddress = sessionStorage.getItem("address");
+        userAddress = currentUser;
       }
+
       try {
         const res = await get("/api/user/" + userAddress);
         if (res.status === 200) {
-          user.value = res.data;
-          let original_address = res.data.address;
-          let truncated_address1 = original_address.substring(0, 5);
-          let truncated_address2 = original_address.substring(
-            original_address.length - 4,
-            original_address.length
-          );
-          address.value = truncated_address1 + "..." + truncated_address2;
+          user.value = User.fromJson(res.data);
+          canEdit.value = user.value.isOwner(currentUser);
         }
-        isVerified.value = user.value.verifiedAt != null;
-        followers_count.value = user.value.followers_count ?? 0;
-        followings_count.value = user.value.following.length;
-        owned_nfts_count.value = await getOwnedNFTsCount(userAddress);
       } catch (error) {
         console.error(error);
       }
 
-      try {
-        console.log("session", sessionStorage.getItem("address"));
-        const res = await post("/api/user/follow/check", {
-          user_address: sessionStorage.getItem("address"),
-          target_address: router.params.address,
-        });
-        if (res.data === true) {
-          canFollow.value = false;
-        }
-      } catch (err) {
-        console.log(err);
-        console.log(err.response.data.message);
-      }
-    });
+      if (!canEdit.value) {
 
-    const canEdit = computed(() => {
-      return userAddress === "";
+        try {
+          console.log("session", currentUser);
+          const res = await post("/api/user/follow/check", {
+            user_address: currentUser,
+            target_address: router.params.address,
+          });
+          if (res.data === true) {
+            canFollow.value = false;
+          }
+        } catch (err) {
+          console.log(err);
+          console.log(err.response.data.message);
+        }
+      }
+
+      try {
+        var owned_nfts_count = await getOwnedNFTsCount(user.value.address);
+        user.value.setOwnedNftCount(owned_nfts_count);
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     return {
       user,
-      address,
-      isVerified,
-      owned_nfts_count,
-      followers_count,
-      followings_count,
       showEditProfile,
       // showUploadProfile,
       canEdit,
