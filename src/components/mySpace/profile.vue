@@ -255,8 +255,7 @@ export default {
     };
 
     const updateUser = (newDetail) => {
-      user.value.username = newDetail.username || user.value.username;
-      user.value.description = newDetail.description || user.value.description;
+      user.value.updateUser(newDetail.username, newDetail.description);
     };
 
     // onMounted async because it take time for the parent component to fetch data

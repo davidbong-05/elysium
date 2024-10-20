@@ -77,11 +77,11 @@ class User {
   updateUser(username, description) {
     var oldUsername = this.username;
     var oldDescription = this.description;
-    this.username = username;
-    this.description = description;
+    this.username = username || oldUsername;
+    this.description = description || oldDescription;
     console.log(`✨ updated username from ${oldUsername} to ${this.username}.`);
     console.log(
-      `✨ updated description from ${oldDescription} t0 ${this.description}.`
+      `✨ updated description from ${oldDescription} to ${this.description}.`
     );
   }
 
