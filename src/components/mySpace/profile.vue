@@ -169,7 +169,7 @@ export default {
   emits: ["onAlert"],
   setup(props, { emit }) {
     const router = useRoute();
-    const user = ref(new User({ username: "User Not Found" }));
+    const user = ref(new User({ username: "Loading..." }));
     const showEditProfile = ref(false);
     const currentUser = sessionStorage.getItem("address");
     var userAddress = props.userAddress;
