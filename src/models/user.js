@@ -40,7 +40,7 @@ class User {
     this.isVerified = this.verifiedAt != null;
   }
 
-  static fromJson(jsonData) {
+  static parse(jsonData) {
     try {
       const data =
         typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;

@@ -267,7 +267,7 @@ export default {
       try {
         const res = await get("/api/user/" + userAddress);
         if (res.status === 200) {
-          user.value = User.fromJson(res.data);
+          user.value = User.parse(res.data);
           canEdit.value = user.value.isOwner(currentUser);
         }
       } catch (error) {
