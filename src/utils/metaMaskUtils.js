@@ -1,7 +1,6 @@
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 
-class MetaMaskUtils {
-  static polygonNetwork = {
+  static POLYGON_NETWORK = {
     chainId: "0x13882",
     chainName: "POLYGON AMOY TESTNET",
     nativeCurrency: {
@@ -43,7 +42,7 @@ class MetaMaskUtils {
       const walletChainId = await window.ethereum.request({
         method: "eth_chainId",
       });
-      if (walletChainId != this.polygonNetwork.chainId) {
+      if (walletChainId != this.POLYGON_NETWORK.chainId) {
         await this.switchNetwork(setAlertFunc);
       }
     } catch (error) {
@@ -54,10 +53,10 @@ class MetaMaskUtils {
 
   static switchNetwork = async (setAlertFunc) => {
     try {
-      console.log(`🧹 switching chain to ${this.polygonNetwork.chainId}`);
+      console.log(`🧹 switching chain to ${this.POLYGON_NETWORK.chainId}`);
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: this.polygonNetwork.chainId }],
+        params: [{ chainId: this.POLYGON_NETWORK.chainId }],
       });
     } catch (error) {
       setAlertFunc("error", error.message);
@@ -71,11 +70,11 @@ class MetaMaskUtils {
   static addChain = async (setAlertFunc) => {
     try {
       console.log(
-        `🧹 adding chain ${this.polygonNetwork.chainName} ${this.polygonNetwork.chainId}`
+        `🧹 adding chain ${this.POLYGON_NETWORK.chainName} ${this.POLYGON_NETWORK.chainId}`
       );
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
-        params: [polygonNetwork],
+        params: [POLYGON_NETWORK],
       });
     } catch (error) {
       setAlertFunc("error", error.message);
