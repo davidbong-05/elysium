@@ -60,7 +60,7 @@
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props">
           <v-avatar size="35">
-            <Avatar :name="pfp_url" variant="beam" size="95%" />
+            <Avatar :name="pfp_url" variant="beam" :size="35" />
             <!-- <v-img
               style="border: 2px solid #fff; border-radius: 100%"
               :src="pfp_url"

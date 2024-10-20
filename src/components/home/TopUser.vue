@@ -7,7 +7,9 @@
     <v-row class="mt-5" v-if="isLoading || topUsers.length">
       <v-col cols="12" md="4" v-for="item in topUsers" :key="item.address">
         <v-card class="mx-auto py-3" max-width="344" color="black">
-          <Avatar :name="item.username" variant="beam" size="95%" />
+          <v-card-title class="d-flex justify-center"
+            ><Avatar :name="item.username" variant="beam" :size="250"
+          /></v-card-title>
           <!-- <v-img :src="item.profile_url" height="200px"></v-img> -->
           <v-card-title class="text-h5">{{ item.username }}</v-card-title>
           <v-card-text>{{ item.address }}</v-card-text>

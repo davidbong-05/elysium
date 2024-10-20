@@ -38,11 +38,11 @@
         <v-avatar
           class="mb-0 rounded-circle"
           color="grey"
-          size="150"
+          :size="150"
           style="border: 3px solid #fff; border-radius: 100%"
           v-bind="props"
         >
-          <Avatar :name="user.username" variant="beam" size="100%" />
+          <Avatar :name="user.username" variant="beam" :size="150" />
           <!-- <v-img cover :src="user.profile_url" class="d-flex align-center"> -->
           <!-- <v-btn
               variant="text"
