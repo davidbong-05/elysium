@@ -52,8 +52,8 @@
   </v-card>
 </template>
 <script>
-import { ref, computed  } from "vue";
-import { useApiStore } from '@/stores/api';
+import { ref, computed } from "vue";
+import { useApiStore } from "@/stores/api";
 export default {
   name: "Edit Profile",
   props: ["user"],
@@ -92,10 +92,10 @@ export default {
             address: sessionStorage.getItem("address"),
             username: username.value,
             description: bio.value,
-          }
+          };
           const res = await put("/api/user", newDetail);
-          if(res.status == 200) {
-            emit('update:user', newDetail);
+          if (res.status == 200) {
+            emit("update:user", newDetail);
             alert.value = {
               show: true,
               color: "success",
@@ -103,8 +103,7 @@ export default {
               title: "Success",
               text: "Profile Updated",
             };
-          }
-          else{
+          } else {
             alert.value = {
               show: true,
               color: "error",
@@ -116,12 +115,12 @@ export default {
           console.log(res);
         } catch (err) {
           alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: "We are facing some issues please try again later...",
-        };
+            show: true,
+            color: "error",
+            icon: "$error",
+            title: "Oops...",
+            text: "We are facing some issues please try again later...",
+          };
           console.log(err);
           console.log(err.response.data.message);
         }
