@@ -11,7 +11,7 @@ import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
-const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
+const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
 const apiKey = import.meta.env.VITE_PINATA_API_KEY;
 const apiSecret = import.meta.env.VITE_PINATA_API_SECRET;
 
@@ -73,7 +73,7 @@ export const useMarketStore = defineStore("user", () => {
     return alert;
   };
 
-  const metaMaskClient = new MetaMaskClient({ setAlertFunc: setAlert });
+  const metaMaskClient = new MetaMaskClient(FACTORY_CONTRACT_ADDRESS, setAlert);
 
   const connectWallet = async () => {
     try {
@@ -280,7 +280,7 @@ export const useMarketStore = defineStore("user", () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const factoryContract = new ethers.Contract(
-          factoryContractAddress,
+          FACTORY_CONTRACT_ADDRESS,
           factoryContractABI.abi,
           signer
         );

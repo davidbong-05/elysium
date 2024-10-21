@@ -1,9 +1,16 @@
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 
 class MetaMaskClient {
-  constructor({ setAlertFunc }) {
+  constructor(factoryContractAddress, setAlertFunc) {
+    this.factoryContractAddress = factoryContractAddress;
     this.setAlertFunc = setAlertFunc;
+    this.displayInfo();
   }
+
+  displayInfo() {
+    console.log(`✨ Factory Contract Address: ${this.factoryContractAddress}`);
+  }
+
   static POLYGON_NETWORK = {
     chainId: "0x13882",
     chainName: "POLYGON AMOY TESTNET",
