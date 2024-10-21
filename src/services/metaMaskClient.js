@@ -1,4 +1,7 @@
+import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json";
+import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
+import EthereumTransaction from "@/models/metamask/ethereumTransaction";
 
 class MetaMaskClient {
   constructor(factoryContractAddress, setAlertFunc) {
@@ -78,6 +81,36 @@ class MetaMaskClient {
       method: "wallet_addEthereumChain",
       params: [POLYGON_NETWORK],
     });
+  };
+
+  createNftCollection = async (name, symbol, royaltyFee, royaltyRecipient) => {
+    console.log(`⚒️  Creating a new collection:
+------------------------------
+📛 Name:               ${name}
+💠 Symbol:             ${symbol}
+💸 Royalty Fee:        ${royaltyFee}%
+👑 Royalty Recipient:  ${royaltyRecipient}
+------------------------------
+🚀 Collection is being created...
+    `);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const factoryContract = new ethers.Contract(
+      this.factoryContractAddress,
+      factoryContractABI.abi,
+      signer
+    );
+
+    const collectionTxn = await factoryContract.createNFTCollection(
+      name,
+      symbol,
+      royaltyFee,
+      royaltyRecipient
+    );
+
+    const res = await collectionTxn.wait();
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
   };
 }
 

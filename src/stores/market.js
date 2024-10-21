@@ -248,29 +248,14 @@ export const useMarketStore = defineStore("user", () => {
     royaltyRecipient
   ) => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const factoryContract = new ethers.Contract(
-          factoryContractAddress,
-          factoryContractABI.abi,
-          signer
-        );
-        console.log("contract", factoryContractAddress);
-
-        const collectionTxn = await factoryContract.createNFTCollection(
-          name,
-          symbol,
-          royaltyFee,
-          royaltyRecipient
-        );
-
-        return await collectionTxn.wait();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      return await metaMaskClient.createNftCollection(
+        name,
+        symbol,
+        royaltyFee,
+        royaltyRecipient
+      );
     } catch (error) {
-      MetaMaskReponse.parse(error);
+      return MetaMaskReponse.parse(error);
     }
   };
 

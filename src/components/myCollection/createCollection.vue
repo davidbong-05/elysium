@@ -160,22 +160,33 @@ export default {
             royalty.value,
             wallet
           );
-          if (res === "ACTION_REJECTED") {
-            alert.value = setAlert("info", "You had rejected the transaction.");
+
+          if (res.isSuccess) {
+            alert.value = setAlert(
+              "success",
+              null,
+              "NFT created successfully!"
+            );
+          } else if (res.isUserRejected) {
+            alert.value = setAlert(
+              "info",
+              null,
+              "You had rejected the transaction."
+            );
           } else {
-            alert.value = setAlert("success", "NFT created successfully!");
-            console.log(res);
+            alert.value = setAlert("error", res.code, res.message);
           }
         } catch (err) {
           alert.value = setAlert(
             "error",
+            err.code,
             "We are facing some issues please try again later..."
           );
-          console.log(err);
         }
       } else {
         alert.value = setAlert(
           "error",
+          null,
           "Please check your input and try again"
         );
         console.log("Invalid", valid.value);
