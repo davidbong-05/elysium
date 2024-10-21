@@ -89,11 +89,13 @@ export const useMarketStore = defineStore("user", () => {
       user_address: address,
     });
 
-    sessionStorage.setItem("address", address);
-    sessionStorage.setItem("username", res.data.username);
-    sessionStorage.setItem("pfp", res.data.profile_url);
-    sessionStorage.setItem("role", res.data.role ?? "unverified-user");
-    sessionStorage.setItem("session_id", res.data.session_id);
+    if (res.status === 200) {
+      sessionStorage.setItem("address", address);
+      sessionStorage.setItem("username", res.data.username);
+      sessionStorage.setItem("pfp", res.data.profile_url);
+      sessionStorage.setItem("role", res.data.role ?? "unverified-user");
+      sessionStorage.setItem("session_id", res.data.session_id);
+    }
     return res.status;
   };
   const logout = async () => {
