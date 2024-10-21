@@ -7,7 +7,7 @@ class MetaMaskError {
     this.isSucess = false;
     this.code = code;
     this.message = message;
-    this.isUserRejected = this.checkIfUserRejected();
+    this.isUserRejected = this.isRejectedByUser();
     this.displayInfo();
   }
 
@@ -35,7 +35,7 @@ class MetaMaskError {
     return this.code === MetaMaskError.CODE_CHAIN_NOT_ADDED_IN_WALLET;
   }
 
-  checkIfUserRejected() {
+  isRejectedByUser() {
     return (
       this.code === MetaMaskError.CODE_USER_REJECTED ||
       this.code === MetaMaskError.CODE_ACTION_REJECTED
