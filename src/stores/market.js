@@ -261,85 +261,44 @@ export const useMarketStore = defineStore("user", () => {
 
   const getMyCollection = async () => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const factoryContract = new ethers.Contract(
-          FACTORY_CONTRACT_ADDRESS,
-          factoryContractABI.abi,
-          signer
-        );
-
-        return await factoryContract.getOwnCollections();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      return await metaMaskClient.getOwnNftCollections();
     } catch (error) {
       MetaMaskReponse.parse(error);
     }
   };
 
   const getCollectionDetails = async (collectionAddress) => {
+    let nftCollection = null;
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const nftContract = new ethers.Contract(
-          collectionAddress,
-          nftContractABI.abi,
-          provider
-        );
-        const totalSupply = await nftContract.totalSupply();
-        let cover = "";
-        if (totalSupply > 0) {
-          cover = await getCollectionCover(collectionAddress);
-        }
-        const royaltyFee = await nftContract.getRoyalty();
-        var royaltyRecipientAddress = await nftContract.getRoyaltyRecipient();
-        const collection = {
-          address: collectionAddress,
-          cover: cover,
-          owner: await nftContract.owner(),
-          name: await nftContract.name(),
-          symbol: await nftContract.symbol(),
-          royalty: BigInt(royaltyFee).toString(),
-          royaltyRecipient: royaltyRecipientAddress,
-          royaltyRecipientName: (
-            await get("/api/user/name/" + royaltyRecipientAddress)
-          ).data,
-          totalSupply: totalSupply.toString(),
-        };
-        console.log("collection", collection);
-        return collection;
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
     } catch (error) {
-      console.log(error);
+      MetaMaskReponse.parse(error);
     }
-    return null;
+    try {
+      if (nftCollection.totalSupply > 0) {
+        const cover = await getCollectionCover(collectionAddress);
+        nftCollection.setCover(cover);
+      }
+      const royaltyRecipientName = await get(
+        "/api/user/name/" + nftCollection.royaltyRecipient
+      ).data;
+      nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
+    } catch (error) {
+      console.warn(error);
+    }
+    return nftCollection;
   };
 
   const getCollectionCover = async (tokenAddress) => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const nftContract = new ethers.Contract(
-          tokenAddress,
-          nftContractABI.abi,
-          provider
-        );
-        const tokenId = await nftContract.tokenByIndex(0);
-        const tokenHash = await nftContract.tokenURI(tokenId);
-        const meta = await getTokenMeta(tokenHash);
-        const imgHash = meta.image;
-        return (
-          "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
-        );
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      const tokenHash = await metaMaskClient.getTokenHash(tokenAddress);
+      const meta = await getTokenMeta(tokenHash);
+      const imgHash = meta.image;
+      return (
+        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
+      );
     } catch (error) {
-      console.log(error);
+      return MetaMaskReponse.parse(error);
     }
   };
 

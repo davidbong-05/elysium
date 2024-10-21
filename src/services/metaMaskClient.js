@@ -1,7 +1,9 @@
 import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json";
+import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 import EthereumTransaction from "@/models/metamask/ethereumTransaction";
+import NftColletion from "@/models/nftCollection";
 
 class MetaMaskClient {
   constructor(factoryContractAddress, setAlertFunc) {
@@ -111,6 +113,50 @@ class MetaMaskClient {
     const res = await collectionTxn.wait();
     const txn = EthereumTransaction.parse(res);
     return txn.getTransactionDetails();
+  };
+
+  getOwnNftCollections = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const factoryContract = new ethers.Contract(
+      this.factoryContractAddress,
+      factoryContractABI.abi,
+      signer
+    );
+    return await factoryContract.getOwnCollections();
+  };
+
+  getNftCollection = async (collectionAddress) => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const nftContract = new ethers.Contract(
+      collectionAddress,
+      nftContractABI.abi,
+      provider
+    );
+
+    const royaltyFee = await nftContract.getRoyalty();
+
+    return NftColletion.parse({
+      address: collectionAddress,
+      owner: await nftContract.owner(),
+      name: await nftContract.name(),
+      symbol: await nftContract.symbol(),
+      royalty: BigInt(royaltyFee).toString(),
+      royaltyRecipient: await nftContract.getRoyaltyRecipient(),
+      totalSupply: await nftContract.totalSupply(),
+    });
+  };
+
+  getTokenHash = async (tokenAddress) => {
+    `🧹 getting token hash from ${tokenAddress}.`;
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const nftContract = new ethers.Contract(
+      tokenAddress,
+      nftContractABI.abi,
+      provider
+    );
+    const tokenId = await nftContract.tokenByIndex(0);
+    return await nftContract.tokenURI(tokenId);
   };
 }
 
