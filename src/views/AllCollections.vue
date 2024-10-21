@@ -43,7 +43,7 @@ import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 export default {
   setup() {
-    const { getCollectionDetails } = useMarketStore();
+    const { getNftCollection } = useMarketStore();
     const { get } = useApiStore();
 
     const breadcrumbItems = [
@@ -87,7 +87,7 @@ export default {
           collections.value = await Promise.all(
             res.data.map(async (i) => {
               try {
-                const collectionDetails = await getCollectionDetails(i[0]);
+                const collectionDetails = await getNftCollection(i[0]);
                 console.log(collectionDetails.royaltyRecipient.toString());
                 let collection = {
                   name: collectionDetails.name,

@@ -30,12 +30,12 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 
 export default {
   setup() {
-    const { getCollectionDetails } = useMarketStore();
+    const { getNftCollection } = useMarketStore();
     const { get } = useApiStore();
 
     const breadcrumbItems = [
@@ -71,7 +71,7 @@ export default {
         if (res) {
           collections.value = await Promise.all(
             res.data.map(async (i) => {
-              const collectionDetails = await getCollectionDetails(i[0]);
+              const collectionDetails = await getNftCollection(i[0]);
 
               let collection = {
                 name: collectionDetails.name,

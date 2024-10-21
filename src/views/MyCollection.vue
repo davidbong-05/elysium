@@ -167,7 +167,7 @@ export default {
       getLinkedCollection,
       unlinkCollection,
       getMyCollection,
-      getCollectionDetails,
+      getNftCollection,
     } = useMarketStore();
     const isLoading = ref(true);
     const loadingMsg = ref(
@@ -212,16 +212,13 @@ export default {
         const res = await getLinkedCollection(ownerAddress);
         if (res != "404") {
           for (const item of res) {
-            try
-            {
-              let collection = await getCollectionDetails(item);
-              if(collection != null)
-              {
+            try {
+              let collection = await getNftCollection(item);
+              if (collection != null) {
                 collections.push(collection);
               }
-            }
-            catch(error) {
-              console.log("There's an issue with this address: "+ item);
+            } catch (error) {
+              console.log("There's an issue with this address: " + item);
               continue;
             }
           }
@@ -239,7 +236,7 @@ export default {
         const res = await getMyCollection();
         let collections = [];
         for (const item of res) {
-          let collection = await getCollectionDetails(item);
+          let collection = await getNftCollection(item);
           collections.push(collection);
         }
         createdCollection.value = collections;

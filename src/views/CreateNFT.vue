@@ -187,7 +187,7 @@ export default {
       uploadFileToIPFS,
       uploadJSONToIPFS,
       getMyCollection,
-      getCollectionDetails,
+      getNftCollection,
       mintNFT,
       listNFT,
     } = useMarketStore();
@@ -352,7 +352,7 @@ export default {
           return;
         } else {
           for (let i = 0; i < res.length; i++) {
-            let collectionItem = await getCollectionDetails(res[i]);
+            let collectionItem = await getNftCollection(res[i]);
             let collection = {
               address: res[i],
               name: collectionItem.name,

@@ -267,7 +267,7 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getCollectionDetails = async (collectionAddress) => {
+  const getNftCollection = async (collectionAddress) => {
     let nftCollection = null;
     try {
       nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
@@ -806,7 +806,7 @@ export const useMarketStore = defineStore("user", () => {
     uploadJSONToIPFS,
     createNFTCollection,
     getMyCollection,
-    getCollectionDetails,
+    getNftCollection,
     mintNFT,
     getOwnedNFTs,
     getOwnedNFTsCount,

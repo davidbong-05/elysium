@@ -7,7 +7,10 @@
         </v-card-title>
         <v-card-subtitle>{{ collectionDetails.address }}</v-card-subtitle>
         <v-card-text>Royalty: {{ collectionDetails.royalty }}%</v-card-text>
-        <v-card-text>Royalty Recipient: {{ collectionDetails.royaltyRecipientName }}</v-card-text>
+        <v-card-text
+          >Royalty Recipient:
+          {{ collectionDetails.royaltyRecipientName }}</v-card-text
+        >
         <v-card-text> Royalty Recipient Address: </v-card-text>
         <v-card-subtitle>
           {{ collectionDetails.royaltyRecipient }}
@@ -59,7 +62,7 @@ export default {
     // Activity,
   },
   setup() {
-    const { getCollectionDetails } = useMarketStore();
+    const { getNftCollection } = useMarketStore();
     const tab = ref(1);
     const route = useRoute();
     const collectionAddress = route.params.address;
@@ -68,7 +71,7 @@ export default {
 
     onMounted(async () => {
       try {
-        collectionDetails.value = await getCollectionDetails(collectionAddress);
+        collectionDetails.value = await getNftCollection(collectionAddress);
       } catch (error) {
         console.error(error);
       }
