@@ -98,7 +98,7 @@ export default {
     const { setAlert, createNFTCollection } = useMarketStore();
     // data
     const wallet = sessionStorage.getItem("address");
-    const isVerified = sessionStorage.getItem("role") != 'unverified-user';
+    const isVerified = sessionStorage.getItem("role") != "unverified-user";
     const name = ref("");
     const symbol = ref("");
     const royalty = ref("");
@@ -160,16 +160,10 @@ export default {
             royalty.value,
             wallet
           );
-          if(res === "ACTION_REJECTED") {
-            alert.value = setAlert(
-              "info",
-              "You had rejected the transaction."
-            );
+          if (res === "ACTION_REJECTED") {
+            alert.value = setAlert("info", "You had rejected the transaction.");
           } else {
-            alert.value = setAlert(
-              "success",
-              "NFT created successfully!"
-            );
+            alert.value = setAlert("success", "NFT created successfully!");
             console.log(res);
           }
         } catch (err) {
@@ -189,11 +183,8 @@ export default {
     };
 
     onMounted(async () => {
-      if(!isVerified) {
-        alert.value = setAlert(
-          "error",
-          "Please verify your email first."
-        );
+      if (!isVerified) {
+        alert.value = setAlert("error", "Please verify your email first.");
       }
     });
 
