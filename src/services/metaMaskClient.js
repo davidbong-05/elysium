@@ -19,18 +19,12 @@ class MetaMaskClient {
   connectWallet = async () => {
     await this.ensureMetaMaskIsInstalled();
     await this.ensureNetworkIsCorrect();
-
-    try {
-      console.log(`🧹 connecting to wallet.`);
-      const res = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log(`✨ wallet connected. Wallet Address:${res}`);
-      return res[0];
-    } catch (error) {
-      this.setAlertFunc("error", error.message);
-      MetaMaskReponse.parse(error);
-    }
+    console.log(`🧹 connecting to wallet.`);
+    const res = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    console.log(`✨ wallet connected. Wallet Address:${res}`);
+    return res[0];
   };
 
   ensureMetaMaskIsInstalled = async () => {
@@ -41,17 +35,12 @@ class MetaMaskClient {
   };
 
   ensureNetworkIsCorrect = async () => {
-    try {
-      console.log(`🧹 ensuring connected chain is correct.`);
-      const walletChainId = await window.ethereum.request({
-        method: "eth_chainId",
-      });
-      if (walletChainId != MetaMaskClient.POLYGON_NETWORK.chainId) {
-        await this.switchNetwork(this.setAlertFunc);
-      }
-    } catch (error) {
-      this.setAlertFunc("error", error.message);
-      MetaMaskReponse.parse(error);
+    console.log(`🧹 ensuring connected chain is correct.`);
+    const walletChainId = await window.ethereum.request({
+      method: "eth_chainId",
+    });
+    if (walletChainId != MetaMaskClient.POLYGON_NETWORK.chainId) {
+      await this.switchNetwork(this.setAlertFunc);
     }
   };
 
@@ -65,27 +54,23 @@ class MetaMaskClient {
         params: [{ chainId: MetaMaskClient.POLYGON_NETWORK.chainId }],
       });
     } catch (error) {
-      this.setAlertFunc("error", error.message);
       var switchError = MetaMaskReponse.parse(error);
       if (switchError.isChainNotAddedError()) {
         await this.addChain();
+      } else {
+        throw error;
       }
     }
   };
 
   addChain = async () => {
-    try {
-      console.log(
-        `🧹 adding chain ${MetaMaskClient.POLYGON_NETWORK.chainName} ${MetaMaskClient.POLYGON_NETWORK.chainId}`
-      );
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [POLYGON_NETWORK],
-      });
-    } catch (error) {
-      this.setAlertFunc("error", error.message);
-      MetaMaskReponse.parse(error);
-    }
+    console.log(
+      `🧹 adding chain ${MetaMaskClient.POLYGON_NETWORK.chainName} ${MetaMaskClient.POLYGON_NETWORK.chainId}`
+    );
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [POLYGON_NETWORK],
+    });
   };
 }
 

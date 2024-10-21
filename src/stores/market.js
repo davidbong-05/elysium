@@ -8,6 +8,7 @@ import axios from "axios";
 import { useApiStore } from "@/stores/api";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 import MetaMaskClient from "@/services/metaMaskClient";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -27,36 +28,44 @@ export const useMarketStore = defineStore("user", () => {
     color: "",
     icon: "",
     title: "",
+    code: "",
     text: "",
   });
 
-  const setAlert = (status, msg) => {
-    if (status === "error") {
-      alert = {
-        show: true,
-        color: "error",
-        icon: "$error",
-        title: "Oops...",
-        text: msg,
-      };
-    } else if (status === "success") {
-      alert = {
-        show: true,
-        color: "success",
-        icon: "$success",
-        title: "Success",
-        text: msg,
-      };
-    } else if (status === "info") {
-      alert = {
-        show: true,
-        color: "info",
-        icon: "$info",
-        title: "Info",
-        text: msg,
-      };
+  const setAlert = (status, code, msg) => {
+    alert.code = code ? `[${code}]` : "";
+    alert.text = msg ? `${msg}.` : "";
+
+    switch (status) {
+      case "error":
+        alert = {
+          show: true,
+          color: "error",
+          icon: "$error",
+          title: "Oops...",
+        };
+        break;
+      case "success":
+        alert = {
+          show: true,
+          color: "success",
+          icon: "$success",
+          title: "Success",
+        };
+        break;
+      case "info":
+        alert = {
+          show: true,
+          color: "info",
+          icon: "$info",
+          title: "Info",
+        };
+        break;
+      default:
+        alert = { show: false };
+        break;
     }
-    console.log(`💬 (${alert.title}) ${alert.text}`);
+    console.log(`💬 (${alert.title}) ${alert.text} ${alert.code}`);
     return alert;
   };
 
@@ -66,7 +75,8 @@ export const useMarketStore = defineStore("user", () => {
     try {
       account.value = await metaMaskClient.connectWallet();
     } catch (error) {
-      setAlert("error", error.message);
+      setAlert("error", error.code, error.message);
+      ConsoleUtils.displayError(error);
     }
   };
 
