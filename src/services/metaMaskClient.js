@@ -86,15 +86,14 @@ class MetaMaskClient {
   };
 
   createNftCollection = async (name, symbol, royaltyFee, royaltyRecipient) => {
-    console.log(`⚒️  Creating a new collection:
-------------------------------
-📛 Name:               ${name}
-💠 Symbol:             ${symbol}
-💸 Royalty Fee:        ${royaltyFee}%
-👑 Royalty Recipient:  ${royaltyRecipient}
-------------------------------
-🚀 Collection is being created...
-    `);
+    console.log(`⚒️  Creating a new collection:`);
+    console.log(`------------------------------`);
+    console.log(`📛 Name:               ${name}`);
+    console.log(`💠 Symbol:             ${symbol}`);
+    console.log(`💸 Royalty Fee:        ${royaltyFee}%`);
+    console.log(`👑 Royalty Recipient:  ${royaltyRecipient}`);
+    console.log(`------------------------------`);
+    console.log(`🚀 Collection is being created...`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
@@ -116,6 +115,7 @@ class MetaMaskClient {
   };
 
   getOwnNftCollections = async () => {
+    `🧹 getting own NFT collections.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
@@ -127,6 +127,7 @@ class MetaMaskClient {
   };
 
   getNftCollection = async (collectionAddress) => {
+    `🧹 getting NFT collection detail from ${collectionAddress}.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
