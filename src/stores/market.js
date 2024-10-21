@@ -33,12 +33,14 @@ export const useMarketStore = defineStore("user", () => {
   });
 
   const setAlert = (status, code, msg) => {
-    alert.code = code ? `[${code}]` : "";
-    alert.text = msg ? `${msg}.` : "";
-
+    var alertDetail = {
+      code: code ? `[${code}]` : "",
+      text: msg ? `${msg}.` : "",
+    };
     switch (status) {
       case "error":
         alert = {
+          ...alertDetail,
           show: true,
           color: "error",
           icon: "$error",
@@ -47,6 +49,7 @@ export const useMarketStore = defineStore("user", () => {
         break;
       case "success":
         alert = {
+          ...alertDetail,
           show: true,
           color: "success",
           icon: "$success",
@@ -55,6 +58,7 @@ export const useMarketStore = defineStore("user", () => {
         break;
       case "info":
         alert = {
+          ...alertDetail,
           show: true,
           color: "info",
           icon: "$info",
