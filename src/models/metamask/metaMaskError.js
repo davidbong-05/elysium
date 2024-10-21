@@ -1,7 +1,7 @@
 class MetaMaskError {
-  static code_chain_not_added_in_wallet = 4902;
-  static code_user_rejected = 4001;
-  static code_action_rejected = "ACTION_REJECTED";
+  static CODE_CHAIN_NOT_ADDED_IN_WALLET = 4902;
+  static CODE_USER_REJECTED = 4001;
+  static CODE_ACTION_REJECTED = "ACTION_REJECTED";
 
   constructor({ code, message }) {
     this.isSucess = false;
@@ -32,13 +32,13 @@ class MetaMaskError {
   }
 
   isChainNotAddedError() {
-    return this.code === MetaMaskError.code_chain_not_added_in_wallet;
+    return this.code === MetaMaskError.CODE_CHAIN_NOT_ADDED_IN_WALLET;
   }
 
   checkIfUserRejected() {
     return (
-      this.code === MetaMaskError.code_user_rejected ||
-      this.code === MetaMaskError.code_action_rejected
+      this.code === MetaMaskError.CODE_USER_REJECTED ||
+      this.code === MetaMaskError.CODE_ACTION_REJECTED
     );
   }
 }
