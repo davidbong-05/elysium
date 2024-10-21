@@ -7,7 +7,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
-import MetaMaskUtils from "@/utils/metaMaskUtils";
+import MetaMaskClient from "@/services/metaMaskClient";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const factoryContractAddress = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -18,7 +18,6 @@ export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
   const { get, post, put } = useApiStore();
-
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
@@ -61,9 +60,11 @@ export const useMarketStore = defineStore("user", () => {
     return alert;
   };
 
+  const metaMaskClient = new MetaMaskClient({ setAlertFunc: setAlert });
+
   const connectWallet = async () => {
     try {
-      account.value = await MetaMaskUtils.connectWallet(setAlert);
+      account.value = await metaMaskClient.connectWallet();
     } catch (error) {
       setAlert("error", error.message);
     }

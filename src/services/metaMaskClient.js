@@ -1,5 +1,9 @@
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 
+class MetaMaskClient {
+  constructor({ setAlertFunc }) {
+    this.setAlertFunc = setAlertFunc;
+  }
   static POLYGON_NETWORK = {
     chainId: "0x13882",
     chainName: "POLYGON AMOY TESTNET",
@@ -12,9 +16,9 @@ import MetaMaskReponse from "@/models/metamask/metaMaskError";
     blockExplorerUrls: ["https://www.oklink.com/amoy"],
   };
 
-  static connectWallet = async (setAlertFunc) => {
-    await this.ensureMetaMaskIsInstalled(setAlertFunc);
-    await this.ensureNetworkIsCorrect(setAlertFunc);
+  connectWallet = async () => {
+    await this.ensureMetaMaskIsInstalled();
+    await this.ensureNetworkIsCorrect();
 
     try {
       console.log(`🧹 connecting to wallet.`);
@@ -24,42 +28,44 @@ import MetaMaskReponse from "@/models/metamask/metaMaskError";
       console.log(`✨ wallet connected. Wallet Address:${res}`);
       return res[0];
     } catch (error) {
-      setAlertFunc("error", error.message);
+      this.setAlertFunc("error", error.message);
       MetaMaskReponse.parse(error);
     }
   };
 
-  static ensureMetaMaskIsInstalled = async (setAlertFunc) => {
+  ensureMetaMaskIsInstalled = async () => {
     if (!window.ethereum) {
       console.log(`⚠️ MetaMask is either not installed or not connected.`);
-      setAlertFunc("error", "Must connect to MetaMask!");
+      this.setAlertFunc("error", "Must connect to MetaMask!");
     }
   };
 
-  static ensureNetworkIsCorrect = async (setAlertFunc) => {
+  ensureNetworkIsCorrect = async () => {
     try {
       console.log(`🧹 ensuring connected chain is correct.`);
       const walletChainId = await window.ethereum.request({
         method: "eth_chainId",
       });
-      if (walletChainId != this.POLYGON_NETWORK.chainId) {
-        await this.switchNetwork(setAlertFunc);
+      if (walletChainId != MetaMaskClient.POLYGON_NETWORK.chainId) {
+        await this.switchNetwork(this.setAlertFunc);
       }
     } catch (error) {
-      setAlertFunc("error", error.message);
+      this.setAlertFunc("error", error.message);
       MetaMaskReponse.parse(error);
     }
   };
 
-  static switchNetwork = async (setAlertFunc) => {
+  switchNetwork = async () => {
     try {
-      console.log(`🧹 switching chain to ${this.POLYGON_NETWORK.chainId}`);
+      console.log(
+        `🧹 switching chain to ${MetaMaskClient.POLYGON_NETWORK.chainId}`
+      );
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: this.POLYGON_NETWORK.chainId }],
+        params: [{ chainId: MetaMaskClient.POLYGON_NETWORK.chainId }],
       });
     } catch (error) {
-      setAlertFunc("error", error.message);
+      this.setAlertFunc("error", error.message);
       var switchError = MetaMaskReponse.parse(error);
       if (switchError.isChainNotAddedError()) {
         await this.addChain();
@@ -67,20 +73,20 @@ import MetaMaskReponse from "@/models/metamask/metaMaskError";
     }
   };
 
-  static addChain = async (setAlertFunc) => {
+  addChain = async () => {
     try {
       console.log(
-        `🧹 adding chain ${this.POLYGON_NETWORK.chainName} ${this.POLYGON_NETWORK.chainId}`
+        `🧹 adding chain ${MetaMaskClient.POLYGON_NETWORK.chainName} ${MetaMaskClient.POLYGON_NETWORK.chainId}`
       );
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [POLYGON_NETWORK],
       });
     } catch (error) {
-      setAlertFunc("error", error.message);
+      this.setAlertFunc("error", error.message);
       MetaMaskReponse.parse(error);
     }
   };
 }
 
-export default MetaMaskUtils;
+export default MetaMaskClient;
