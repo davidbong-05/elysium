@@ -177,7 +177,7 @@ export default {
         isLoading.value = true;
         const res = await listNFT(nftCollection, nftId, price.value.toString());
         if (res.isSuccess) {
-          alert.value = setAlert("success", null, "NFT created successfully!");
+          alert.value = setAlert("success", null, "NFT listed successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
           alert.value = setAlert(
@@ -206,22 +206,29 @@ export default {
       try {
         isLoading.value = true;
         const res = await unListNFT(nftCollection, nftId);
-        if (res === "ACTION_REJECTED") {
-          alert.value = setAlert("info", "You had rejected the transaction.");
-        } else {
+        if (res.isSuccess) {
+          alert.value = setAlert("success", null, "NFT unlisted successfully!");
+          isUpdate.value = true;
+        } else if (res.isUserRejected) {
           alert.value = setAlert(
-            "success",
-            "Successfully remove NFT from listing! Please refresh page to update"
+            "info",
+            null,
+            "You had rejected the transaction."
           );
+        } else {
+          alert.value = setAlert("error", res.code, res.message);
+          isUpdate.value = true;
         }
-        isLoading.value = false;
-        isUpdate.value = true;
       } catch (err) {
         alert.value = setAlert(
           "error",
+          err.code,
           "We are facing some issues please try again later..."
         );
-        console.log(err);
+        ConsoleUtils.displayError(err);
+        isUpdate.value = true;
+      } finally {
+        isLoading.value = false;
       }
     };
 

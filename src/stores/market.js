@@ -433,24 +433,9 @@ export const useMarketStore = defineStore("user", () => {
 
   const unListNFT = async (tokenAddress, tokenId) => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const marketContract = new ethers.Contract(
-          MARKET_CONTRACT_ADDRESS,
-          marketContractABI.abi,
-          signer
-        );
-        const tokenTxn = await marketContract.cancelListNFT(
-          tokenAddress,
-          tokenId
-        );
-        return await tokenTxn.wait();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      return await metaMaskClient.unlistNft(tokenAddress, tokenId);
     } catch (error) {
-      return error.code;
+      return MetaMaskError.parse(error);
     }
   };
 

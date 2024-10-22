@@ -175,11 +175,6 @@ class MetaMaskClient {
       nftContractABI.abi,
       signer
     );
-    console.log("Marketplace Contract Object:", marketContract);
-    console.log(
-      "Available Contract Functions:",
-      marketContract.interface.functions
-    );
 
     console.log("🔑 Approving marketplace to handle NFT.");
     const approveTxn = await nftContract.approve(
@@ -201,6 +196,35 @@ class MetaMaskClient {
     console.log("⏳ Listing transaction sent.");
     const res = await listingTxn.wait();
     console.log("✅ NFT successfully listed!");
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+
+  unlistNft = async (tokenAddress, tokenId) => {
+    console.log(`📝 Unlisting NFT from marketplace:`);
+    console.log(`------------------------------`);
+    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🆔 Token ID:           ${tokenId}`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+
+    console.log("🔨 Unlisting NFT on marketplace.");
+    const cancellingTxn = await marketContract.cancelListNFT(
+      tokenAddress,
+      tokenId
+    );
+
+    console.log("⏳ Unlisting transaction sent.");
+    const res = await cancellingTxn.wait();
+    console.log("✅ NFT successfully unlisted!");
 
     const txn = EthereumTransaction.parse(res);
     return txn.getTransactionDetails();
