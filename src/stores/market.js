@@ -303,30 +303,14 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const mintNFT = async (ownerAddress, collectionAddress, tokenURI) => {
-    console.log("collection", collectionAddress);
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const nftContract = new ethers.Contract(
-          collectionAddress,
-          nftContractABI.abi,
-          signer
-        );
-        nftContract.on("Transfer", (from, to, tokenId) => {
-          console.log(`Token ${tokenId} transferred from ${from} to ${to}`);
-        });
-        const tokenTxn = await nftContract.safeMint(ownerAddress, tokenURI);
-        const receipt = await tokenTxn.wait();
-        const tokenId = receipt.logs[0].topics[3];
-        console.log(`TokenId: ${tokenId}`);
-        return tokenId;
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      return await metaMaskClient.createNft(
+        ownerAddress,
+        collectionAddress,
+        tokenURI
+      );
     } catch (error) {
-      MetaMaskReponse.parse(error);
-      return error.code;
+      return MetaMaskReponse.parse(error);
     }
   };
 

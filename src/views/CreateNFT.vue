@@ -269,57 +269,72 @@ export default {
 
     const submit = async () => {
       if (valid.value === true) {
-        isLoading.value = true;
-        loadingMsg.value = "Uploading the file to IPFS...";
-        const fileData = await uploadFileToIPFS(file.value);
-        console.log("fileData.IpfsHash", fileData.IpfsHash);
-        const json = {
-          name: name.value,
-          description: description.value,
-          image: fileData.IpfsHash,
-        };
-        const jsonFile = await uploadJSONToIPFS(json);
-        console.log("file", jsonFile.IpfsHash);
-        loadingMsg.value = "Minting the NFT...";
-        const res = await mintNFT(
-          sessionStorage.getItem("address"),
-          selectedCollection.value.address,
-          jsonFile.IpfsHash
-        );
-        if (res === "ACTION_REJECTED") {
-          alert.value = setAlert("info", "You had rejected the transaction.");
-        } else {
-          console.log("mint", res);
-          if (onSale.value === "Yes") {
-            try {
-              loadingMsg.value = "Listing the NFT on sale...";
-              const res2 = await listNFT(
-                selectedCollection.value.address,
-                res,
-                price.value.toString()
-              );
-              if (res2 === "ACTION_REJECTED") {
+        try {
+          isLoading.value = true;
+          loadingMsg.value = "Uploading the file to IPFS...";
+          const fileData = await uploadFileToIPFS(file.value);
+          console.log("fileData.IpfsHash", fileData.IpfsHash);
+          const json = {
+            name: name.value,
+            description: description.value,
+            image: fileData.IpfsHash,
+          };
+          const jsonFile = await uploadJSONToIPFS(json);
+          console.log("file", jsonFile.IpfsHash);
+          loadingMsg.value = "Minting the NFT...";
+          const res = await mintNFT(
+            sessionStorage.getItem("address"),
+            selectedCollection.value.address,
+            jsonFile.IpfsHash
+          );
+          if (res.isSuccess) {
+            if (onSale.value === "Yes") {
+              try {
+                loadingMsg.value = "Listing the NFT on sale...";
+                const res2 = await listNFT(
+                  selectedCollection.value.address,
+                  res,
+                  price.value.toString()
+                );
+                if (res2 === "ACTION_REJECTED") {
+                  alert.value = setAlert(
+                    "info",
+                    res2.code,
+                    "You had rejected the transaction. Failed to listed on sales."
+                  );
+                }
+                console.log("listed on sale", res2);
+              } catch (err) {
                 alert.value = setAlert(
-                  "info",
-                  "You had rejected the transaction. Failed to listed on sales."
+                  "error",
+                  err.code,
+                  "We are facing some issues please try again later..."
                 );
               }
-              console.log("listed on sale", res2);
-            } catch (err) {
-              alert.value = setAlert(
-                "error",
-                "We are facing some issues please try again later..."
-              );
-              console.log(err);
             }
+            alert.value = setAlert("success", null, "NFT Minted Successfully");
+            reset();
+          } else if (res.isUserRejected) {
+            alert.value = setAlert(
+              "info",
+              res.code,
+              "You had rejected the transaction."
+            );
+          } else {
+            alert.value = setAlert("error", res.code, res.message);
           }
-          alert.value = setAlert("success", "NFT Minted Successfully");
-          reset();
+        } catch (err) {
+          alert.value = setAlert(
+            "error",
+            err.code,
+            "We are facing some issues please try again later..."
+          );
         }
         isLoading.value = false;
       } else {
         alert.value = setAlert(
           "error",
+          null,
           "Please check your input and try again"
         );
         console.log("Invalid", valid.value);

@@ -114,6 +114,48 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
+  createNft = async (ownerAddress, collectionAddress, tokenURI) => {
+    ownerAddress = "0x36c4406399ed3d79f6baca37720c188d4353d5f0";
+    collectionAddress = "0x2296980659378e4136d3bcdae53ad41ed1ad996c";
+    tokenURI = "Qmct2NTU3wxVSmS6VXSmzLfBhCDTtqJcHSs2JGm8n9cD4i";
+
+    console.log(`⚒️  Minting a new NFT:`);
+    console.log(`------------------------------`);
+    console.log(`📛 Owner:               ${ownerAddress}`);
+    console.log(`🏛️ Collection Address:   ${collectionAddress}`);
+    console.log(`🖼️ Token URI:            ${tokenURI}`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const nftContract = new ethers.Contract(
+      collectionAddress,
+      nftContractABI.abi,
+      signer
+    );
+
+    const transferListener = (from, to, tokenId) => {
+      console.log(
+        `🚚 Token ${tokenId.toString()} transferred from ${from} to ${to}`
+      );
+    };
+
+    nftContract.on("Transfer", transferListener);
+
+    const tokenTxn = await nftContract.safeMint(ownerAddress, tokenURI);
+    console.log("⏳ Minting transaction sent...");
+
+    const res = await tokenTxn.wait();
+    console.log("✅ Transaction confirmed!");
+
+    const tokenIdHex = res.logs[0].topics[3];
+    console.log(`🎉 Token minted! TokenId: ${tokenIdHex}`);
+
+    nftContract.off("Transfer", transferListener);
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+
   getOwnNftCollections = async () => {
     `🧹 getting own NFT collections.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
