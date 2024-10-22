@@ -11,10 +11,10 @@ import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
 
-const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
+const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
-const apiKey = import.meta.env.VITE_PINATA_API_KEY;
-const apiSecret = import.meta.env.VITE_PINATA_API_SECRET;
+const API_KEY = import.meta.env.VITE_PINATA_API_KEY;
+const API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
 
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
@@ -74,7 +74,11 @@ export const useMarketStore = defineStore("user", () => {
     return alert;
   };
 
-  const metaMaskClient = new MetaMaskClient(FACTORY_CONTRACT_ADDRESS, setAlert);
+  const metaMaskClient = new MetaMaskClient(
+    FACTORY_CONTRACT_ADDRESS,
+    MARKET_CONTRACT_ADDRESS,
+    setAlert
+  );
 
   const connectWallet = async () => {
     try {
@@ -208,8 +212,8 @@ export const useMarketStore = defineStore("user", () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          pinata_api_key: apiKey,
-          pinata_secret_api_key: apiSecret,
+          pinata_api_key: API_KEY,
+          pinata_secret_api_key: API_SECRET,
         },
       }
     );
@@ -223,8 +227,8 @@ export const useMarketStore = defineStore("user", () => {
       json,
       {
         headers: {
-          pinata_api_key: apiKey,
-          pinata_secret_api_key: apiSecret,
+          pinata_api_key: API_KEY,
+          pinata_secret_api_key: API_SECRET,
         },
       }
     );
@@ -421,7 +425,7 @@ export const useMarketStore = defineStore("user", () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const marketContract = new ethers.Contract(
-          marketContractAddress,
+          MARKET_CONTRACT_ADDRESS,
           marketContractABI.abi,
           signer
         );
@@ -431,7 +435,7 @@ export const useMarketStore = defineStore("user", () => {
           signer
         );
         const approveTxn = await nftContract.approve(
-          marketContractAddress,
+          MARKET_CONTRACT_ADDRESS,
           tokenId
         );
         console.log("Approving transaction...");
@@ -457,7 +461,7 @@ export const useMarketStore = defineStore("user", () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const marketContract = new ethers.Contract(
-          marketContractAddress,
+          MARKET_CONTRACT_ADDRESS,
           marketContractABI.abi,
           signer
         );
@@ -479,7 +483,7 @@ export const useMarketStore = defineStore("user", () => {
       if (window.ethereum) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const marketContract = new ethers.Contract(
-          marketContractAddress,
+          MARKET_CONTRACT_ADDRESS,
           marketContractABI.abi,
           provider
         );
@@ -489,13 +493,13 @@ export const useMarketStore = defineStore("user", () => {
           provider
         );
         const nfts = [];
-        const balance = await nftContract.balanceOf(marketContractAddress);
+        const balance = await nftContract.balanceOf(MARKET_CONTRACT_ADDRESS);
         console.log("Total NFTs listed:", balance.toString());
         const royaltyFee = await nftContract.getRoyalty();
         const royaltyRecipient = await nftContract.getRoyaltyRecipient();
         for (let i = 0; i < balance; i++) {
           const tokenId = await nftContract.tokenOfOwnerByIndex(
-            marketContractAddress,
+            MARKET_CONTRACT_ADDRESS,
             i
           );
           const marketItem = await marketContract.getListedNFT(
@@ -564,7 +568,7 @@ export const useMarketStore = defineStore("user", () => {
       if (window.ethereum) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const marketContract = new ethers.Contract(
-          marketContractAddress,
+          MARKET_CONTRACT_ADDRESS,
           marketContractABI.abi,
           provider
         );
@@ -611,7 +615,7 @@ export const useMarketStore = defineStore("user", () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         signer
       );
@@ -632,7 +636,7 @@ export const useMarketStore = defineStore("user", () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         signer
       );
@@ -670,7 +674,7 @@ export const useMarketStore = defineStore("user", () => {
     if (window.ethereum) {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         provider
       );
@@ -682,7 +686,7 @@ export const useMarketStore = defineStore("user", () => {
     if (window.ethereum) {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         provider
       );
@@ -695,7 +699,7 @@ export const useMarketStore = defineStore("user", () => {
     if (window.ethereum) {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         provider
       );
@@ -707,7 +711,7 @@ export const useMarketStore = defineStore("user", () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         signer
       );
@@ -721,7 +725,7 @@ export const useMarketStore = defineStore("user", () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const marketContract = new ethers.Contract(
-        marketContractAddress,
+        MARKET_CONTRACT_ADDRESS,
         marketContractABI.abi,
         signer
       );
