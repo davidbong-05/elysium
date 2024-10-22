@@ -6,10 +6,9 @@ import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
-import MetaMaskReponse from "@/models/metamask/metaMaskError";
+import MetaMaskError from "@/models/metamask/metaMaskError";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
-import MetaMaskError from "@/models/metamask/metaMaskError";
 
 const marketContractAddress = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -256,7 +255,7 @@ export const useMarketStore = defineStore("user", () => {
         royaltyRecipient
       );
     } catch (error) {
-      return MetaMaskReponse.parse(error);
+      return MetaMaskError.parse(error);
     }
   };
 
@@ -264,7 +263,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       return await metaMaskClient.getOwnNftCollections();
     } catch (error) {
-      MetaMaskReponse.parse(error);
+      MetaMaskError.parse(error);
     }
   };
 
@@ -273,7 +272,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
     } catch (error) {
-      MetaMaskReponse.parse(error);
+      MetaMaskError.parse(error);
     }
     try {
       if (nftCollection.totalSupply > 0) {
@@ -299,7 +298,7 @@ export const useMarketStore = defineStore("user", () => {
         "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
       );
     } catch (error) {
-      return MetaMaskReponse.parse(error);
+      return MetaMaskError.parse(error);
     }
   };
 
@@ -311,7 +310,7 @@ export const useMarketStore = defineStore("user", () => {
         tokenURI
       );
     } catch (error) {
-      return MetaMaskReponse.parse(error);
+      return MetaMaskError.parse(error);
     }
   };
 
@@ -333,7 +332,7 @@ export const useMarketStore = defineStore("user", () => {
         totalCount += count;
       }
     } catch (error) {
-      MetaMaskReponse.parse(error);
+      MetaMaskError.parse(error);
     }
     console.log(`🎯 Total NFTs owned by ${address}: ${totalCount}`);
     return totalCount;
@@ -370,7 +369,7 @@ export const useMarketStore = defineStore("user", () => {
         }
       }
     } catch (error) {
-      MetaMaskReponse.parse(error);
+      MetaMaskError.parse(error);
     }
 
     try {
