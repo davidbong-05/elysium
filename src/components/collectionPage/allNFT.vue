@@ -184,8 +184,8 @@ export default {
       try {
         const res = await getCollectionNFTs(props.collectionAddress);
         loading.value = false;
-        if (res) {
-          allNFTs.value = res;
+        if (res.length > 0) {
+          ownedNFTs.value = res;
         }
       } catch (err) {
         console.log(err);
