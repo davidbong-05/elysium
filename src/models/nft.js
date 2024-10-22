@@ -36,7 +36,7 @@ class Nft {
       `👑 Collection Owner: ${this.collectionOwner} (${this.collectionOwnerName})`
     );
     console.log(`🆔 Token ID: ${this.tokenId}`);
-    console.log(`🆔 Token Name: ${this.tokenName}`);
+    console.log(`🧾 Token Name: ${this.tokenName}`);
     console.log(`#️⃣ Token Hash: ${this.tokenHash}`);
     console.log(`📝 Description: ${this.tokenDescription}`);
     console.log(`💰 Royalty: ${this.royalty}%`);
