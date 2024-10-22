@@ -3,6 +3,7 @@ import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
 import EthereumTransaction from "@/models/metamask/ethereumTransaction";
+import Nft from "@/models/nft";
 import NftColletion from "@/models/nftCollection";
 
 class MetaMaskClient {
@@ -190,7 +191,55 @@ class MetaMaskClient {
     });
   };
 
-  getTokenHash = async (tokenAddress) => {
+  getOwnedNftCounts = async (ownerAddress, tokenAddress) => {
+    console.log(
+      `🧹 getting NFTs own by ${ownerAddress} in collection (${tokenAddress}).`
+    );
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    let nftsCount = 0;
+    try {
+      const nftContract = new ethers.Contract(
+        tokenAddress,
+        nftContractABI.abi,
+        provider
+      );
+
+      const balance = await nftContract.balanceOf(ownerAddress);
+      nftsCount = Number(balance);
+
+      console.log(
+        `📦 Total NFTs owned in collection (${tokenAddress}): ${balance.toString()}`
+      );
+    } catch (error) {
+      console.log(
+        `⚠️ There's an issue with this collection address (${tokenAddress}): ${error.message}`
+      );
+    }
+    return nftsCount;
+  };
+
+  getOwnedNft = async (ownerAddress, tokenAddress, index) => {
+    `🧹 getting token #${index} from ${tokenAddress}.`;
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const nftContract = new ethers.Contract(
+      tokenAddress,
+      nftContractABI.abi,
+      provider
+    );
+    const tokenId = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
+
+    return Nft.parse({
+      owner: ownerAddress,
+      collection: tokenAddress,
+      collectionOwner: await nftContract.getRoyaltyRecipient(),
+      collectionName: await nftContract.name(),
+      tokenId: tokenId,
+      tokenHash: await nftContract.tokenURI(tokenId),
+      royalty: await nftContract.getRoyalty(),
+    });
+  };
+
+  getTokenHash = async (tokenAddress, index) => {
     `🧹 getting token hash from ${tokenAddress}.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
@@ -198,7 +247,7 @@ class MetaMaskClient {
       nftContractABI.abi,
       provider
     );
-    const tokenId = await nftContract.tokenByIndex(0);
+    const tokenId = await nftContract.tokenByIndex(index);
     return await nftContract.tokenURI(tokenId);
   };
 }
