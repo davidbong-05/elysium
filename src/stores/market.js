@@ -112,7 +112,8 @@ export const useMarketStore = defineStore("user", () => {
       sessionStorage.clear();
       console.log(res);
     } catch (err) {
-      console.log(err);
+      ConsoleUtils.displayError(error);
+
       console.log(err.response.message);
     }
   };
@@ -124,7 +125,8 @@ export const useMarketStore = defineStore("user", () => {
         session_id: sessionStorage.getItem("session_id"),
       });
     } catch (err) {
-      console.log(err);
+      ConsoleUtils.displayError(error);
+
       console.log(err.response.message);
     }
   };
@@ -154,7 +156,8 @@ export const useMarketStore = defineStore("user", () => {
       }
       return 200;
     } catch (err) {
-      console.log(err);
+      ConsoleUtils.displayError(error);
+
       return "Something went wrong...";
     }
   };
@@ -167,7 +170,7 @@ export const useMarketStore = defineStore("user", () => {
       if (err.response.status === 404) {
         return [];
       }
-      console.log(err);
+      ConsoleUtils.displayError(error);
     }
   };
 
@@ -181,7 +184,7 @@ export const useMarketStore = defineStore("user", () => {
       if (err.response.status === 404) {
         return [];
       }
-      console.log(err);
+      ConsoleUtils.displayError(error);
     }
   };
 
@@ -197,7 +200,8 @@ export const useMarketStore = defineStore("user", () => {
       console.log("res", res);
       return 200;
     } catch (err) {
-      console.log(err);
+      ConsoleUtils.displayError(error);
+
       return "Something went wrong...";
     }
   };
@@ -242,7 +246,7 @@ export const useMarketStore = defineStore("user", () => {
       );
       return res.data;
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     }
   };
 
@@ -291,7 +295,7 @@ export const useMarketStore = defineStore("user", () => {
         ).data;
         nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
       } catch (error) {
-        console.warn(error);
+        ConsoleUtils.displayError(error);
       }
     }
     return nftCollection;
@@ -328,7 +332,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       linkedCollection = await getLinkedCollection(address);
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     }
 
     try {
@@ -352,7 +356,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       linkedCollection = await getLinkedCollection(ownerAddress);
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     }
 
     try {
@@ -369,7 +373,7 @@ export const useMarketStore = defineStore("user", () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     } finally {
       return nfts;
     }
@@ -386,7 +390,7 @@ export const useMarketStore = defineStore("user", () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     } finally {
       return nfts;
     }
@@ -413,7 +417,7 @@ export const useMarketStore = defineStore("user", () => {
       });
       nft.displayInfo();
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     } finally {
       return nft;
     }
@@ -538,7 +542,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     }
   };
 
@@ -607,7 +611,7 @@ export const useMarketStore = defineStore("user", () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      ConsoleUtils.displayError(error);
     }
   };
   const buyNFT = async (tokenAddress, tokenId, tokenPrice) => {
@@ -665,7 +669,7 @@ export const useMarketStore = defineStore("user", () => {
           linkCollection(sessionStorage.getItem("address"), tokenAdress);
         }
       } catch (err) {
-        console.log(err);
+        ConsoleUtils.displayError(error);
       }
     }
   };

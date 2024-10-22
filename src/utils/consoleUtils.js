@@ -5,12 +5,15 @@ class ConsoleUtils {
       typeof error.code !== "undefined" &&
       typeof error.message !== "undefined"
     ) {
-      if (typeof error.code !== "undefined") {
-        console.log(`⚠️ Code: ${error.code}.`);
+      if (typeof error.name !== "undefined") {
+        console.log(`⚠️ Name    : ${error.name}.`);
       }
-      console.log(`⚠️ Message: ${error.message}`);
+      if (typeof error.code !== "undefined") {
+        console.log(`⚠️ Code    : [${error.code}]`);
+      }
+      console.log(`⚠️ Message : ${error.message}`);
     } else {
-      console.warn("⚠️ Invalid error object provided.");
+      console.error(error);
     }
   }
 }

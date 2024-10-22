@@ -62,6 +62,7 @@
 import { ref, onMounted } from "vue";
 import { useApiStore } from "@/stores/api";
 import Avatar from "vue-boring-avatars";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "TopUser",
@@ -87,7 +88,7 @@ export default {
         if (err.response.status === 404)
           //TODO if no top seller, show something else
           isExist.value = false;
-        console.log(err);
+        ConsoleUtils.displayError(err);
       }
     });
 

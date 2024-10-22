@@ -59,6 +59,7 @@
 import { ref, onMounted } from "vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "TopCollection",
@@ -88,7 +89,7 @@ export default {
         if (err.response.status === 404)
           // TODO if no top collection, show something else
           isExist.value = false;
-        console.log(err);
+        ConsoleUtils.displayError(err);
       }
     });
 

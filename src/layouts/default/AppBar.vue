@@ -104,6 +104,7 @@ import { useRouter } from "vue-router";
 import { useMarketStore } from "@/stores/market";
 import { storeToRefs } from "pinia";
 import Avatar from "vue-boring-avatars";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "AppBar",
@@ -181,7 +182,7 @@ export default {
         } else {
           console.log("Server error please try again later...");
         }
-        console.log(error);
+        ConsoleUtils.displayError(error);
       }
     };
 
