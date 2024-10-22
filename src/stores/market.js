@@ -273,19 +273,22 @@ export const useMarketStore = defineStore("user", () => {
     try {
       nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
     } catch (error) {
+      console.warn(`Error while fetching${collectionAddress}`);
       MetaMaskError.parse(error);
     }
-    try {
-      if (nftCollection.totalSupply > 0) {
-        const cover = await getCollectionCover(collectionAddress);
-        nftCollection.setCover(cover);
+    if (nftCollection) {
+      try {
+        if (nftCollection.totalSupply > 0) {
+          const cover = await getCollectionCover(collectionAddress);
+          nftCollection.setCover(cover);
+        }
+        const royaltyRecipientName = await get(
+          "/api/user/name/" + nftCollection.royaltyRecipient
+        ).data;
+        nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
+      } catch (error) {
+        console.warn(error);
       }
-      const royaltyRecipientName = await get(
-        "/api/user/name/" + nftCollection.royaltyRecipient
-      ).data;
-      nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
-    } catch (error) {
-      console.warn(error);
     }
     return nftCollection;
   };
