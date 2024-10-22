@@ -196,8 +196,7 @@ export default {
       }
       const res = await getOwnedNFTs(userAddress);
       loading.value = false;
-      console.log("Owned", res);
-      if (res) {
+      if (res.length > 0) {
         ownedNFTs.value = res;
       }
     });

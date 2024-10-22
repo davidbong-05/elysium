@@ -7,6 +7,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
 import MetaMaskError from "@/models/metamask/metaMaskError";
+import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
 
@@ -361,70 +362,27 @@ export const useMarketStore = defineStore("user", () => {
           );
           const meta = await getTokenMeta(nft.tokenHash);
           const imgHash = meta.image;
-          let ownerName = (await get("/api/user/name/" + ownerAddress)).data;
-          let collectionOwnerName = (
-            await get("/api/user/name/" + ownerAddress)
+          const ownerName = (await get("/api/user/name/" + ownerAddress)).data;
+          const collectionOwnerName = (
+            await get("/api/user/name/" + nft.collectionOwner)
           ).data;
-          let tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+          const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+          nft = new Nft({
+            ...nft,
+            ownerName: ownerName,
+            collectionOwnerName: collectionOwnerName,
+            tokenName: meta.name,
+            tokenDescription: meta.description,
+            tokenUri: tokenUri,
+          });
+          nft.displayInfo();
+          nfts.push(nft);
         }
       }
-    } catch (error) {
-      MetaMaskError.parse(error);
-    }
-
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      for (const tokenAddress of linkedCollection) {
-        try {
-          const nftContract = new ethers.Contract(
-            tokenAddress,
-            nftContractABI.abi,
-            provider
-          );
-          const balance = await nftContract.balanceOf(ownerAddress);
-          console.log("Total NFTs owned:", balance.toString());
-          const royaltyFee = await nftContract.getRoyalty();
-          const royaltyRecipient = await nftContract.getRoyaltyRecipient();
-          for (let i = 0; i < balance; i++) {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(
-              ownerAddress,
-              i
-            );
-            const owner = await nftContract.ownerOf(tokenId);
-            const tokenHash = await nftContract.tokenURI(tokenId);
-            console.log("Getting nft #" + i + " meta data...");
-            const meta = await getTokenMeta(tokenHash);
-            const imgHash = meta.image;
-            let nft = {
-              owner: owner,
-              ownerName: (await get("/api/user/name/" + owner)).data,
-              collection: tokenAddress,
-              collectionName: await nftContract.name(),
-              collectionOwner: royaltyRecipient,
-              collectionOwnerName: (
-                await get("/api/user/name/" + royaltyRecipient)
-              ).data,
-              tokenId: tokenId.toString(),
-              tokenUri:
-                "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
-                imgHash,
-              tokenName: meta.name,
-              tokenDescription: meta.description,
-              royalty: royaltyFee.toString(),
-            };
-            nfts.push(nft);
-          }
-        } catch (error) {
-          console.log("There's an issue with this address: " + tokenAddress);
-          console.log(error);
-          continue;
-        }
-      }
-      if (nfts.length > 0) {
-        return nfts;
-      } else return null;
     } catch (error) {
       console.log(error);
+    } finally {
+      return nfts;
     }
   };
 

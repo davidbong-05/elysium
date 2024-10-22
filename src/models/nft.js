@@ -25,16 +25,18 @@ class Nft {
     this.tokenName = tokenName;
     this.tokenDescription = tokenDescription;
     this.royalty = royalty;
-    this.displayInfo();
   }
 
   displayInfo() {
     console.log(`📦 NFT:`);
     console.log(`------------------------------`);
-    console.log(`👤 Owner: ${this.owner}`);
+    console.log(`👤 Owner: ${this.owner} (${this.ownerName})`);
     console.log(`🏛️ Collection: ${this.collection} (${this.collectionName})`);
-    console.log(`👑 Collection Owner: ${this.collectionOwner}`);
+    console.log(
+      `👑 Collection Owner: ${this.collectionOwner} (${this.collectionOwnerName})`
+    );
     console.log(`🆔 Token ID: ${this.tokenId}`);
+    console.log(`🆔 Token Name: ${this.tokenName}`);
     console.log(`#️⃣ Token Hash: ${this.tokenHash}`);
     console.log(`📝 Description: ${this.tokenDescription}`);
     console.log(`💰 Royalty: ${this.royalty}%`);
@@ -59,18 +61,6 @@ class Nft {
       tokenDescription: data.tokenDescription || null,
       royalty: data.royalty,
     });
-  }
-
-  setUri(tokenUri) {
-    this.tokenUri = tokenUri;
-  }
-
-  setTokenName(tokenName) {
-    this.tokenName = tokenName;
-  }
-
-  setTokenDescription(tokenDescription) {
-    this.tokenDescription = tokenDescription;
   }
 }
 
