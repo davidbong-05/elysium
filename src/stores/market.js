@@ -355,28 +355,10 @@ export const useMarketStore = defineStore("user", () => {
           tokenAddress
         );
         for (let i = 0; i < count; i++) {
-          let nft = await metaMaskClient.getOwnedNft(
-            ownerAddress,
-            tokenAddress,
-            i
-          );
-          const meta = await getTokenMeta(nft.tokenHash);
-          const imgHash = meta.image;
-          const ownerName = (await get("/api/user/name/" + ownerAddress)).data;
-          const collectionOwnerName = (
-            await get("/api/user/name/" + nft.collectionOwner)
-          ).data;
-          const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
-          nft = new Nft({
-            ...nft,
-            ownerName: ownerName,
-            collectionOwnerName: collectionOwnerName,
-            tokenName: meta.name,
-            tokenDescription: meta.description,
-            tokenUri: tokenUri,
-          });
-          nft.displayInfo();
-          nfts.push(nft);
+          const nft = await getNft(ownerAddress, tokenAddress, i);
+          if (nft) {
+            nfts.push(nft);
+          }
         }
       }
     } catch (error) {
@@ -387,48 +369,46 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const getCollectionNFTs = async (tokenAddress) => {
+    let nfts = [];
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const nfts = [];
-        const nftContract = new ethers.Contract(
-          tokenAddress,
-          nftContractABI.abi,
-          provider
-        );
-        const totalSupply = await nftContract.totalSupply();
-        console.log("Total NFTs in collection:", totalSupply.toString());
-        const royaltyFee = await nftContract.getRoyalty();
-        for (let i = 0; i < totalSupply; i++) {
-          const tokenId = await nftContract.tokenByIndex(i);
-          const owner = await nftContract.ownerOf(tokenId);
-          const tokenHash = await nftContract.tokenURI(tokenId);
-          console.log("Getting nft #" + i + " meta data...");
-          const meta = await getTokenMeta(tokenHash);
-          const imgHash = meta.image;
-          let nft = {
-            owner: owner,
-            ownerName: (await get("/api/user/name/" + owner)).data,
-            collection: tokenAddress,
-            collectionName: await nftContract.name(),
-            tokenId: tokenId.toString(),
-            tokenUri:
-              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
-              imgHash,
-            tokenName: meta.name,
-            tokenDescription: meta.description,
-            royalty: royaltyFee.toString(),
-          };
+      const count = await metaMaskClient.getCollectionNftCounts(tokenAddress);
+      for (let i = 0; i < count; i++) {
+        const nft = await getNft(null, tokenAddress, i);
+        if (nft) {
           nfts.push(nft);
         }
-        if (nfts.length > 0) {
-          return nfts;
-        } else return null;
-      } else {
-        console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      return nfts;
+    }
+  };
+
+  const getNft = async (ownerAddress, tokenAddress, i) => {
+    let nft = null;
+    try {
+      nft = await metaMaskClient.getOwnedNft(ownerAddress, tokenAddress, i);
+      const meta = await getTokenMeta(nft.tokenHash);
+      const imgHash = meta.image;
+      const ownerName = (await get("/api/user/name/" + ownerAddress)).data;
+      const collectionOwnerName = (
+        await get("/api/user/name/" + nft.collectionOwner)
+      ).data;
+      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+      nft = new Nft({
+        ...nft,
+        ownerName: ownerName,
+        collectionOwnerName: collectionOwnerName,
+        tokenName: meta.name,
+        tokenDescription: meta.description,
+        tokenUri: tokenUri,
+      });
+      nft.displayInfo();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      return nft;
     }
   };
 

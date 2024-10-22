@@ -226,7 +226,14 @@ class MetaMaskClient {
       nftContractABI.abi,
       provider
     );
-    const tokenId = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
+    let tokenId = -1;
+
+    if (ownerAddress) {
+      tokenId = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
+    } else {
+      tokenId = await nftContract.tokenByIndex(index);
+      ownerAddress = await nftContract.ownerOf(tokenId);
+    }
 
     return Nft.parse({
       owner: ownerAddress,
@@ -237,6 +244,30 @@ class MetaMaskClient {
       tokenHash: await nftContract.tokenURI(tokenId),
       royalty: await nftContract.getRoyalty(),
     });
+  };
+
+  getCollectionNftCounts = async (tokenAddress) => {
+    console.log(`🧹 getting total NFTs count in collection (${tokenAddress}).`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    let nftsCount = 0;
+    try {
+      const nftContract = new ethers.Contract(
+        tokenAddress,
+        nftContractABI.abi,
+        provider
+      );
+      const totalSupply = await nftContract.totalSupply();
+      nftsCount = Number(totalSupply);
+
+      console.log(
+        `📦 Total NFTs count in collection (${tokenAddress}): ${totalSupply.toString()}`
+      );
+    } catch (error) {
+      console.log(
+        `⚠️ There's an issue with this collection address (${tokenAddress}): ${error.message}`
+      );
+    }
+    return nftsCount;
   };
 
   getTokenHash = async (tokenAddress, index) => {
