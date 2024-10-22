@@ -425,37 +425,9 @@ export const useMarketStore = defineStore("user", () => {
 
   const listNFT = async (tokenAddress, tokenId, price) => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const marketContract = new ethers.Contract(
-          MARKET_CONTRACT_ADDRESS,
-          marketContractABI.abi,
-          signer
-        );
-        const nftContract = new ethers.Contract(
-          tokenAddress,
-          nftContractABI.abi,
-          signer
-        );
-        const approveTxn = await nftContract.approve(
-          MARKET_CONTRACT_ADDRESS,
-          tokenId
-        );
-        console.log("Approving transaction...");
-        await approveTxn.wait();
-        console.log("Approved!");
-        const tokenTxn = await marketContract.listNft(
-          tokenAddress,
-          tokenId,
-          ethers.parseUnits(price, "ether")
-        );
-        return await tokenTxn.wait();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
+      await metaMaskClient.listNft(tokenAddress, tokenId, price);
     } catch (error) {
-      return error.code;
+      return MetaMaskError.parse(error);
     }
   };
 

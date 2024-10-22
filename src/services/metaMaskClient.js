@@ -1,4 +1,5 @@
 import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json";
+import marketContractABI from "../artifacts/contractABI/ElysiumNFTMarketplace.json";
 import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/metamask/metaMaskError";
@@ -7,8 +8,9 @@ import Nft from "@/models/nft";
 import NftColletion from "@/models/nftCollection";
 
 class MetaMaskClient {
-  constructor(factoryContractAddress, setAlertFunc) {
+  constructor(factoryContractAddress, marketContractAddress, setAlertFunc) {
     this.factoryContractAddress = factoryContractAddress;
+    this.marketContractAddress = marketContractAddress;
     this.setAlertFunc = setAlertFunc;
     this.displayInfo();
   }
@@ -94,7 +96,7 @@ class MetaMaskClient {
     console.log(`💸 Royalty Fee:        ${royaltyFee}%`);
     console.log(`👑 Royalty Recipient:  ${royaltyRecipient}`);
     console.log(`------------------------------`);
-    console.log(`🚀 Collection is being created...`);
+    console.log(`🚀 Collection is being created.`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
@@ -139,7 +141,7 @@ class MetaMaskClient {
     nftContract.on("Transfer", transferListener);
 
     const tokenTxn = await nftContract.safeMint(ownerAddress, tokenURI);
-    console.log("⏳ Minting transaction sent...");
+    console.log("⏳ Minting transaction sent.");
 
     const res = await tokenTxn.wait();
     console.log("✅ Transaction confirmed!");
@@ -148,6 +150,57 @@ class MetaMaskClient {
     console.log(`🎉 Token minted! TokenId: ${tokenIdHex}`);
 
     nftContract.off("Transfer", transferListener);
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+
+  listNft = async (tokenAddress, tokenId, price) => {
+    console.log(`📝 Listing NFT for sale:`);
+    console.log(`------------------------------`);
+    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🆔 Token ID:           ${tokenId}`);
+    console.log(`💲 Listing Price:       ${price} ETH`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+    const nftContract = new ethers.Contract(
+      tokenAddress,
+      nftContractABI.abi,
+      signer
+    );
+    console.log("Marketplace Contract Object:", marketContract);
+    console.log(
+      "Available Contract Functions:",
+      marketContract.interface.functions
+    );
+
+    console.log("🔑 Approving marketplace to handle NFT.");
+    const approveTxn = await nftContract.approve(
+      this.marketContractAddress,
+      tokenId
+    );
+
+    console.log("⏳ Approving transaction sent.");
+    await approveTxn.wait();
+    console.log("✅ Approval transaction confirmed!");
+
+    console.log("🔨 Listing NFT on marketplace.");
+    const listingTxn = await marketContract.listNft(
+      tokenAddress,
+      tokenId,
+      ethers.parseUnits(price, "ether")
+    );
+
+    console.log("⏳ Listing transaction sent.");
+    const res = await listingTxn.wait();
+    console.log("✅ NFT successfully listed!");
 
     const txn = EthereumTransaction.parse(res);
     return txn.getTransactionDetails();

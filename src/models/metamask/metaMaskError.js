@@ -4,7 +4,7 @@ class MetaMaskError {
   static CODE_ACTION_REJECTED = "ACTION_REJECTED";
 
   constructor({ code, message }) {
-    this.isSucess = false;
+    this.isSuccess = false;
     this.code = code;
     this.message = message;
     this.isUserRejected = this.isRejectedByUser();
