@@ -182,8 +182,6 @@ export default {
           alert.value = setAlert("error", res.code, res.message);
           isUpdate.value = true;
         }
-
-        isLoading.value = false;
       } catch (err) {
         alert.value = setAlert(
           "error",
@@ -191,6 +189,9 @@ export default {
           "We are facing some issues please try again later..."
         );
         ConsoleUtils.displayError(err);
+        isUpdate.value = true;
+      } finally {
+        isLoading.value = false;
       }
     };
 
