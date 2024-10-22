@@ -116,10 +116,6 @@ class MetaMaskClient {
   };
 
   createNft = async (ownerAddress, collectionAddress, tokenURI) => {
-    ownerAddress = "0x36c4406399ed3d79f6baca37720c188d4353d5f0";
-    collectionAddress = "0x2296980659378e4136d3bcdae53ad41ed1ad996c";
-    tokenURI = "Qmct2NTU3wxVSmS6VXSmzLfBhCDTtqJcHSs2JGm8n9cD4i";
-
     console.log(`⚒️  Minting a new NFT:`);
     console.log(`------------------------------`);
     console.log(`📛 Owner:               ${ownerAddress}`);
