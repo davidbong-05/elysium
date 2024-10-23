@@ -236,27 +236,33 @@ export default {
       try {
         isLoading.value = true;
         const res = await buyNFT(nftCollection, nftId, nftPrice);
-        if (res === "ACTION_REJECTED") {
-          alert.value = setAlert("info", "You had rejected the transaction.");
-        } else {
+        if (res.isSuccess) {
           await linkCollection(
             sessionStorage.getItem("address"),
             nftCollection
           );
+          alert.value = setAlert("success", null, "NFT bought successfully!");
+          isUpdate.value = true;
+        } else if (res.isUserRejected) {
           alert.value = setAlert(
-            "success",
-            "Successfully purchased NFT! Please refresh page to update"
+            "info",
+            null,
+            "You had rejected the transaction."
           );
+        } else {
+          alert.value = setAlert("error", res.code, res.message);
+          isUpdate.value = true;
         }
-
-        isLoading.value = false;
-        isUpdate.value = true;
       } catch (err) {
         alert.value = setAlert(
           "error",
+          err.code,
           "We are facing some issues please try again later..."
         );
-        console.log(err);
+        ConsoleUtils.displayError(err);
+        isUpdate.value = true;
+      } finally {
+        isLoading.value = false;
       }
     };
 

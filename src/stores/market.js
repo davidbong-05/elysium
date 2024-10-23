@@ -563,24 +563,12 @@ export const useMarketStore = defineStore("user", () => {
       ConsoleUtils.displayError(error);
     }
   };
-  const buyNFT = async (tokenAddress, tokenId, tokenPrice) => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        signer
-      );
-      const price = ethers.parseUnits(tokenPrice, "ether");
-      try {
-        const tokenTxn = await marketContract.buyNFT(tokenAddress, tokenId, {
-          value: price,
-        });
-        return tokenTxn;
-      } catch (err) {
-        return err.code;
-      }
+
+  const buyNFT = async (tokenAddress, tokenId, price) => {
+    try {
+      return await metaMaskClient.buyNft(tokenAddress, tokenId, price);
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
 

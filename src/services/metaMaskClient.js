@@ -230,6 +230,36 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
+  buyNft = async (tokenAddress, tokenId, price) => {
+    console.log(`📝 Buying NFT from marketplace:`);
+    console.log(`------------------------------`);
+    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🆔 Token ID:           ${tokenId}`);
+    console.log(`💲 Listing Price:       ${price} ETH`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+    const tokenPrice = ethers.parseUnits(price, "ether");
+
+    console.log("💵 Buying NFT on marketplace.");
+    const buyingTxn = await marketContract.buyNFT(tokenAddress, tokenId, {
+      value: tokenPrice,
+    });
+
+    console.log("⏳ Buying transaction sent.");
+    const res = await buyingTxn.wait();
+    console.log("✅ NFT successfully bought!");
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+
   getOwnNftCollections = async () => {
     `🧹 getting own NFT collections.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
