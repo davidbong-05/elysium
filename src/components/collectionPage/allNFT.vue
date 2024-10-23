@@ -152,6 +152,7 @@ import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import filterMenu from "@/components/collectionPage/filterMenu.vue";
 import ViewNFT from "@/components/collectionPage/viewNFT.vue";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   tokenName: "AllNFT",
@@ -182,13 +183,10 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await getCollectionNFTs(props.collectionAddress);
+        allNFTs.value = await getCollectionNFTs(props.collectionAddress);
         loading.value = false;
-        if (res.length > 0) {
-          ownedNFTs.value = res;
-        }
       } catch (err) {
-        console.log(err);
+        ConsoleUtils.displayError(err);
       }
     });
 

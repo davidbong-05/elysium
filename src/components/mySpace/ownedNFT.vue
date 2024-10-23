@@ -161,6 +161,7 @@ import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import filterMenu from "@/components/mySpace/filterMenu.vue";
 import ViewNFT from "@/components/mySpace/viewNFT.vue";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "OwnedNFT",
@@ -191,13 +192,14 @@ export default {
     };
 
     onMounted(async () => {
-      if (!userAddress || userAddress === "") {
-        userAddress = sessionStorage.getItem("address");
-      }
-      const res = await getOwnedNFTs(userAddress);
-      loading.value = false;
-      if (res.length > 0) {
-        ownedNFTs.value = res;
+      try {
+        if (!userAddress || userAddress === "") {
+          userAddress = sessionStorage.getItem("address");
+        }
+        ownedNFTs.value = await getOwnedNFTs(userAddress);
+        loading.value = false;
+      } catch (err) {
+        ConsoleUtils.displayError(err);
       }
     });
 
