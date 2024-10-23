@@ -41,6 +41,9 @@
 import { ref, onMounted } from "vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
+import NftCollection from "@/models/nftCollection";
+import ConsoleUtils from "@/utils/consoleUtils";
+
 export default {
   setup() {
     const { getNftCollection } = useMarketStore();
@@ -87,26 +90,17 @@ export default {
           collections.value = await Promise.all(
             res.data.map(async (i) => {
               try {
-                const collectionDetails = await getNftCollection(i[0]);
-                console.log(collectionDetails.royaltyRecipient.toString());
-                let collection = {
-                  name: collectionDetails.name,
-                  address: collectionDetails.address,
-                  royalty: collectionDetails.royalty,
-                  royaltyRecipient: collectionDetails.royaltyRecipient,
-                  royaltyRecipientName: collectionDetails.royaltyRecipientName,
-                  follower: i[1],
-                };
-                return collection;
+                const collection = await getNftCollection(i[0]);
+                return new NftCollection({ ...collection, follower: i[1] });
               } catch (error) {
-                console.error(error);
+                ConsoleUtils.displayError(error);
               }
             })
           );
         }
         loading.value = false;
       } catch (error) {
-        console.error(error);
+        ConsoleUtils.displayError(error);
       }
     });
 

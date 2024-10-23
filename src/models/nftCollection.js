@@ -1,3 +1,5 @@
+import ConsoleUtils from "@/utils/consoleUtils";
+
 class NftColletion {
   constructor({
     address,
@@ -9,6 +11,7 @@ class NftColletion {
     royaltyRecipient,
     royaltyRecipientName,
     totalSupply,
+    follower,
   }) {
     this.address = address;
     this.cover = cover;
@@ -19,6 +22,7 @@ class NftColletion {
     this.royaltyRecipient = royaltyRecipient;
     this.royaltyRecipientName = royaltyRecipientName;
     this.totalSupply = totalSupply;
+    this.follower = follower;
     this.displayInfo();
   }
 
