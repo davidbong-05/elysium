@@ -168,6 +168,7 @@ import { ref, computed, onMounted } from "vue";
 import filterMenu from "./filterMenu.vue";
 import { useMarketStore } from "@/stores/market";
 import ViewNFT from "@/components/mySpace/viewNFT.vue";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   tokenName: "OnSale",
@@ -202,14 +203,10 @@ export default {
         userAddress = sessionStorage.getItem("address");
       }
       try {
-        const res = await getUserListedNFTs(userAddress);
+        listedNFTs.value = await getUserListedNFTs(userAddress);
         loading.value = false;
-        if (res) {
-          listedNFTs.value = res;
-          console.log("On Sale", res);
-        }
       } catch (err) {
-        console.log(err);
+        ConsoleUtils.displayError(err);
       }
     });
 

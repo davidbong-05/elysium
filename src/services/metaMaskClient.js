@@ -319,6 +319,40 @@ class MetaMaskClient {
     });
   };
 
+  getListedNft = async (tokenAddress, index) => {
+    `🧹 getting token #${index} from ${tokenAddress}.`;
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      provider
+    );
+
+    const nftContract = new ethers.Contract(
+      tokenAddress,
+      nftContractABI.abi,
+      provider
+    );
+
+    const tokenId = await nftContract.tokenOfOwnerByIndex(
+      this.marketContractAddress,
+      index
+    );
+
+    const marketItem = await marketContract.getListedNFT(tokenAddress, tokenId);
+
+    return Nft.parse({
+      seller: marketItem.seller,
+      collection: tokenAddress,
+      collectionOwner: await nftContract.getRoyaltyRecipient(),
+      collectionName: await nftContract.name(),
+      tokenId: tokenId,
+      tokenHash: await nftContract.tokenURI(tokenId),
+      royalty: await nftContract.getRoyalty(),
+      price: ethers.formatUnits(marketItem.price.toString(), "ether"),
+    });
+  };
+
   getCollectionNftCounts = async (tokenAddress) => {
     console.log(`🧹 getting total NFTs count in collection (${tokenAddress}).`);
     const provider = new ethers.BrowserProvider(window.ethereum);

@@ -2,6 +2,8 @@ class Nft {
   constructor({
     owner,
     ownerName,
+    seller,
+    sellerName,
     collection,
     collectionName,
     collectionOwner,
@@ -12,9 +14,12 @@ class Nft {
     tokenName,
     tokenDescription,
     royalty,
+    price,
   }) {
     this.owner = owner;
     this.ownerName = ownerName;
+    this.seller = seller;
+    this.sellerName = sellerName;
     this.collection = collection;
     this.collectionName = collectionName;
     this.collectionOwner = collectionOwner;
@@ -25,12 +30,17 @@ class Nft {
     this.tokenName = tokenName;
     this.tokenDescription = tokenDescription;
     this.royalty = royalty;
+    this.price = price;
   }
 
   displayInfo() {
     console.log(`📦 NFT:`);
     console.log(`------------------------------`);
-    console.log(`👤 Owner: ${this.owner} (${this.ownerName})`);
+    if (!this.seller) {
+      console.log(`👤 Owner: ${this.owner} (${this.ownerName})`);
+    } else {
+      console.log(`👨‍💼 Seller: ${this.seller} (${this.sellerName})`);
+    }
     console.log(`🏛️ Collection: ${this.collection} (${this.collectionName})`);
     console.log(
       `👑 Collection Owner: ${this.collectionOwner} (${this.collectionOwnerName})`
@@ -40,14 +50,17 @@ class Nft {
     console.log(`#️⃣ Token Hash: ${this.tokenHash}`);
     console.log(`📝 Description: ${this.tokenDescription}`);
     console.log(`💰 Royalty: ${this.royalty}%`);
+    console.log(`🏷️ Price: ${this.price}`);
     console.log(`------------------------------`);
   }
 
   static parse(jsonData) {
     const data = typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;
     return new Nft({
-      owner: data.owner,
+      owner: data.owner || null,
       ownerName: data.ownerName || null,
+      seller: data.seller || null,
+      sellerName: data.sellerName || null,
       collection: data.collection,
       collectionName: data.collectionName || null,
       collectionOwner: data.collectionOwner || null,
@@ -60,6 +73,7 @@ class Nft {
       tokenName: data.tokenName || null,
       tokenDescription: data.tokenDescription || null,
       royalty: data.royalty,
+      price: data.price || "NOT FOR SALE",
     });
   }
 }

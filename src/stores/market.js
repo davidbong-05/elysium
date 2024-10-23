@@ -440,88 +440,80 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const getListedNFTs = async (collectionAddress) => {
+    let nfts = [];
+    let count = 0;
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const marketContract = new ethers.Contract(
+      try {
+        count = await metaMaskClient.getOwnedNftCounts(
           MARKET_CONTRACT_ADDRESS,
-          marketContractABI.abi,
-          provider
+          collectionAddress
         );
-        const nftContract = new ethers.Contract(
-          collectionAddress,
-          nftContractABI.abi,
-          provider
-        );
-        const nfts = [];
-        const balance = await nftContract.balanceOf(MARKET_CONTRACT_ADDRESS);
-        console.log("Total NFTs listed:", balance.toString());
-        const royaltyFee = await nftContract.getRoyalty();
-        const royaltyRecipient = await nftContract.getRoyaltyRecipient();
-        for (let i = 0; i < balance; i++) {
-          const tokenId = await nftContract.tokenOfOwnerByIndex(
-            MARKET_CONTRACT_ADDRESS,
-            i
-          );
-          const marketItem = await marketContract.getListedNFT(
-            collectionAddress,
-            tokenId
-          );
-          const tokenHash = await nftContract.tokenURI(tokenId);
-          console.log("Getting nft #" + i + " meta data...");
-          const meta = await getTokenMeta(tokenHash);
-          const imgHash = meta.image;
-          var nftContractOwnerAddress = await nftContract.ownerOf(tokenId);
-          let nft = {
-            seller: marketItem.seller,
-            sellerName: (await get("/api/user/name/" + marketItem.seller)).data,
-            tokenId: tokenId.toString(),
-            price: ethers.formatUnits(marketItem.price.toString(), "ether"),
-            tokenUri:
-              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
-              imgHash,
-            tokenName: meta.name,
-            tokenDescription: meta.description,
-            collection: collectionAddress,
-            collectionName: await nftContract.name(),
-            collectionOwner: royaltyRecipient,
-            collectionOwnerName: (
-              await get("/api/user/name/" + royaltyRecipient)
-            ).data,
-            royalty: royaltyFee.toString(),
-          };
+      } catch (error) {
+        MetaMaskError.parse(error);
+      }
+
+      for (let i = 0; i < count; i++) {
+        const nft = await getListedNft(collectionAddress, i);
+        if (nft) {
           nfts.push(nft);
         }
-        if (nfts.length > 0) {
-          return nfts;
-        } else return null;
-      } else {
-        console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
       ConsoleUtils.displayError(error);
+    } finally {
+      return nfts;
+    }
+  };
+
+  const getListedNft = async (tokenAddress, i) => {
+    let nft = null;
+    try {
+      nft = await metaMaskClient.getListedNft(tokenAddress, i);
+      const meta = await getTokenMeta(nft.tokenHash);
+      const imgHash = meta.image;
+      const sellerName = (await get("/api/user/name/" + nft.seller)).data;
+      const collectionOwnerName = (
+        await get("/api/user/name/" + nft.collectionOwner)
+      ).data;
+      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+      nft = new Nft({
+        ...nft,
+        sellerName: sellerName,
+        collectionOwnerName: collectionOwnerName,
+        tokenName: meta.name,
+        tokenDescription: meta.description,
+        tokenUri: tokenUri,
+      });
+      nft.displayInfo();
+    } catch (error) {
+      ConsoleUtils.displayError(error);
+    } finally {
+      return nft;
     }
   };
 
   const getUserListedNFTs = async (address) => {
-    let allNfts = [];
     let nfts = [];
-    const collectionAddress = await getLinkedCollection(address);
-    for (const collection of collectionAddress) {
-      const res = await getListedNFTs(collection);
-      if (res) {
-        allNfts = allNfts.concat(res);
+    let allListedNfts = [];
+    try {
+      const collectionAddress = await getLinkedCollection(address);
+      for (const collection of collectionAddress) {
+        const res = await getListedNFTs(collection);
+        if (res && res.length > 0) {
+          allListedNfts = allListedNfts.concat(res);
+        }
       }
-    }
-    if (allNfts.length > 0) {
-      for (const nft of allNfts) {
+      for (const nft of allListedNfts) {
         console.log("Searching for nfts listed by user...");
         if (nft.seller.toLowerCase() === address.toLowerCase()) {
           nfts.push(nft);
         }
       }
+    } catch (error) {
+      ConsoleUtils.displayError(error);
+    } finally {
       return nfts;
-    } else return null;
+    }
   };
 
   const getCartNFTs = async (cartContent) => {
