@@ -73,7 +73,7 @@ class Nft {
       tokenName: data.tokenName || null,
       tokenDescription: data.tokenDescription || null,
       royalty: data.royalty,
-      price: data.price || "NOT FOR SALE",
+      price: data.price || null,
     });
   }
 }
