@@ -9,8 +9,8 @@ import ConsoleUtils from "@/utils/consoleUtils";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
-const API_KEY = import.meta.env.VITE_PINATA_API_KEY;
-const API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
+const PINATA_API_KEY = import.meta.env.VITE_PINATA_API_KEY;
+const PINATA_API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
 
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
@@ -212,8 +212,8 @@ export const useMarketStore = defineStore("user", () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          pinata_api_key: API_KEY,
-          pinata_secret_api_key: API_SECRET,
+          pinata_api_key: PINATA_API_KEY,
+          pinata_secret_api_key: PINATA_API_SECRET,
         },
       }
     );
@@ -227,8 +227,8 @@ export const useMarketStore = defineStore("user", () => {
       json,
       {
         headers: {
-          pinata_api_key: API_KEY,
-          pinata_secret_api_key: API_SECRET,
+          pinata_api_key: PINATA_API_KEY,
+          pinata_secret_api_key: PINATA_API_SECRET,
         },
       }
     );
