@@ -1,8 +1,4 @@
-import { ethers } from "ethers";
 import { acceptHMRUpdate, defineStore } from "pinia";
-import marketContractABI from "../artifacts/contractABI/ElysiumNFTMarketplace.json";
-import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json";
-import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
@@ -541,7 +537,7 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const checkoutNFTs = async (cartItems, totalPrice) => {
+  const checkoutNFTs = async (cartItems) => {
     try {
       const res = await metaMaskClient.checkoutNFTs(cartItems);
       for (const cartItem of cartItems) {

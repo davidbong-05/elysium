@@ -155,7 +155,7 @@ export default {
 
     const checkout = async () => {
       try {
-        const res = await checkoutNFTs(cartItems.value, totalPrice.value);
+        const res = await checkoutNFTs(cartItems.value);
         if (res.isSuccess) {
           alert.value = setAlert(
             "success",
