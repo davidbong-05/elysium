@@ -86,6 +86,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "MyCart",
@@ -155,17 +156,31 @@ export default {
     const checkout = async () => {
       try {
         const res = await checkoutNFTs(cartItems.value, totalPrice.value);
-        console.log(res);
-        if (res === "ACTION_REJECTED") {
-          alert.value = setAlert("info", "You had rejected the transaction.");
+        if (res.isSuccess) {
+          alert.value = setAlert(
+            "success",
+            null,
+            "Cart checked out successfully!"
+          );
+          isUpdate.value = true;
+        } else if (res.isUserRejected) {
+          alert.value = setAlert(
+            "info",
+            null,
+            "You had rejected the transaction."
+          );
         } else {
-          await clearCart();
-          cartItems.value = [];
-          alert.value = setAlert("success", "Checkout successful");
+          alert.value = setAlert("error", res.code, res.message);
+          isUpdate.value = true;
         }
       } catch (err) {
-        alert.value = setAlert("error", "Oops... Something went wrong");
-        console.log(err);
+        alert.value = setAlert(
+          "error",
+          err.code,
+          "Oops... Something went wrong"
+        );
+        ConsoleUtils.displayError(err);
+        isUpdate.value = true;
       }
     };
 

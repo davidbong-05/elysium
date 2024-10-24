@@ -573,41 +573,17 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const checkoutNFTs = async (cartItems, totalPrice) => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        signer
-      );
-      const tokenAddresses = [];
-      const tokenIds = [];
-      const tokenPrices = [];
-
-      for (const item of cartItems) {
-        tokenAddresses.push(item.collectionAddress);
-        tokenIds.push(item.tokenId);
-        tokenPrices.push(ethers.parseUnits(item.price, "ether"));
-      }
-
-      const price = ethers.parseUnits(totalPrice, "ether");
-
-      try {
-        const tokenTxn = await marketContract.buyBulkNFTs(
-          tokenAddresses,
-          tokenIds,
-          {
-            value: price,
-          }
+    try {
+      const res = await metaMaskClient.checkoutNFTs(cartItems);
+      for (const cartItem of cartItems) {
+        linkCollection(
+          sessionStorage.getItem("address"),
+          cartItem.collectionAddress
         );
-        await tokenTxn.wait();
-        for (const tokenAdress of tokenAddresses) {
-          linkCollection(sessionStorage.getItem("address"), tokenAdress);
-        }
-      } catch (err) {
-        ConsoleUtils.displayError(error);
       }
+      return res;
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
   // #region admin

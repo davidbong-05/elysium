@@ -260,6 +260,53 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
+  checkoutNFTs = async (cartItems) => {
+    const tokenAddresses = [];
+    const tokenIds = [];
+    let totalPrice = 0;
+
+    console.log(`📝 Checking out NFTs from marketplace:`);
+    console.log(`------------------------------`);
+
+    cartItems.forEach((cartItem) => {
+      console.log(
+        `🏛️ Collection: ${cartItem.collectionAddress}, Token ID: ${cartItem.tokenId} (${cartItem.price} ETH)`
+      );
+      tokenAddresses.push(cartItem.collectionAddress);
+      tokenIds.push(cartItem.tokenId);
+      totalPrice += parseFloat(cartItem.price); // Ensure prices are properly handled as numbers
+    });
+
+    console.log(`------------------------------`);
+    console.log(`💲 Total Price:       ${totalPrice} ETH`);
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+    const price = ethers.parseUnits(totalPrice.toString(), "ether");
+
+    console.log(`💰 Proceeding with the purchase...`);
+    const tokenTxn = await marketContract.buyBulkNFTs(
+      tokenAddresses,
+      tokenIds,
+      {
+        value: price,
+      }
+    );
+
+    console.log(`⏳ Transaction sent, awaiting confirmation...`);
+    const res = await tokenTxn.wait();
+    console.log(`✅ Transaction successful!`);
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+
   getOwnNftCollections = async () => {
     `🧹 getting own NFT collections.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
