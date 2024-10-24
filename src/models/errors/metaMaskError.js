@@ -1,14 +1,14 @@
-class MetaMaskError {
+import BaseError from "./baseError";
+
+class MetaMaskError extends BaseError {
   static CODE_CHAIN_NOT_ADDED_IN_WALLET = 4902;
   static CODE_USER_REJECTED = 4001;
   static CODE_ACTION_REJECTED = "ACTION_REJECTED";
 
   constructor({ code, message }) {
-    this.isSuccess = false;
-    this.code = code;
-    this.message = message;
+    super("MetaMask", code, message);
     this.isUserRejected = this.isRejectedByUser();
-    this.displayInfo();
+    super.displayInfo();
   }
 
   static parse(jsonData) {
@@ -24,11 +24,6 @@ class MetaMaskError {
       console.error("Failed to parse data:", error);
       return null;
     }
-  }
-
-  displayInfo() {
-    console.log(`⚠️ Code: ${this.code}.`);
-    console.log(`⚠️ Message: ${this.message}`);
   }
 
   isChainNotAddedError() {
