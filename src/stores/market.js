@@ -610,69 +610,45 @@ export const useMarketStore = defineStore("user", () => {
       }
     }
   };
-
+  // #region admin
   const getOwner = async () => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        provider
-      );
-      return await marketContract.owner();
+    try {
+      return await metaMaskClient.getOwner();
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
 
   const getPlatformFee = async () => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        provider
-      );
-      const fee = await marketContract.getPlatformFee();
-      return ethers.formatUnits(fee.toString(), "ether");
+    try {
+      return await metaMaskClient.getPlatformFee();
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
 
   const getPlatformFeeRecipient = async () => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        provider
-      );
-      return await marketContract.getFeeRecipient();
+    try {
+      return await metaMaskClient.getPlatformFeeRecipient();
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
   const updatePlatformFee = async (newPlatformFee) => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        signer
-      );
-      return await marketContract.updatePlatformFee(
-        ethers.parseUnits(newPlatformFee.toString(), "ether")
-      );
+    try {
+      return await metaMaskClient.updatePlatformFee(newPlatformFee);
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
   const changeFeeRecipient = async (newFeeRecipient) => {
-    if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const marketContract = new ethers.Contract(
-        MARKET_CONTRACT_ADDRESS,
-        marketContractABI.abi,
-        signer
-      );
-      return await marketContract.changeFeeRecipient(newFeeRecipient);
+    try {
+      return await metaMaskClient.changeFeeRecipient(newFeeRecipient);
+    } catch (error) {
+      return MetaMaskError.parse(error);
     }
   };
+  // #endregion admin
 
   return {
     account,

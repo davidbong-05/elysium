@@ -418,6 +418,87 @@ class MetaMaskClient {
     const tokenId = await nftContract.tokenByIndex(index);
     return await nftContract.tokenURI(tokenId);
   };
-}
 
+  // #region admin
+  getOwner = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      provider
+    );
+    return await marketContract.owner();
+  };
+
+  getPlatformFee = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      provider
+    );
+    const fee = await marketContract.getPlatformFee();
+    return ethers.formatUnits(fee.toString(), "ether");
+  };
+
+  getPlatformFeeRecipient = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      provider
+    );
+    return await marketContract.getFeeRecipient();
+  };
+  updatePlatformFee = async (newPlatformFee) => {
+    console.log(`📝 Updating marketplace fee recipient:`);
+    console.log(`------------------------------`);
+    console.log(`💲 New Platform Fee: ${newPlatformFee}`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+    const newFee = ethers.parseUnits(newPlatformFee.toString(), "ether");
+
+    console.log("🔨 Submiting new platform fee.");
+    const updatingTxn = await marketContract.updatePlatformFee(newFee);
+
+    console.log("⏳ Transaction sent.");
+    const res = await updatingTxn.wait();
+    console.log("✅ Platform fee successfully updated!");
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+  changeFeeRecipient = async (newFeeRecipient) => {
+    console.log(`📝 Updating marketplace fee recipient:`);
+    console.log(`------------------------------`);
+    console.log(`🙎‍♂️ New Recipient: ${newFeeRecipient}`);
+    console.log(`------------------------------`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const marketContract = new ethers.Contract(
+      this.marketContractAddress,
+      marketContractABI.abi,
+      signer
+    );
+
+    console.log("🔨 Submiting new fee recipient.");
+    const updatingTxn = await marketContract.changeFeeRecipient(
+      newFeeRecipient
+    );
+
+    console.log("⏳ Transaction sent.");
+    const res = await updatingTxn.wait();
+    console.log("✅ Fee recipient successfully updated!");
+
+    const txn = EthereumTransaction.parse(res);
+    return txn.getTransactionDetails();
+  };
+  // #endregion admin
+}
 export default MetaMaskClient;
