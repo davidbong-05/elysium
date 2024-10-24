@@ -1,4 +1,6 @@
-class EthereumTransaction {
+import BaseTransaction from "./baseTransaction";
+
+class EthereumTransaction extends BaseTransaction {
   constructor({
     blobGasPrice = null,
     blobGasUsed = null,
@@ -19,6 +21,7 @@ class EthereumTransaction {
     type,
     fee,
   }) {
+    super(status === 1);
     this.blobGasPrice = blobGasPrice;
     this.blobGasUsed = blobGasUsed;
     this.blockHash = blockHash;
@@ -85,7 +88,8 @@ class EthereumTransaction {
 
   getTransactionDetails() {
     return {
-      isSuccess: this.status === 1,
+      isSuccess: this.isSuccess,
+      status: this.status,
       from: this.from,
       to: this.to,
       hash: this.hash,

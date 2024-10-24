@@ -3,7 +3,7 @@ import marketContractABI from "../artifacts/contractABI/ElysiumNFTMarketplace.js
 import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/errors/metaMaskError";
-import EthereumTransaction from "@/models/ethereumTransaction";
+import EthereumTransaction from "@/models/transactions/ethereumTransaction";
 import Nft from "@/models/nft";
 import NftColletion from "@/models/nftCollection";
 
