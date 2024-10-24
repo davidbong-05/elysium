@@ -8,7 +8,6 @@ class MetaMaskError extends BaseError {
   constructor({ code, message }) {
     super("MetaMask", code, message);
     this.isUserRejected = this.isRejectedByUser();
-    super.displayInfo();
   }
 
   static parse(jsonData) {
