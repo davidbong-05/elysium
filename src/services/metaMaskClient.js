@@ -155,10 +155,10 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
-  listNft = async (tokenAddress, tokenId, price) => {
+  listNft = async (collectionAddress, tokenId, price) => {
     console.log(`📝 Listing NFT for sale:`);
     console.log(`------------------------------`);
-    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🏛️ Collection Address: ${collectionAddress}`);
     console.log(`🆔 Token ID:           ${tokenId}`);
     console.log(`💲 Listing Price:       ${price} ETH`);
     console.log(`------------------------------`);
@@ -171,7 +171,7 @@ class MetaMaskClient {
       signer
     );
     const nftContract = new ethers.Contract(
-      tokenAddress,
+      collectionAddress,
       nftContractABI.abi,
       signer
     );
@@ -188,7 +188,7 @@ class MetaMaskClient {
 
     console.log("🔨 Listing NFT on marketplace.");
     const listingTxn = await marketContract.listNft(
-      tokenAddress,
+      collectionAddress,
       tokenId,
       ethers.parseUnits(price, "ether")
     );
@@ -201,10 +201,10 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
-  unlistNft = async (tokenAddress, tokenId) => {
+  unlistNft = async (collectionAddress, tokenId) => {
     console.log(`📝 Unlisting NFT from marketplace:`);
     console.log(`------------------------------`);
-    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🏛️ Collection Address: ${collectionAddress}`);
     console.log(`🆔 Token ID:           ${tokenId}`);
     console.log(`------------------------------`);
     const provider = new ethers.BrowserProvider(window.ethereum);
@@ -218,7 +218,7 @@ class MetaMaskClient {
 
     console.log("🔨 Unlisting NFT on marketplace.");
     const cancellingTxn = await marketContract.cancelListNFT(
-      tokenAddress,
+      collectionAddress,
       tokenId
     );
 
@@ -230,10 +230,10 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
-  buyNft = async (tokenAddress, tokenId, price) => {
+  buyNft = async (collectionAddress, tokenId, price) => {
     console.log(`📝 Buying NFT from marketplace:`);
     console.log(`------------------------------`);
-    console.log(`🏛️ Collection Address: ${tokenAddress}`);
+    console.log(`🏛️ Collection Address: ${collectionAddress}`);
     console.log(`🆔 Token ID:           ${tokenId}`);
     console.log(`💲 Listing Price:       ${price} ETH`);
     console.log(`------------------------------`);
@@ -248,7 +248,7 @@ class MetaMaskClient {
     const tokenPrice = ethers.parseUnits(price, "ether");
 
     console.log("💵 Buying NFT on marketplace.");
-    const buyingTxn = await marketContract.buyNFT(tokenAddress, tokenId, {
+    const buyingTxn = await marketContract.buyNFT(collectionAddress, tokenId, {
       value: tokenPrice,
     });
 
@@ -261,7 +261,7 @@ class MetaMaskClient {
   };
 
   checkoutNFTs = async (cartItems) => {
-    const tokenAddresses = [];
+    const collectionAddresses = [];
     const tokenIds = [];
     let totalPrice = 0;
 
@@ -272,7 +272,7 @@ class MetaMaskClient {
       console.log(
         `🏛️ Collection: ${cartItem.collectionAddress}, Token ID: ${cartItem.tokenId} (${cartItem.price} ETH)`
       );
-      tokenAddresses.push(cartItem.collectionAddress);
+      collectionAddresses.push(cartItem.collectionAddress);
       tokenIds.push(cartItem.tokenId);
       totalPrice += parseFloat(cartItem.price); // Ensure prices are properly handled as numbers
     });
@@ -292,7 +292,7 @@ class MetaMaskClient {
 
     console.log(`💰 Proceeding with the purchase...`);
     const tokenTxn = await marketContract.buyBulkNFTs(
-      tokenAddresses,
+      collectionAddresses,
       tokenIds,
       {
         value: price,
@@ -341,15 +341,15 @@ class MetaMaskClient {
     });
   };
 
-  getOwnedNftCounts = async (ownerAddress, tokenAddress) => {
+  getOwnedNftCounts = async (ownerAddress, collectionAddress) => {
     console.log(
-      `🧹 getting NFTs own by ${ownerAddress} in collection (${tokenAddress}).`
+      `🧹 getting NFTs own by ${ownerAddress} in collection (${collectionAddress}).`
     );
     const provider = new ethers.BrowserProvider(window.ethereum);
     let nftsCount = 0;
     try {
       const nftContract = new ethers.Contract(
-        tokenAddress,
+        collectionAddress,
         nftContractABI.abi,
         provider
       );
@@ -358,21 +358,21 @@ class MetaMaskClient {
       nftsCount = Number(balance);
 
       console.log(
-        `📦 Total NFTs owned in collection (${tokenAddress}): ${balance.toString()}`
+        `📦 Total NFTs owned in collection (${collectionAddress}): ${balance.toString()}`
       );
     } catch (error) {
       console.log(
-        `⚠️ There's an issue with this collection address (${tokenAddress}): ${error.message}`
+        `⚠️ There's an issue with this collection address (${collectionAddress}): ${error.message}`
       );
     }
     return nftsCount;
   };
 
-  getOwnedNft = async (ownerAddress, tokenAddress, index) => {
-    `🧹 getting token #${index} from ${tokenAddress}.`;
+  getOwnedNft = async (ownerAddress, collectionAddress, index) => {
+    `🧹 getting token #${index} from ${collectionAddress}.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
-      tokenAddress,
+      collectionAddress,
       nftContractABI.abi,
       provider
     );
@@ -387,7 +387,7 @@ class MetaMaskClient {
 
     return Nft.parse({
       owner: ownerAddress,
-      collection: tokenAddress,
+      collection: collectionAddress,
       collectionOwner: await nftContract.getRoyaltyRecipient(),
       collectionName: await nftContract.name(),
       tokenId: tokenId,
@@ -396,8 +396,8 @@ class MetaMaskClient {
     });
   };
 
-  getListedNft = async (tokenAddress, index) => {
-    `🧹 getting token #${index} from ${tokenAddress}.`;
+  getListedNft = async (collectionAddress, index) => {
+    `🧹 getting token #${index} from ${collectionAddress}.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
@@ -406,7 +406,7 @@ class MetaMaskClient {
     );
 
     const nftContract = new ethers.Contract(
-      tokenAddress,
+      collectionAddress,
       nftContractABI.abi,
       provider
     );
@@ -416,11 +416,14 @@ class MetaMaskClient {
       index
     );
 
-    const marketItem = await marketContract.getListedNFT(tokenAddress, tokenId);
+    const marketItem = await marketContract.getListedNFT(
+      collectionAddress,
+      tokenId
+    );
 
     return Nft.parse({
       seller: marketItem.seller,
-      collection: tokenAddress,
+      collection: collectionAddress,
       collectionOwner: await nftContract.getRoyaltyRecipient(),
       collectionName: await nftContract.name(),
       tokenId: tokenId,
@@ -430,13 +433,15 @@ class MetaMaskClient {
     });
   };
 
-  getCollectionNftCounts = async (tokenAddress) => {
-    console.log(`🧹 getting total NFTs count in collection (${tokenAddress}).`);
+  getCollectionNftCounts = async (collectionAddress) => {
+    console.log(
+      `🧹 getting total NFTs count in collection (${collectionAddress}).`
+    );
     const provider = new ethers.BrowserProvider(window.ethereum);
     let nftsCount = 0;
     try {
       const nftContract = new ethers.Contract(
-        tokenAddress,
+        collectionAddress,
         nftContractABI.abi,
         provider
       );
@@ -444,21 +449,21 @@ class MetaMaskClient {
       nftsCount = Number(totalSupply);
 
       console.log(
-        `📦 Total NFTs count in collection (${tokenAddress}): ${totalSupply.toString()}`
+        `📦 Total NFTs count in collection (${collectionAddress}): ${totalSupply.toString()}`
       );
     } catch (error) {
       console.log(
-        `⚠️ There's an issue with this collection address (${tokenAddress}): ${error.message}`
+        `⚠️ There's an issue with this collection address (${collectionAddress}): ${error.message}`
       );
     }
     return nftsCount;
   };
 
-  getTokenHash = async (tokenAddress, index) => {
-    `🧹 getting token hash from ${tokenAddress}.`;
+  getTokenHash = async (collectionAddress, index) => {
+    `🧹 getting token hash from ${collectionAddress}.`;
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
-      tokenAddress,
+      collectionAddress,
       nftContractABI.abi,
       provider
     );

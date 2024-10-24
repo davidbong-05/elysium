@@ -297,9 +297,9 @@ export const useMarketStore = defineStore("user", () => {
     return nftCollection;
   };
 
-  const getCollectionCover = async (tokenAddress) => {
+  const getCollectionCover = async (collectionAddress) => {
     try {
-      const tokenHash = await metaMaskClient.getTokenHash(tokenAddress, 0);
+      const tokenHash = await metaMaskClient.getTokenHash(collectionAddress, 0);
       const meta = await getTokenMeta(tokenHash);
       const imgHash = meta.image;
       return (
@@ -332,10 +332,10 @@ export const useMarketStore = defineStore("user", () => {
     }
 
     try {
-      for (const tokenAddress of linkedCollection) {
+      for (const collectionAddress of linkedCollection) {
         const count = await metaMaskClient.getOwnedNftCounts(
           address,
-          tokenAddress
+          collectionAddress
         );
         totalCount += count;
       }
@@ -356,13 +356,13 @@ export const useMarketStore = defineStore("user", () => {
     }
 
     try {
-      for (const tokenAddress of linkedCollection) {
+      for (const collectionAddress of linkedCollection) {
         const count = await metaMaskClient.getOwnedNftCounts(
           ownerAddress,
-          tokenAddress
+          collectionAddress
         );
         for (let i = 0; i < count; i++) {
-          const nft = await getNft(ownerAddress, tokenAddress, i);
+          const nft = await getNft(ownerAddress, collectionAddress, i);
           if (nft) {
             nfts.push(nft);
           }
@@ -375,12 +375,14 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getCollectionNFTs = async (tokenAddress) => {
+  const getCollectionNFTs = async (collectionAddress) => {
     let nfts = [];
     try {
-      const count = await metaMaskClient.getCollectionNftCounts(tokenAddress);
+      const count = await metaMaskClient.getCollectionNftCounts(
+        collectionAddress
+      );
       for (let i = 0; i < count; i++) {
-        const nft = await getNft(null, tokenAddress, i);
+        const nft = await getNft(null, collectionAddress, i);
         if (nft) {
           nfts.push(nft);
         }
@@ -392,10 +394,14 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getNft = async (ownerAddress, tokenAddress, i) => {
+  const getNft = async (ownerAddress, collectionAddress, i) => {
     let nft = null;
     try {
-      nft = await metaMaskClient.getOwnedNft(ownerAddress, tokenAddress, i);
+      nft = await metaMaskClient.getOwnedNft(
+        ownerAddress,
+        collectionAddress,
+        i
+      );
       const meta = await getTokenMeta(nft.tokenHash);
       const imgHash = meta.image;
       const ownerName = (await get("/api/user/name/" + ownerAddress)).data;
@@ -419,17 +425,17 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const listNFT = async (tokenAddress, tokenId, price) => {
+  const listNFT = async (collectionAddress, tokenId, price) => {
     try {
-      return await metaMaskClient.listNft(tokenAddress, tokenId, price);
+      return await metaMaskClient.listNft(collectionAddress, tokenId, price);
     } catch (error) {
       return MetaMaskError.parse(error);
     }
   };
 
-  const unListNFT = async (tokenAddress, tokenId) => {
+  const unListNFT = async (collectionAddress, tokenId) => {
     try {
-      return await metaMaskClient.unlistNft(tokenAddress, tokenId);
+      return await metaMaskClient.unlistNft(collectionAddress, tokenId);
     } catch (error) {
       return MetaMaskError.parse(error);
     }
@@ -461,10 +467,10 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getListedNft = async (tokenAddress, i) => {
+  const getListedNft = async (collectionAddress, i) => {
     let nft = null;
     try {
-      nft = await metaMaskClient.getListedNft(tokenAddress, i);
+      nft = await metaMaskClient.getListedNft(collectionAddress, i);
       const meta = await getTokenMeta(nft.tokenHash);
       const imgHash = meta.image;
       const sellerName = (await get("/api/user/name/" + nft.seller)).data;
@@ -515,7 +521,9 @@ export const useMarketStore = defineStore("user", () => {
   const getCartNFTs = async (cartItems) => {
     let nfts = [];
     try {
-      const count = await metaMaskClient.getCollectionNftCounts(tokenAddress);
+      const count = await metaMaskClient.getCollectionNftCounts(
+        collectionAddress
+      );
       for (const cartItem of cartItems) {
         const nft = await getNft(null, cartItem.collection, cartItem.tokenId);
         if (nft) {
@@ -529,9 +537,9 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const buyNFT = async (tokenAddress, tokenId, price) => {
+  const buyNFT = async (collectionAddress, tokenId, price) => {
     try {
-      return await metaMaskClient.buyNft(tokenAddress, tokenId, price);
+      return await metaMaskClient.buyNft(collectionAddress, tokenId, price);
     } catch (error) {
       return MetaMaskError.parse(error);
     }
