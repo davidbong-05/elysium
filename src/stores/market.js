@@ -516,51 +516,20 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getCartNFTs = async (cartContent) => {
+  const getCartNFTs = async (cartItems) => {
+    let nfts = [];
     try {
-      if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const marketContract = new ethers.Contract(
-          MARKET_CONTRACT_ADDRESS,
-          marketContractABI.abi,
-          provider
-        );
-        const nfts = [];
-        for (const item of cartContent) {
-          const nftContract = new ethers.Contract(
-            item.collection,
-            nftContractABI.abi,
-            provider
-          );
-          const marketItem = await marketContract.getListedNFT(
-            item.collection,
-            item.tokenId
-          );
-          const tokenHash = await nftContract.tokenURI(item.tokenId);
-          const meta = await getTokenMeta(tokenHash);
-          const imgHash = meta.image;
-          let nft = {
-            collectionAddress: item.collection,
-            collectionName: await nftContract.name(),
-            seller: marketItem.seller,
-            tokenId: item.tokenId,
-            price: ethers.formatUnits(marketItem.price.toString(), "ether"),
-            tokenUri:
-              "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
-              imgHash,
-            tokenName: meta.name,
-            tokenDescription: meta.description,
-          };
+      const count = await metaMaskClient.getCollectionNftCounts(tokenAddress);
+      for (const cartItem of cartItems) {
+        const nft = await getNft(null, cartItem.collection, cartItem.tokenId);
+        if (nft) {
           nfts.push(nft);
         }
-        if (nfts.length > 0) {
-          return nfts;
-        } else return null;
-      } else {
-        console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
       ConsoleUtils.displayError(error);
+    } finally {
+      return nfts;
     }
   };
 
