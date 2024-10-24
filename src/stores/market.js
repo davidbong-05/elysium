@@ -15,7 +15,7 @@ const PINATA_API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
-  const { get, post, put } = useApiStore();
+  const { postLogin, postLogout, get, post, put } = useApiStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
@@ -86,9 +86,7 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const login = async (address) => {
-    const res = await post("/api/auth/login", {
-      user_address: address,
-    });
+    const res = await postLogin(address);
 
     if (res.status === 200) {
       sessionStorage.setItem("address", address);
@@ -99,18 +97,16 @@ export const useMarketStore = defineStore("user", () => {
     }
     return res.status;
   };
+
   const logout = async () => {
     try {
-      const res = await post("/api/auth/logout", {
-        user_address: sessionStorage.getItem("address"),
-        session_id: sessionStorage.getItem("session_id"),
-      });
+      const res = await postLogout(
+        sessionStorage.getItem("address"),
+        sessionStorage.getItem("session_id")
+      );
       sessionStorage.clear();
-      console.log(res);
     } catch (err) {
       ConsoleUtils.displayError(error);
-
-      console.log(err.response.message);
     }
   };
 
