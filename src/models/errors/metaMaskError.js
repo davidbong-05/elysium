@@ -1,10 +1,6 @@
 import BaseError from "./baseError";
 
 class MetaMaskError extends BaseError {
-  static CODE_CHAIN_NOT_ADDED_IN_WALLET = 4902;
-  static CODE_USER_REJECTED = 4001;
-  static CODE_ACTION_REJECTED = "ACTION_REJECTED";
-
   constructor({ code, message }) {
     super("MetaMask", code, message);
     this.isUserRejected = this.isRejectedByUser();
@@ -35,6 +31,10 @@ class MetaMaskError extends BaseError {
       this.code === MetaMaskError.CODE_ACTION_REJECTED
     );
   }
+
+  static CODE_CHAIN_NOT_ADDED_IN_WALLET = 4902;
+  static CODE_USER_REJECTED = 4001;
+  static CODE_ACTION_REJECTED = "ACTION_REJECTED";
 }
 
 export default MetaMaskError;
