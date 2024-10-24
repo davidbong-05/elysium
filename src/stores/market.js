@@ -2,7 +2,7 @@ import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
-import MetaMaskError from "@/models/metamask/metaMaskError";
+import MetaMaskError from "@/models/errors/metaMaskError";
 import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
