@@ -169,20 +169,15 @@ export default {
     const login = async () => {
       try {
         await marketStore.connectWallet();
-
-        var status = await marketStore.login(account.value);
-        //check if user previously signed up
-        if (status === 200) {
+        var res = await marketStore.login(account.value);
+        if (res.isSuccess) {
           pfp_url.value = sessionStorage.getItem("pfp");
           isConnected.value = true;
+        } else if (res.isNotFound) {
+          emit("onSignUp", true);
         }
       } catch (error) {
-        if (error.response?.status === 404) {
-          emit("onSignUp", true);
-        } else {
-          console.log("Server error please try again later...");
-        }
-        ConsoleUtils.displayError(error);
+        console.log("Something went wrong...");
       }
     };
 

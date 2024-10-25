@@ -15,7 +15,7 @@ const PINATA_API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
-  const { postLogin, postLogout, get, post, put } = useApiStore();
+  const { postLogin, postLogout, postPing, get, post, put } = useApiStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
@@ -88,14 +88,14 @@ export const useMarketStore = defineStore("user", () => {
   const login = async (address) => {
     const res = await postLogin(address);
 
-    if (res.status === 200) {
+    if (res.isSuccess) {
       sessionStorage.setItem("address", address);
       sessionStorage.setItem("username", res.data.username);
       sessionStorage.setItem("pfp", res.data.profile_url);
       sessionStorage.setItem("role", res.data.role ?? "unverified-user");
       sessionStorage.setItem("session_id", res.data.session_id);
     }
-    return res.status;
+    return res;
   };
 
   const logout = async () => {
@@ -104,23 +104,19 @@ export const useMarketStore = defineStore("user", () => {
         sessionStorage.getItem("address"),
         sessionStorage.getItem("session_id")
       );
-      sessionStorage.clear();
+      if (res.isSuccess) {
+        sessionStorage.clear();
+      }
     } catch (err) {
       ConsoleUtils.displayError(error);
     }
   };
 
   const ping = async () => {
-    try {
-      const res = await post("/api/auth/ping", {
-        user_address: sessionStorage.getItem("address"),
-        session_id: sessionStorage.getItem("session_id"),
-      });
-    } catch (err) {
-      ConsoleUtils.displayError(error);
-
-      console.log(err.response.message);
-    }
+    await postPing(
+      sessionStorage.getItem("address"),
+      sessionStorage.getItem("session_id")
+    );
   };
 
   const linkCollection = async (user_address, address) => {

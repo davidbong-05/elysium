@@ -62,7 +62,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import { storeToRefs } from "pinia";
 
@@ -72,7 +72,9 @@ export default {
   setup(props, { emit }) {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
-    const isAdmin = sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin";
+    const isAdmin =
+      sessionStorage.getItem("role") === "admin" ||
+      sessionStorage.getItem("role") === "superadmin";
     const menu = [
       {
         text: "My Space",
@@ -124,21 +126,15 @@ export default {
     const login = async () => {
       try {
         await marketStore.connectWallet();
-
-        var status = await marketStore.login(account.value);
-        //check if user previously signed up
-        if(status == 200) {
+        var res = await marketStore.login(account.value);
+        if (res.isSuccess) {
           pfp_url.value = sessionStorage.getItem("pfp");
           isConnected.value = true;
+        } else if (res.isNotFound) {
+          emit("onSignUp", true);
         }
       } catch (error) {
-        if (error.response?.status == 404) {
-            emit("onSignUp", true);
-        }
-        else {
-          console.log("Server error please try again later...");
-        }
-        console.log(error);
+        console.log("Something went wrong...");
       }
     };
 

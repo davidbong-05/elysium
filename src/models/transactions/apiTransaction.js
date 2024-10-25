@@ -34,8 +34,7 @@ class ApiTransaction extends BaseTransaction {
   }
 
   static CODE_OK = 200;
-  static CODE_UNAUTHORIZED = 401;
-  static CODE_BAD_REQUEST = 400;
+  static CODE_NOT_MODIFIED = 304;
 }
 
 export default ApiTransaction;

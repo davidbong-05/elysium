@@ -1,7 +1,8 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import axios from "axios";
 import ApiClient from "@/services/apiClient";
-import ConsoleUtils from "@/utils/consoleUtils";
+import ApiTransaction from "@/models/transactions/apiTransaction";
+import BaseError from "@/models/errors/baseError";
+import ApiError from "@/models/errors/apiError";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;
@@ -11,16 +12,53 @@ export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
 
   const postLogin = async (address) => {
-    return await apiClient.post("/api/auth/login", {
-      user_address: address,
-    });
+    try {
+      const res = await apiClient.post("/api/auth/login", {
+        user_address: address,
+      });
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
   };
 
   const postLogout = async (userAddress, sessionId) => {
-    return await apiClient.post("/api/auth/logout", {
-      user_address: userAddress,
-      session_id: sessionId,
-    });
+    try {
+      const res = await apiClient.post("/api/auth/logout", {
+        user_address: userAddress,
+        session_id: sessionId,
+      });
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const postPing = async (userAddress, sessionId) => {
+    try {
+      const res = await apiClient.post("/api/auth/ping", {
+        user_address: userAddress,
+        session_id: sessionId,
+      });
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
   };
 
   const get = async (url) => {
@@ -38,6 +76,7 @@ export const useApiStore = defineStore("api", () => {
   return {
     postLogin,
     postLogout,
+    postPing,
     get,
     post,
     put,
