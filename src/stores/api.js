@@ -61,6 +61,25 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const getLinkedCollections = async (userAddress) => {
+    let linkedCollections = [];
+    try {
+      const res = await apiClient.get("/api/collection/" + userAddress);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        linkedCollections = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return linkedCollections;
+    }
+  };
+
   const get = async (url) => {
     return await apiClient.get(url);
   };
@@ -77,6 +96,7 @@ export const useApiStore = defineStore("api", () => {
     postLogin,
     postLogout,
     postPing,
+    getLinkedCollections,
     get,
     post,
     put,

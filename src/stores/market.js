@@ -15,7 +15,15 @@ const PINATA_API_SECRET = import.meta.env.VITE_PINATA_API_SECRET;
 export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
-  const { postLogin, postLogout, postPing, get, post, put } = useApiStore();
+  const {
+    postLogin,
+    postLogout,
+    postPing,
+    getLinkedCollections,
+    get,
+    post,
+    put,
+  } = useApiStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
@@ -120,7 +128,7 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const linkCollection = async (user_address, address) => {
-    let newCollections = await getLinkedCollection(user_address);
+    let newCollections = await getLinkedCollections(user_address);
     if (newCollections.length > 0) {
       if (newCollections.includes(address)) {
         return "Already Linked";
@@ -143,22 +151,10 @@ export const useMarketStore = defineStore("user", () => {
         console.log("new collection", newCollection);
       }
       return 200;
-    } catch (err) {
+    } catch (error) {
       ConsoleUtils.displayError(error);
 
       return "Something went wrong...";
-    }
-  };
-
-  const getLinkedCollection = async (user_address) => {
-    try {
-      const res = await get("/api/collection/" + user_address);
-      if (res.status === 200) return res.data;
-    } catch (err) {
-      if (err.response.status === 404) {
-        return [];
-      }
-      ConsoleUtils.displayError(error);
     }
   };
 
@@ -177,7 +173,7 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const unlinkCollection = async (user_address, tokenIndex) => {
-    let newCollections = await getLinkedCollection(user_address);
+    let newCollections = await getLinkedCollections(user_address);
     newCollections.splice(tokenIndex, 1);
     const data = {
       user_address: user_address,
@@ -318,7 +314,7 @@ export const useMarketStore = defineStore("user", () => {
     let totalCount = 0;
     let linkedCollection = [];
     try {
-      linkedCollection = await getLinkedCollection(address);
+      linkedCollection = await getLinkedCollections(address);
     } catch (error) {
       ConsoleUtils.displayError(error);
     }
@@ -342,7 +338,7 @@ export const useMarketStore = defineStore("user", () => {
     let nfts = [];
     let linkedCollection = [];
     try {
-      linkedCollection = await getLinkedCollection(ownerAddress);
+      linkedCollection = await getLinkedCollections(ownerAddress);
     } catch (error) {
       ConsoleUtils.displayError(error);
     }
@@ -490,7 +486,7 @@ export const useMarketStore = defineStore("user", () => {
     let nfts = [];
     let allListedNfts = [];
     try {
-      const collectionAddress = await getLinkedCollection(address);
+      const collectionAddress = await getLinkedCollections(address);
       for (const collection of collectionAddress) {
         const res = await getListedNFTs(collection);
         if (res && res.length > 0) {
@@ -602,7 +598,6 @@ export const useMarketStore = defineStore("user", () => {
     logout,
     ping,
     linkCollection,
-    getLinkedCollection,
     getAllLinkedCollection,
     unlinkCollection,
     uploadFileToIPFS,

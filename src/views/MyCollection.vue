@@ -156,6 +156,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
+import { useApiStore } from "@/stores/api";
 import createCollection from "@/components/myCollection/createCollection.vue";
 
 export default {
@@ -164,11 +165,11 @@ export default {
   setup() {
     const {
       linkCollection,
-      getLinkedCollection,
       unlinkCollection,
       getMyCollection,
       getNftCollection,
     } = useMarketStore();
+    const { getLinkedCollections } = useApiStore();
     const isLoading = ref(true);
     const loadingMsg = ref(
       "Trying to fetch your NFTs collections. This may take a while..."
@@ -209,18 +210,16 @@ export default {
     const loadLinkedCollection = async () => {
       try {
         let collections = [];
-        const res = await getLinkedCollection(ownerAddress);
-        if (res != "404") {
-          for (const item of res) {
-            try {
-              let collection = await getNftCollection(item);
-              if (collection != null) {
-                collections.push(collection);
-              }
-            } catch (error) {
-              console.log("There's an issue with this address: " + item);
-              continue;
+        const res = await getLinkedCollections(ownerAddress);
+        for (const item of res) {
+          try {
+            let collection = await getNftCollection(item);
+            if (collection != null) {
+              collections.push(collection);
             }
+          } catch (error) {
+            console.log("There's an issue with this address: " + item);
+            continue;
           }
         }
         linkedCollection.value = collections;
