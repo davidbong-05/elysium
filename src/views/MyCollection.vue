@@ -212,14 +212,9 @@ export default {
         let collections = [];
         const res = await getLinkedCollections(ownerAddress);
         for (const item of res) {
-          try {
-            let collection = await getNftCollection(item);
-            if (collection != null) {
-              collections.push(collection);
-            }
-          } catch (error) {
-            console.log("There's an issue with this address: " + item);
-            continue;
+          let collection = await getNftCollection(item);
+          if (collection != null) {
+            collections.push(collection);
           }
         }
         linkedCollection.value = collections;
@@ -232,11 +227,13 @@ export default {
 
     const loadCreatedCollection = async () => {
       try {
-        const res = await getMyCollection();
         let collections = [];
+        const res = await getMyCollection();
         for (const item of res) {
           let collection = await getNftCollection(item);
-          collections.push(collection);
+          if (collection != null) {
+            collections.push(collection);
+          }
         }
         createdCollection.value = collections;
       } catch (err) {
