@@ -3,13 +3,24 @@
   <v-card theme="dark" class="ma-4 pa-4" variant="outlined">
     <v-card-title class="ms-2">Manage Collections</v-card-title>
     <v-card-text>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="compact"
+        hide-details
+        single-line
+      ></v-text-field
+    ></v-card-text>
+    <v-card-text>
       <v-data-table
         v-model:items-per-page="itemsPerPage"
         :headers="headers"
         :items-length="collections.length"
         :items="collections"
         :loading="loading"
-        item-value="address"
+        :search="search"
         class="elevation-1"
       >
         <template v-slot:item.actions="{ item }">
@@ -55,6 +66,7 @@ export default {
 
     const itemsPerPage = ref(5);
     const loading = ref(true);
+    const search = ref("");
     const headers = [
       { title: "Name", align: "start", key: "name" },
       { title: "Address", align: "start", key: "address" },
@@ -92,6 +104,7 @@ export default {
       breadcrumbItems,
       itemsPerPage,
       loading,
+      search,
       headers,
       collections,
     };
