@@ -91,6 +91,29 @@ export const useApiStore = defineStore("api", () => {
   //#endregion nft collections
 
   //#region users
+  const getTopUsers = async () => {
+    let users = [];
+    try {
+      const res = await apiClient.get("/api/user/topUser");
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        users = await Promise.all(
+          txn.data.map(async (i) => {
+            return User.parse(i);
+          })
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return users;
+    }
+  };
+
   const getUsers = async () => {
     let users = [];
     try {
@@ -98,7 +121,7 @@ export const useApiStore = defineStore("api", () => {
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         users = await Promise.all(
-          res.data.map(async (i) => {
+          txn.data.map(async (i) => {
             return User.parse(i);
           })
         );
@@ -203,6 +226,7 @@ export const useApiStore = defineStore("api", () => {
     getCollections,
     getLinkedCollections,
     getTopCollections,
+    getTopUsers,
     getUsers,
     getUsername,
     postLogin,

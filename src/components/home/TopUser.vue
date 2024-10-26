@@ -73,21 +73,17 @@ export default {
     const isExist = ref(true);
     const isLoading = ref(true);
     const topUsers = ref([]);
-    const { get } = useApiStore();
+    const { getTopUsers } = useApiStore();
     onMounted(async () => {
       try {
-        const res = await get("/api/user/topUser");
-        if (res.status === 200)
-          for (const item of res.data) {
-            const user = item;
-            user.link = `/user/${item.address}`;
-            topUsers.value.push(user);
-          }
+        const users = await getTopUsers();
+        if (users.length > 0) {
+          topUsers.value = users;
+        } else {
+          isExist.value = false;
+        }
         isLoading.value = false;
       } catch (err) {
-        if (err.response.status === 404)
-          //TODO if no top seller, show something else
-          isExist.value = false;
         ConsoleUtils.displayError(err);
       }
     });
