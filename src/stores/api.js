@@ -114,6 +114,25 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const getUser = async (userAddress) => {
+    let user = null;
+    try {
+      const res = await apiClient.get(`/api/user/${userAddress}`);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        user = User.parse(txn.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return user;
+    }
+  };
+
   const getUsers = async () => {
     let users = [];
     try {
@@ -227,6 +246,7 @@ export const useApiStore = defineStore("api", () => {
     getLinkedCollections,
     getTopCollections,
     getTopUsers,
+    getUser,
     getUsers,
     getUsername,
     postLogin,

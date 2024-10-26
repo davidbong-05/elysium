@@ -1,16 +1,16 @@
 <template>
   <v-container fluid v-if="userExist">
-      <v-alert
-        class="mb-2"
-        theme="dark"
-        v-if="alert.show"
-        :color="alert.color"
-        :icon="alert.icon"
-        :title="alert.title"
-        :text="alert.text"
-        variant="tonal"
-        density="compact"
-      ></v-alert>
+    <v-alert
+      class="mb-2"
+      theme="dark"
+      v-if="alert.show"
+      :color="alert.color"
+      :icon="alert.icon"
+      :title="alert.title"
+      :text="alert.text"
+      variant="tonal"
+      density="compact"
+    ></v-alert>
     <v-card class="mx-auto" color="background">
       <profile :userAddress="userAddress" @onAlert="newAlert" />
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
@@ -49,7 +49,8 @@ import Profile from "@/components/mySpace/profile.vue";
 import OwnedNFT from "@/components/mySpace/ownedNFT.vue";
 import OnSale from "@/components/mySpace/onSale.vue";
 // import Activity from "@/components/mySpace/activity.vue";
-import { useApiStore } from '@/stores/api';
+import { useApiStore } from "@/stores/api";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "MySpace",
@@ -63,8 +64,9 @@ export default {
     const tab = ref(1);
     const route = useRoute();
     const userExist = ref(true);
-    const userAddress = route.params.address ?? sessionStorage.getItem("address");
-    const { get } = useApiStore();
+    const userAddress =
+      route.params.address ?? sessionStorage.getItem("address");
+    const { getUser } = useApiStore();
 
     const alert = ref({
       show: false,
@@ -80,13 +82,14 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await get("/api/user/" + userAddress);
-        if (res.status === 200) userExist.value = true;
-      } catch (error) {
-        if (error.response.status === 404) {
+        const res = await getUser(userAddress);
+        if (res) {
+          userExist.value = true;
+        } else {
           userExist.value = false;
         }
-        console.error(error);
+      } catch (error) {
+        ConsoleUtils.displayError(error);
       }
     });
 

@@ -89,13 +89,14 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useApiStore } from "@/stores/api";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "VerificationPage",
   components: {},
   setup() {
     const route = useRoute();
-    const { get, post } = useApiStore();
+    const { getUser, post } = useApiStore();
     const alert = ref({
       show: false,
       color: "",
@@ -130,15 +131,25 @@ export default {
           };
           const res = await post("/api/auth/verify", data);
           if (res.status === 200) {
-            const res2 = await get("/api/user/" + address);
-            sessionStorage.setItem("role", res2.data.role);
-            alert.value = {
-              show: true,
-              color: "success",
-              icon: "$success",
-              title: "Success",
-              text: "Your email is verified!",
-            };
+            const res2 = await getUser(address);
+            if (res2) {
+              sessionStorage.setItem("role", res2.role);
+              alert.value = {
+                show: true,
+                color: "success",
+                icon: "$success",
+                title: "Success",
+                text: "Your email is verified!",
+              };
+            } else {
+              alert.value = {
+                show: true,
+                color: "error",
+                icon: "$error",
+                title: "Oops",
+                text: "Something went wrong. Please refresh this page to try again...",
+              };
+            }
           }
         } catch (err) {
           if (err.response.status < 500) {
@@ -188,22 +199,30 @@ export default {
           };
         }
         token.value = route.query.token;
-        const res = await get("/api/user/" + address);
-        if (res.status === 200) {
-          email.value = res.data.email;
-          isVerified.value = res.data.verifiedAt != null;
-        }
-        if (isVerified.value) {
+        const res = await getUser(address);
+        if (res) {
+          email.value = res.email;
+          isVerified.value = res.isVerified;
+          if (isVerified.value) {
+            alert.value = {
+              show: true,
+              color: "white",
+              icon: "$info",
+              title: "Info",
+              text: "Your email is already been verified.",
+            };
+          }
+        } else {
           alert.value = {
             show: true,
-            color: "white",
-            icon: "$info",
-            title: "Info",
-            text: "Your email is already been verified.",
+            color: "error",
+            icon: "$error",
+            title: "Oops",
+            text: "Something went wrong. Please refresh this page to try again...",
           };
         }
       } catch (error) {
-        console.error(error);
+        ConsoleUtils.displayError(error);
       }
     });
 

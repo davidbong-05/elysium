@@ -178,7 +178,7 @@ export default {
     const canFollow = ref(true);
     const followBtnText = ref("FOLLOW");
     const { getOwnedNFTsCount } = useMarketStore();
-    const { get, post, put } = useApiStore();
+    const { getUser, post, put } = useApiStore();
 
     const alert = ref({
       show: false,
@@ -265,9 +265,9 @@ export default {
       }
 
       try {
-        const res = await get("/api/user/" + userAddress);
-        if (res.status === 200) {
-          user.value = User.parse(res.data);
+        const res = await getUser(userAddress);
+        if (res) {
+          user.value = res;
           canEdit.value = user.value.isOwner(currentUser);
         }
       } catch (error) {
