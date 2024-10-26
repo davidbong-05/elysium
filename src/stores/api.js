@@ -261,6 +261,57 @@ export const useApiStore = defineStore("api", () => {
       }
     }
   };
+
+  const postFollowUserCheck = async (userAddress, targetAddress) => {
+    try {
+      const data = {
+        user_address: userAddress,
+        target_address: targetAddress,
+      };
+      const res = await post("/api/user/follow/check", data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const putFollowUser = async (userAddress, targetAddress) => {
+    try {
+      const data = {
+        user_address: userAddress,
+        target_address: targetAddress,
+      };
+      const res = await put("/api/user/follow", data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const putUnfollowUser = async (userAddress, targetAddress) => {
+    try {
+      const data = {
+        user_address: userAddress,
+        target_address: targetAddress,
+      };
+      const res = await put("/api/user/unfollow", data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
   //#region users
 
   const postLogin = async (address) => {
@@ -336,6 +387,9 @@ export const useApiStore = defineStore("api", () => {
     getUser,
     getUsers,
     getUsername,
+    postFollowUserCheck,
+    putFollowUser,
+    putUnfollowUser,
     postLogin,
     postLogout,
     postPing,

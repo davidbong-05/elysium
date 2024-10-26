@@ -157,6 +157,7 @@ import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import Avatar from "vue-boring-avatars";
+import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   name: "Profile",
@@ -178,7 +179,13 @@ export default {
     const canFollow = ref(true);
     const followBtnText = ref("FOLLOW");
     const { getOwnedNFTsCount } = useMarketStore();
-    const { getUser, post, put } = useApiStore();
+    const {
+      getUser,
+      postFollowUserCheck,
+      putFollowUser,
+      putUnfollowUser,
+      post,
+    } = useApiStore();
 
     const alert = ref({
       show: false,
@@ -226,31 +233,25 @@ export default {
       emit("onAlert", alert.value);
     };
 
-    const follow = async (target_address) => {
+    const follow = async (targetAddress) => {
       try {
-        const res = await put("/api/user/follow", {
-          user_address: currentUser,
-          target_address: target_address,
-        });
-        console.log(res);
-        canFollow.value = false;
-      } catch (err) {
-        console.log(err);
-        console.log(err.response.message);
+        const res = await putFollowUser(currentUser, targetAddress);
+        if (res.isSuccess) {
+          canFollow.value = false;
+        }
+      } catch (error) {
+        ConsoleUtils.displayError(error);
       }
     };
 
-    const unfollow = async (target_address) => {
+    const unfollow = async (targetAddress) => {
       try {
-        const res = await put("/api/user/unfollow", {
-          user_address: currentUser,
-          target_address: target_address,
-        });
-        console.log(res);
-        canFollow.value = true;
-      } catch (err) {
-        console.log(err);
-        console.log(err.response.message);
+        const res = await putUnfollowUser(currentUser, targetAddress);
+        if (res.isSuccess) {
+          canFollow.value = true;
+        }
+      } catch (error) {
+        ConsoleUtils.displayError(error);
       }
     };
 
@@ -274,24 +275,25 @@ export default {
         console.error(error);
       }
 
-      if (!canEdit.value) {
-        if (user.value.isFollowing(currentUser)) {
-          followBtnText.value = "FOLLOW BACK";
-        }
-
-        try {
-          console.log("session", currentUser);
-          const res = await post("/api/user/follow/check", {
-            user_address: currentUser,
-            target_address: router.params.address,
-          });
-          if (res.data === true) {
-            canFollow.value = false;
+      try {
+        if (!canEdit.value) {
+          const res2 = await postFollowUserCheck(
+            currentUser,
+            router.params.address
+          );
+          if (res2.isSuccess) {
+            canFollow.value = !res2.data;
+            if (canFollow.value) {
+              if (user.value.isFollowing(currentUser)) {
+                followBtnText.value = "FOLLOW BACK";
+              } else {
+                canFollow.value = true;
+              }
+            }
           }
-        } catch (err) {
-          console.log(err);
-          console.log(err.response.data.message);
         }
+      } catch (error) {
+        ConsoleUtils.displayError(error);
       }
 
       try {
