@@ -58,7 +58,6 @@
               <th scope="Preview" class="text-left">Preview</th>
               <th scope="Name" class="text-left">Name</th>
               <th scope="Address" class="text-left">Address</th>
-              <th scope="Price" class="text-left">Price</th>
               <th scope="Action" class="text-left">Action</th>
             </tr>
           </thead>
