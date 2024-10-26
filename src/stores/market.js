@@ -23,6 +23,7 @@ export const useMarketStore = defineStore("user", () => {
     getAllCollections,
     getLinkedCollections,
     getTopCollections,
+    postLinkCollection,
     getUsername,
     postLogin,
     postLogout,
@@ -131,37 +132,6 @@ export const useMarketStore = defineStore("user", () => {
       sessionStorage.getItem("address"),
       sessionStorage.getItem("session_id")
     );
-  };
-
-  const linkCollection = async (user_address, address) => {
-    let newCollections = await getLinkedCollections(user_address);
-    if (newCollections.length > 0) {
-      if (newCollections.includes(address)) {
-        return "Already Linked";
-      } else {
-        newCollections.push(address);
-      }
-    } else {
-      newCollections = address;
-    }
-    const data = {
-      user_address: user_address,
-      nft_collection: newCollections,
-    };
-    console.log(newCollections);
-
-    try {
-      const res = await put("/api/collection/", data);
-      if (res.data === "404") {
-        const newCollection = await post("/api/collection/", data);
-        console.log("new collection", newCollection);
-      }
-      return 200;
-    } catch (error) {
-      ConsoleUtils.displayError(error);
-
-      return "Something went wrong...";
-    }
   };
 
   const unlinkCollection = async (user_address, tokenIndex) => {
@@ -602,7 +572,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       const res = await metaMaskClient.checkoutNFTs(cartItems);
       for (const cartItem of cartItems) {
-        linkCollection(
+        await postLinkCollection(
           sessionStorage.getItem("address"),
           cartItem.collectionAddress
         );
@@ -662,7 +632,6 @@ export const useMarketStore = defineStore("user", () => {
     login,
     logout,
     ping,
-    linkCollection,
     unlinkCollection,
     uploadFileToIPFS,
     uploadJSONToIPFS,

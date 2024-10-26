@@ -169,7 +169,7 @@ export default {
       getMyCollection,
       getNftCollection,
     } = useMarketStore();
-    const { getLinkedCollections } = useApiStore();
+    const { getLinkedCollections, postLinkCollection } = useApiStore();
     const isLoading = ref(true);
     const loadingMsg = ref(
       "Trying to fetch your NFTs collections. This may take a while..."
@@ -185,7 +185,7 @@ export default {
     const linkedCollection = ref([]);
     const createdCollection = ref([]);
     const collectionAddress = ref("");
-    const ownerAddress = sessionStorage.getItem("address");
+    const userAddress = sessionStorage.getItem("address");
 
     const setAlert = (status, msg) => {
       if (status === "error") {
@@ -210,7 +210,7 @@ export default {
     const loadLinkedCollection = async () => {
       try {
         let collections = [];
-        const res = await getLinkedCollections(ownerAddress);
+        const res = await getLinkedCollections(userAddress);
         for (const item of res) {
           let collection = await getNftCollection(item);
           if (collection != null) {
@@ -247,13 +247,23 @@ export default {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      const res = await linkCollection(ownerAddress, address);
-      if (res === 200) {
-        setAlert("success", "Successfully linked");
-      } else {
-        setAlert("error", res);
+      let collection = await getNftCollection(address);
+      if (!collection) {
+        setAlert("error", "Collection doesn't exist.");
+        isLoading.value = false;
+        return;
       }
-      await loadLinkedCollection();
+      const res = await postLinkCollection(
+        userAddress,
+        address,
+        linkedCollection.value
+      );
+      if (res.isSuccess) {
+        setAlert("success", "Successfully linked");
+        linkedCollection.value.push(collection);
+      } else {
+        setAlert("error", res.message);
+      }
       isLoading.value = false;
     };
 
@@ -261,7 +271,7 @@ export default {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      const res = await unlinkCollection(ownerAddress, tokenIndex);
+      const res = await unlinkCollection(userAddress, tokenIndex);
       if (res === 200) {
         setAlert("success", "Successfully unlinked");
       } else {

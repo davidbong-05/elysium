@@ -5,6 +5,7 @@ import BaseError from "@/models/errors/baseError";
 import ApiError from "@/models/errors/apiError";
 import User from "@/models/user";
 import ValidationUtils from "@/utils/validationUtils";
+import { ApiResponseCode, ErrorCode, ErrorSource } from "@/models/enums";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;
@@ -95,6 +96,39 @@ export const useApiStore = defineStore("api", () => {
       }
     } finally {
       return collections;
+    }
+  };
+
+  const postLinkCollection = async (
+    userAddress,
+    collectionAddress,
+    linkedCollections = null
+  ) => {
+    if (
+      !linkedCollections &&
+      linkedCollections.some(
+        (linkedCollection) => linkedCollection.address === collectionAddress
+      )
+    ) {
+      return new BaseError(
+        ErrorSource.CLIENT,
+        ErrorCode.CODE_ALREADY_LINKED,
+        "Collection has already been linked previously."
+      );
+    }
+    try {
+      const data = {
+        user_address: userAddress,
+        collection_address: collectionAddress,
+      };
+      const res = await post(`/api/collection/link/`, data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
     }
   };
   //#endregion nft collections
@@ -263,6 +297,7 @@ export const useApiStore = defineStore("api", () => {
     getCollections,
     getLinkedCollections,
     getTopCollections,
+    postLinkCollection,
     getTopUsers,
     getUser,
     getUsers,

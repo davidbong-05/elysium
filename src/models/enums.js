@@ -8,7 +8,14 @@ export const ApiResponseCode = Object.freeze({
 });
 
 export const ErrorCode = Object.freeze({
+  CODE_ALREADY_LINKED: "ALREADY_LINKED",
   CODE_UNDEFINED_PARAMETER: "UNDEFINED_PARAMETER",
+});
+
+export const ErrorSource = Object.freeze({
+  CLIENT: "CLIENT",
+  METAMASK: "METAMASK",
+  SERVER: "SERVER",
 });
 
 export const MetaMaskResponseCode = Object.freeze({
