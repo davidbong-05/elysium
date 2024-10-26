@@ -76,7 +76,7 @@ export default {
 
         if (res.status === 200) {
           for (const item of res.data) {
-            let collectionItem = await getNftCollection(item[0]);
+            let collectionItem = await getNftCollection(item[0], true);
             if (collectionItem == null || collectionItem.totalSupply == 0)
               continue;
             collectionItem.link = `/collection/${item[0]}`;

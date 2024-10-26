@@ -273,7 +273,7 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getNftCollection = async (collectionAddress) => {
+  const getNftCollection = async (collectionAddress, isCoverNeeded) => {
     if (!collectionAddress) {
       return new BaseError(
         "Client",
@@ -290,7 +290,7 @@ export const useMarketStore = defineStore("user", () => {
     }
     if (nftCollection) {
       try {
-        if (nftCollection.totalSupply > 0) {
+        if (nftCollection.totalSupply > 0 && isCoverNeeded) {
           const cover = await getCollectionCover(collectionAddress);
           nftCollection.setCover(cover);
         }
