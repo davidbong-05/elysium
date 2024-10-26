@@ -11,6 +11,25 @@ const HASH = window.btoa(`${SERVER_API_KEY}:${SERVER_API_SECRET}`);
 export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
 
+  const getCollections = async () => {
+    let collections = [];
+    try {
+      const res = await apiClient.get("/api/collection/");
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        collections = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return collections;
+    }
+  };
+
   const getLinkedCollections = async (userAddress) => {
     let linkedCollections = [];
     try {
@@ -114,6 +133,7 @@ export const useApiStore = defineStore("api", () => {
   };
 
   return {
+    getCollections,
     getLinkedCollections,
     getUsername,
     postLogin,
