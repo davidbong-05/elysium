@@ -80,6 +80,27 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const getUsername = async (userAddress) => {
+    if (!userAddress) {
+      return new BaseError(
+        "Client",
+        BaseError.CODE_UNDEFINED_PARAMETER,
+        "User address is not defined."
+      );
+    }
+    try {
+      const res = await apiClient.get("/api/user/name/" + userAddress);
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
   const get = async (url) => {
     return await apiClient.get(url);
   };
@@ -97,6 +118,7 @@ export const useApiStore = defineStore("api", () => {
     postLogout,
     postPing,
     getLinkedCollections,
+    getUsername,
     get,
     post,
     put,

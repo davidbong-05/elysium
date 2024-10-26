@@ -20,6 +20,7 @@ export const useMarketStore = defineStore("user", () => {
     postLogout,
     postPing,
     getLinkedCollections,
+    getUsername,
     get,
     post,
     put,
@@ -392,10 +393,16 @@ export const useMarketStore = defineStore("user", () => {
       );
       const meta = await getTokenMeta(nft.tokenHash);
       const imgHash = meta.image;
-      const ownerName = (await get("/api/user/name/" + ownerAddress)).data;
-      const collectionOwnerName = (
-        await get("/api/user/name/" + nft.collectionOwner)
-      ).data;
+      let ownerName = null;
+      let collectionOwnerName = null;
+      const ownerNameRes = await getUsername(nft.owner);
+      if (ownerNameRes.isSuccess) {
+        ownerName = ownerNameRes.data;
+      }
+      const collectionOwnerNameRes = await getUsername(nft.collectionOwner);
+      if (collectionOwnerNameRes.isSuccess) {
+        collectionOwnerName = collectionOwnerNameRes.data;
+      }
       const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
       nft = new Nft({
         ...nft,
@@ -461,10 +468,16 @@ export const useMarketStore = defineStore("user", () => {
       nft = await metaMaskClient.getListedNft(collectionAddress, i);
       const meta = await getTokenMeta(nft.tokenHash);
       const imgHash = meta.image;
-      const sellerName = (await get("/api/user/name/" + nft.seller)).data;
-      const collectionOwnerName = (
-        await get("/api/user/name/" + nft.collectionOwner)
-      ).data;
+      let sellerName = null;
+      const sellerNameRes = await getUsername(nft.seller);
+      if (sellerNameRes.isSuccess) {
+        sellerName = sellerNameRes.data;
+      }
+      let collectionOwnerName = null;
+      const collectionOwnerNameRes = await getUsername(nft.collectionOwner);
+      if (collectionOwnerNameRes.isSuccess) {
+        collectionOwnerName = collectionOwnerNameRes.data;
+      }
       const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
       nft = new Nft({
         ...nft,
