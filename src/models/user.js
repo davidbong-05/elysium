@@ -1,8 +1,10 @@
+import { UserRole } from "./enums";
+
 class User {
   constructor({
     username,
     address,
-    role = "unverified-user",
+    role = UserRole.UNVERIFIED_USER,
     email,
     profile_url = null,
     background_url = null,
@@ -50,7 +52,7 @@ class User {
       return new User({
         username: data.username,
         address: data.address,
-        role: data.role || "unverified-user",
+        role: data.role || UserRole.UNVERIFIED_USER,
         email: data.email,
         profile_url: data.profile_url || null,
         background_url: data.background_url || null,

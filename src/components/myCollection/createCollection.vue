@@ -90,6 +90,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
+import { UserRole } from "@/models/enums";
 
 export default {
   name: "createCollection",
@@ -98,7 +99,8 @@ export default {
     const { setAlert, createNFTCollection } = useMarketStore();
     // data
     const wallet = sessionStorage.getItem("address");
-    const isVerified = sessionStorage.getItem("role") != "unverified-user";
+    const isVerified =
+      sessionStorage.getItem("role") != UserRole.UNVERIFIED_USER;
     const name = ref("");
     const symbol = ref("");
     const royalty = ref("");

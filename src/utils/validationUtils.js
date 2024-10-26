@@ -1,3 +1,4 @@
+import { ErrorCode } from "@/models/enums";
 import BaseError from "@/models/errors/baseError";
 
 class ValidationUtils {
@@ -6,7 +7,7 @@ class ValidationUtils {
     if (!isValid) {
       new BaseError(
         "Client",
-        BaseError.CODE_UNDEFINED_PARAMETER,
+        ErrorCode.CODE_UNDEFINED_PARAMETER,
         `${parameterName} is not defined.`
       );
     }

@@ -28,8 +28,6 @@ class BaseError {
     console.log(`⚠️ Code:     ${this.code}.`);
     console.log(`⚠️ Message:  ${this.message}`);
   }
-
-  static CODE_UNDEFINED_PARAMETER = "UNDEFINED_PARAMETER";
 }
 
 export default BaseError;

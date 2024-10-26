@@ -1,3 +1,4 @@
+import { MetaMaskResponseCode } from "../enums";
 import BaseError from "./baseError";
 
 class MetaMaskError extends BaseError {
@@ -22,19 +23,15 @@ class MetaMaskError extends BaseError {
   }
 
   isChainNotAddedError() {
-    return this.code === MetaMaskError.CODE_CHAIN_NOT_ADDED_IN_WALLET;
+    return this.code === MetaMaskResponseCode.CODE_CHAIN_NOT_ADDED_IN_WALLET;
   }
 
   isRejectedByUser() {
     return (
-      this.code === MetaMaskError.CODE_USER_REJECTED ||
-      this.code === MetaMaskError.CODE_ACTION_REJECTED
+      this.code === MetaMaskResponseCode.CODE_USER_REJECTED ||
+      this.code === MetaMaskResponseCode.CODE_ACTION_REJECTED
     );
   }
-
-  static CODE_CHAIN_NOT_ADDED_IN_WALLET = 4902;
-  static CODE_USER_REJECTED = 4001;
-  static CODE_ACTION_REJECTED = "ACTION_REJECTED";
 }
 
 export default MetaMaskError;

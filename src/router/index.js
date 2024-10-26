@@ -1,4 +1,5 @@
 // Composables
+import { UserRole } from "@/models/enums";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -68,10 +69,13 @@ const routes = [
     path: "/admin",
     component: () => import("@/layouts/admin/View.vue"),
     beforeEnter: (to, from) => {
-      if(sessionStorage.getItem("role") === "admin" || sessionStorage.getItem("role") === "superadmin"){
-        return true
+      if (
+        sessionStorage.getItem("role") === UserRole.ADMIN ||
+        sessionStorage.getItem("role") === UserRole.SUPER_ADMIN
+      ) {
+        return true;
       }
-      return '/'
+      return "/";
     },
     children: [
       {

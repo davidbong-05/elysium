@@ -9,6 +9,7 @@ import ConsoleUtils from "@/utils/consoleUtils";
 import NftCollection from "@/models/nftCollection";
 import BaseError from "@/models/errors/baseError";
 import ValidationUtils from "@/utils/validationUtils";
+import { UserRole } from "@/models/enums";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -105,7 +106,7 @@ export const useMarketStore = defineStore("user", () => {
       sessionStorage.setItem("address", address);
       sessionStorage.setItem("username", res.data.username);
       sessionStorage.setItem("pfp", res.data.profile_url);
-      sessionStorage.setItem("role", res.data.role ?? "unverified-user");
+      sessionStorage.setItem("role", res.data.role ?? UserRole.UNVERIFIED_USER);
       sessionStorage.setItem("session_id", res.data.session_id);
     }
     return res;

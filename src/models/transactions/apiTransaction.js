@@ -1,8 +1,9 @@
+import { ApiResponseCode } from "../enums";
 import BaseTransaction from "./baseTransaction";
 
 class ApiTransaction extends BaseTransaction {
   constructor({ status, statusText, data }) {
-    super(status === ApiTransaction.CODE_OK);
+    super(status === ApiResponseCode.CODE_OK);
     this.status = status;
     this.statusText = statusText;
     this.data = data;
@@ -32,9 +33,6 @@ class ApiTransaction extends BaseTransaction {
       data: this.data,
     };
   }
-
-  static CODE_OK = 200;
-  static CODE_NOT_MODIFIED = 304;
 }
 
 export default ApiTransaction;

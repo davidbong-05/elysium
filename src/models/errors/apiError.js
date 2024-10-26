@@ -1,10 +1,11 @@
+import { ApiResponseCode } from "../enums";
 import BaseError from "./baseError";
 
 class ApiError extends BaseError {
   constructor({ source, code, message }) {
     super(source, code, message);
-    this.isNotFound = code === ApiError.CODE_NOT_FOUND;
-    this.isApiServerError = code === ApiError.CODE_INTERNAL_SERVER_ERROR;
+    this.isNotFound = code === ApiResponseCode.CODE_NOT_FOUND;
+    this.isApiServerError = code === ApiResponseCode.CODE_INTERNAL_SERVER_ERROR;
   }
 
   static parse(jsonData) {
@@ -22,11 +23,6 @@ class ApiError extends BaseError {
       return null;
     }
   }
-
-  static CODE_UNAUTHORIZED = 401;
-  static CODE_BAD_REQUEST = 400;
-  static CODE_NOT_FOUND = 404;
-  static CODE_INTERNAL_SERVER_ERROR = 500;
 }
 
 export default ApiError;

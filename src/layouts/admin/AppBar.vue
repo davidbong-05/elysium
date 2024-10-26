@@ -67,6 +67,7 @@ import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import { storeToRefs } from "pinia";
 import Avatar from "vue-boring-avatars";
+import { UserRole } from "@/models/enums";
 
 export default {
   name: "AppBar",
@@ -78,8 +79,8 @@ export default {
     const marketStore = useMarketStore();
     const { account } = storeToRefs(marketStore);
     const isAdmin =
-      sessionStorage.getItem("role") === "admin" ||
-      sessionStorage.getItem("role") === "superadmin";
+      sessionStorage.getItem("role") === UserRole.ADMIN ||
+      sessionStorage.getItem("role") === UserRole.SUPER_ADMIN;
     const menu = [
       {
         text: "My Space",

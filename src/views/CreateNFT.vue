@@ -177,6 +177,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
+import { UserRole } from "@/models/enums";
 
 export default {
   name: "CreateNFT",
@@ -193,7 +194,8 @@ export default {
     } = useMarketStore();
 
     const wallet = sessionStorage.getItem("address");
-    const isVerified = sessionStorage.getItem("role") != "unverified-user";
+    const isVerified =
+      sessionStorage.getItem("role") !== UserRole.UNVERIFIED_USER;
     const isLoading = ref(false);
     const loadingMsg = ref("nothing");
     const collections = ref([]);
