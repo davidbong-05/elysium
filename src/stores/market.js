@@ -16,11 +16,11 @@ export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
   const {
+    getLinkedCollections,
+    getUsername,
     postLogin,
     postLogout,
     postPing,
-    getLinkedCollections,
-    getUsername,
     get,
     post,
     put,

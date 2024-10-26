@@ -11,6 +11,46 @@ const HASH = window.btoa(`${SERVER_API_KEY}:${SERVER_API_SECRET}`);
 export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
 
+  const getLinkedCollections = async (userAddress) => {
+    let linkedCollections = [];
+    try {
+      const res = await apiClient.get("/api/collection/" + userAddress);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        linkedCollections = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return linkedCollections;
+    }
+  };
+
+  const getUsername = async (userAddress) => {
+    if (!userAddress) {
+      return new BaseError(
+        "Client",
+        BaseError.CODE_UNDEFINED_PARAMETER,
+        "User address is not defined."
+      );
+    }
+    try {
+      const res = await apiClient.get("/api/user/name/" + userAddress);
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
   const postLogin = async (address) => {
     try {
       const res = await apiClient.post("/api/auth/login", {
@@ -61,46 +101,6 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
-  const getLinkedCollections = async (userAddress) => {
-    let linkedCollections = [];
-    try {
-      const res = await apiClient.get("/api/collection/" + userAddress);
-      const txn = ApiTransaction.parse(res);
-      if (txn.isSuccess) {
-        linkedCollections = txn.data;
-      }
-    } catch (error) {
-      if (error.response) {
-        ApiError.parse(error.response);
-      } else {
-        BaseError.parse(error);
-      }
-    } finally {
-      return linkedCollections;
-    }
-  };
-
-  const getUsername = async (userAddress) => {
-    if (!userAddress) {
-      return new BaseError(
-        "Client",
-        BaseError.CODE_UNDEFINED_PARAMETER,
-        "User address is not defined."
-      );
-    }
-    try {
-      const res = await apiClient.get("/api/user/name/" + userAddress);
-      const txn = ApiTransaction.parse(res);
-      return txn.getTransactionDetails();
-    } catch (error) {
-      if (error.response) {
-        return ApiError.parse(error.response);
-      } else {
-        return BaseError.parse(error);
-      }
-    }
-  };
-
   const get = async (url) => {
     return await apiClient.get(url);
   };
@@ -114,11 +114,11 @@ export const useApiStore = defineStore("api", () => {
   };
 
   return {
+    getLinkedCollections,
+    getUsername,
     postLogin,
     postLogout,
     postPing,
-    getLinkedCollections,
-    getUsername,
     get,
     post,
     put,
