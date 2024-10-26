@@ -180,11 +180,11 @@ export default {
     const followBtnText = ref("FOLLOW");
     const { getOwnedNFTsCount } = useMarketStore();
     const {
+      postSendVerificationEmail,
       getUser,
       postFollowUserCheck,
       putFollowUser,
       putUnfollowUser,
-      post,
     } = useApiStore();
 
     const alert = ref({
@@ -197,12 +197,9 @@ export default {
 
     const getVerified = async () => {
       try {
-        var data = {
-          email: user.value.email,
-        };
-
-        const res = await post("/api/auth/send-verification-email", data);
-        if (res.status === 200) {
+        //TODO use session email instead.
+        const res = await postSendVerificationEmail(user.value.email);
+        if (res.isSuccess) {
           alert.value = {
             show: true,
             color: "success",
@@ -210,6 +207,7 @@ export default {
             title: "Success",
             text: "A verification code has been sent to your email.",
           };
+          emit("onAlert", alert.value);
           window.location.href = "/user/verify";
         } else {
           alert.value = {
@@ -217,11 +215,11 @@ export default {
             color: "error",
             icon: "$error",
             title: "Error",
-            text: res.data.message,
+            text: res.message,
           };
         }
       } catch (err) {
-        console.log(err);
+        ConsoleUtils.displayError(err);
         alert.value = {
           show: true,
           color: "error",
@@ -229,8 +227,9 @@ export default {
           title: "Error",
           text: err.response.data.message,
         };
+      } finally {
+        emit("onAlert", alert.value);
       }
-      emit("onAlert", alert.value);
     };
 
     const follow = async (targetAddress) => {

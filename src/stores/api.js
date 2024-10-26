@@ -314,6 +314,7 @@ export const useApiStore = defineStore("api", () => {
   };
   //#region users
 
+  //#region auths
   const postLogin = async (address) => {
     try {
       const res = await apiClient.post(`/api/auth/login`, {
@@ -364,6 +365,27 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const postSendVerificationEmail = async (email) => {
+    if (!ValidationUtils.checkIfParameterIsNullOrUndefined("Email", email)) {
+      return null;
+    }
+    try {
+      const data = {
+        email: email,
+      };
+      const res = await post(`/api/auth/send-verification-email`, data);
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+  //#endregion auths
+
   const get = async (url) => {
     return await apiClient.get(url);
   };
@@ -393,6 +415,7 @@ export const useApiStore = defineStore("api", () => {
     postLogin,
     postLogout,
     postPing,
+    postSendVerificationEmail,
     get,
     post,
     put,
