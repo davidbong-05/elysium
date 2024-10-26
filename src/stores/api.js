@@ -99,7 +99,7 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
-  const postLinkCollection = async (
+  const putLinkCollection = async (
     userAddress,
     collectionAddress,
     linkedCollections = null
@@ -121,7 +121,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await post(`/api/collection/link/`, data);
+      const res = await put(`/api/collection/link/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -132,7 +132,7 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
-  const postUnlinkCollection = async (
+  const putUnlinkCollection = async (
     userAddress,
     collectionAddress,
     linkedCollections = null
@@ -154,7 +154,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await post(`/api/collection/unlink/`, data);
+      const res = await put(`/api/collection/unlink/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -329,9 +329,9 @@ export const useApiStore = defineStore("api", () => {
     getAllCollections,
     getCollections,
     getLinkedCollections,
-    postUnlinkCollection,
     getTopCollections,
-    postLinkCollection,
+    putLinkCollection,
+    putUnlinkCollection,
     getTopUsers,
     getUser,
     getUsers,

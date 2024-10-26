@@ -164,7 +164,7 @@ export default {
   components: { createCollection },
   setup() {
     const { getMyCollection, getNftCollection } = useMarketStore();
-    const { getLinkedCollections, postLinkCollection, postUnlinkCollection } =
+    const { getLinkedCollections, putLinkCollection, putUnlinkCollection } =
       useApiStore();
     const isLoading = ref(true);
     const loadingMsg = ref(
@@ -249,7 +249,7 @@ export default {
         isLoading.value = false;
         return;
       }
-      const res = await postLinkCollection(
+      const res = await putLinkCollection(
         userAddress,
         address,
         linkedCollection.value
@@ -267,7 +267,7 @@ export default {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      const res = await postUnlinkCollection(
+      const res = await putUnlinkCollection(
         userAddress,
         address,
         linkedCollection.value

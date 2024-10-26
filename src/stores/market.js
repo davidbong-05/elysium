@@ -23,7 +23,7 @@ export const useMarketStore = defineStore("user", () => {
     getAllCollections,
     getLinkedCollections,
     getTopCollections,
-    postLinkCollection,
+    putLinkCollection,
     getUsername,
     postLogin,
     postLogout,
@@ -554,7 +554,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       const res = await metaMaskClient.checkoutNFTs(cartItems);
       for (const cartItem of cartItems) {
-        await postLinkCollection(
+        await putLinkCollection(
           sessionStorage.getItem("address"),
           cartItem.collectionAddress
         );
