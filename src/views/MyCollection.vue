@@ -31,7 +31,7 @@
                   <v-btn
                     color="red"
                     variant="tonal"
-                    @click="unlink(linkedCollection.indexOf(item))"
+                    @click="unlink(item.address)"
                   >
                     Unlink
                   </v-btn>
@@ -163,13 +163,9 @@ export default {
   name: "MyCollection",
   components: { createCollection },
   setup() {
-    const {
-      linkCollection,
-      unlinkCollection,
-      getMyCollection,
-      getNftCollection,
-    } = useMarketStore();
-    const { getLinkedCollections, postLinkCollection } = useApiStore();
+    const { getMyCollection, getNftCollection } = useMarketStore();
+    const { getLinkedCollections, postLinkCollection, postUnlinkCollection } =
+      useApiStore();
     const isLoading = ref(true);
     const loadingMsg = ref(
       "Trying to fetch your NFTs collections. This may take a while..."
@@ -267,17 +263,23 @@ export default {
       isLoading.value = false;
     };
 
-    const unlink = async (tokenIndex) => {
+    const unlink = async (address) => {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      const res = await unlinkCollection(userAddress, tokenIndex);
-      if (res === 200) {
-        setAlert("success", "Successfully unlinked");
+      const res = await postUnlinkCollection(
+        userAddress,
+        address,
+        linkedCollection.value
+      );
+      if (res.isSuccess) {
+        setAlert("success", "Successfully linked");
+        linkedCollection.value = linkedCollection.value.filter(
+          (linkedCollection) => linkedCollection.address !== address
+        );
       } else {
-        setAlert("error", res);
+        setAlert("error", res.message);
       }
-      await loadLinkedCollection();
       isLoading.value = false;
     };
 

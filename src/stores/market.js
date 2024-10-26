@@ -134,24 +134,6 @@ export const useMarketStore = defineStore("user", () => {
     );
   };
 
-  const unlinkCollection = async (user_address, tokenIndex) => {
-    let newCollections = await getLinkedCollections(user_address);
-    newCollections.splice(tokenIndex, 1);
-    const data = {
-      user_address: user_address,
-      nft_collection: newCollections,
-    };
-    try {
-      const res = await put("/api/collection/", data);
-      console.log("res", res);
-      return 200;
-    } catch (err) {
-      ConsoleUtils.displayError(error);
-
-      return "Something went wrong...";
-    }
-  };
-
   const uploadFileToIPFS = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -632,7 +614,6 @@ export const useMarketStore = defineStore("user", () => {
     login,
     logout,
     ping,
-    unlinkCollection,
     uploadFileToIPFS,
     uploadJSONToIPFS,
     createNFTCollection,

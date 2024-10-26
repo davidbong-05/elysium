@@ -9,6 +9,7 @@ export const ApiResponseCode = Object.freeze({
 
 export const ErrorCode = Object.freeze({
   CODE_ALREADY_LINKED: "ALREADY_LINKED",
+  CODE_NOT_LINKED: "NOT_LINKED",
   CODE_UNDEFINED_PARAMETER: "UNDEFINED_PARAMETER",
 });
 

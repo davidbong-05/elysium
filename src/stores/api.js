@@ -105,7 +105,7 @@ export const useApiStore = defineStore("api", () => {
     linkedCollections = null
   ) => {
     if (
-      !linkedCollections &&
+      linkedCollections !== null &&
       linkedCollections.some(
         (linkedCollection) => linkedCollection.address === collectionAddress
       )
@@ -113,7 +113,7 @@ export const useApiStore = defineStore("api", () => {
       return new BaseError(
         ErrorSource.CLIENT,
         ErrorCode.CODE_ALREADY_LINKED,
-        "Collection has already been linked previously."
+        `${collectionAddress} is has already been linked previously!`
       );
     }
     try {
@@ -122,6 +122,39 @@ export const useApiStore = defineStore("api", () => {
         collection_address: collectionAddress,
       };
       const res = await post(`/api/collection/link/`, data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const postUnlinkCollection = async (
+    userAddress,
+    collectionAddress,
+    linkedCollections = null
+  ) => {
+    if (
+      linkedCollections !== null &&
+      !linkedCollections.some(
+        (linkedCollection) => linkedCollection.address === collectionAddress
+      )
+    ) {
+      return new BaseError(
+        ErrorSource.CLIENT,
+        ErrorCode.CODE_NOT_LINKED,
+        `${collectionAddress} is not linked previously!`
+      );
+    }
+    try {
+      const data = {
+        user_address: userAddress,
+        collection_address: collectionAddress,
+      };
+      const res = await post(`/api/collection/unlink/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -296,6 +329,7 @@ export const useApiStore = defineStore("api", () => {
     getAllCollections,
     getCollections,
     getLinkedCollections,
+    postUnlinkCollection,
     getTopCollections,
     postLinkCollection,
     getTopUsers,
