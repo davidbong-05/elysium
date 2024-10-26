@@ -18,7 +18,7 @@ export const useApiStore = defineStore("api", () => {
   const getAllCollections = async () => {
     let collections = [];
     try {
-      const res = await apiClient.get("/api/collection/all");
+      const res = await apiClient.get(`/api/collection/all`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         collections = txn.data;
@@ -37,7 +37,7 @@ export const useApiStore = defineStore("api", () => {
   const getCollections = async () => {
     let collections = [];
     try {
-      const res = await apiClient.get("/api/collection/");
+      const res = await apiClient.get(`/api/collection/`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         collections = txn.data;
@@ -64,7 +64,7 @@ export const useApiStore = defineStore("api", () => {
       return linkedCollections;
     }
     try {
-      const res = await apiClient.get("/api/collection/" + userAddress);
+      const res = await apiClient.get(`/api/collection/${userAddress}`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         linkedCollections = txn.data;
@@ -83,7 +83,7 @@ export const useApiStore = defineStore("api", () => {
   const getTopCollections = async () => {
     let collections = [];
     try {
-      const res = await apiClient.get("/api/collection/top");
+      const res = await apiClient.get(`/api/collection/top`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         collections = txn.data;
@@ -170,7 +170,7 @@ export const useApiStore = defineStore("api", () => {
   const getTopUsers = async () => {
     let users = [];
     try {
-      const res = await apiClient.get("/api/user/top");
+      const res = await apiClient.get(`/api/user/top`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         users = await Promise.all(
@@ -220,7 +220,7 @@ export const useApiStore = defineStore("api", () => {
   const getUsers = async () => {
     let users = [];
     try {
-      const res = await apiClient.get("/api/user/");
+      const res = await apiClient.get(`/api/user/`);
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         users = await Promise.all(
@@ -250,7 +250,7 @@ export const useApiStore = defineStore("api", () => {
       return null;
     }
     try {
-      const res = await apiClient.get("/api/user/name/" + userAddress);
+      const res = await apiClient.get(`/api/user/name/${userAddress}`);
       const txn = ApiTransaction.parse(res);
       return txn.getTransactionDetails();
     } catch (error) {
@@ -265,7 +265,7 @@ export const useApiStore = defineStore("api", () => {
 
   const postLogin = async (address) => {
     try {
-      const res = await apiClient.post("/api/auth/login", {
+      const res = await apiClient.post(`/api/auth/login`, {
         user_address: address,
       });
       const txn = ApiTransaction.parse(res);
@@ -281,7 +281,7 @@ export const useApiStore = defineStore("api", () => {
 
   const postLogout = async (userAddress, sessionId) => {
     try {
-      const res = await apiClient.post("/api/auth/logout", {
+      const res = await apiClient.post(`/api/auth/logout`, {
         user_address: userAddress,
         session_id: sessionId,
       });
@@ -298,7 +298,7 @@ export const useApiStore = defineStore("api", () => {
 
   const postPing = async (userAddress, sessionId) => {
     try {
-      const res = await apiClient.post("/api/auth/ping", {
+      const res = await apiClient.post(`/api/auth/ping`, {
         user_address: userAddress,
         session_id: sessionId,
       });
