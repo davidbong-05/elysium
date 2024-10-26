@@ -29,7 +29,7 @@
             color="accent"
             variant="outlined"
             size="small"
-            :to="'/collection/' + item.address"
+            :to="item.link"
           >
             View
           </v-btn>

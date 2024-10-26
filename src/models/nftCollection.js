@@ -12,6 +12,7 @@ class NftColletion {
     royaltyRecipientName,
     totalSupply,
     follower,
+    link,
   }) {
     this.address = address;
     this.cover = cover;
@@ -23,6 +24,7 @@ class NftColletion {
     this.royaltyRecipientName = royaltyRecipientName;
     this.totalSupply = totalSupply;
     this.follower = follower;
+    this.link = link;
     this.displayInfo();
   }
 
@@ -54,6 +56,7 @@ class NftColletion {
       royaltyRecipient: data.royaltyRecipient,
       royaltyRecipientName: data.royaltyRecipientName || null,
       totalSupply: data.totalSupply || 0,
+      link: `/collection/${data.address}`,
     });
   }
 

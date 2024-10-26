@@ -11,6 +11,7 @@ class User {
     following = [],
     followings_count = 0,
     followers_count = 0,
+    link = "",
     cart_content = [],
     session_id = null,
     verifiedAt = null,
@@ -34,6 +35,7 @@ class User {
     this.following = following;
     this.followings_count = followings_count;
     this.followers_count = followers_count;
+    this.link = link;
     this.cart_content = cart_content;
     this.session_id = session_id;
     this.verifiedAt = verifiedAt;
@@ -59,6 +61,7 @@ class User {
           ? data.following.length
           : 0,
         followers_count: data.followers_count || 0,
+        link: `/user/${data.address}`,
         cart_content: Array.isArray(data.cart_content) ? data.cart_content : [],
         session_id: data.session_id || null,
         verifiedAt: data.verifiedAt ? new Date(data.verifiedAt) : null,

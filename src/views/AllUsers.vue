@@ -27,7 +27,7 @@
             color="primary"
             variant="outlined"
             size="small"
-            :to="'/user/' + item.address"
+            :to="item.link"
           >
             View
           </v-btn>

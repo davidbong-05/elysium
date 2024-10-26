@@ -18,7 +18,7 @@
             color="accent"
             variant="outlined"
             size="small"
-            :to="'/user/' + item.value"
+            :to="item.link"
           >
             View
           </v-btn>
