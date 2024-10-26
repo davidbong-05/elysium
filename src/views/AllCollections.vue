@@ -84,7 +84,7 @@ export default {
     onMounted(async () => {
       try {
         loading.value = true;
-        const res = await get("/api/collection/list");
+        const res = await get("/api/collection/all");
 
         if (res) {
           collections.value = await Promise.all(
