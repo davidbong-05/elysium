@@ -18,7 +18,7 @@
             color="accent"
             variant="outlined"
             size="small"
-            :to="'/collection/' + item.value"
+            :to="'/collection/' + item.address"
           >
             View
           </v-btn>
