@@ -20,6 +20,7 @@ export const useMarketStore = defineStore("user", () => {
   const {
     getAllCollections,
     getLinkedCollections,
+    getTopCollections,
     getUsername,
     postLogin,
     postLogout,
@@ -273,13 +274,41 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const getTopNftCollections = async () => {
+    let nftCollections = [];
+    try {
+      const res = await getTopCollections();
+      if (res) {
+        nftCollections = await Promise.all(
+          res.map(async (i) => {
+            try {
+              const collection = await getNftCollection(i[0], true);
+              if (collection) {
+                return new NftCollection({ ...collection, follower: i[1] });
+              } else {
+                return null;
+              }
+            } catch (error) {
+              ConsoleUtils.displayError(error);
+            }
+          })
+        );
+      }
+    } catch (error) {
+      ConsoleUtils.displayError(error);
+    } finally {
+      return nftCollections.filter((item) => item !== null);
+    }
+  };
+
   const getNftCollection = async (collectionAddress, isCoverNeeded) => {
     if (!collectionAddress) {
-      return new BaseError(
+      new BaseError(
         "Client",
         BaseError.CODE_UNDEFINED_PARAMETER,
         "Collection address is not defined."
       );
+      return null;
     }
     let nftCollection = null;
     try {
@@ -637,6 +666,7 @@ export const useMarketStore = defineStore("user", () => {
     uploadJSONToIPFS,
     createNFTCollection,
     getNftCollections,
+    getTopNftCollections,
     getMyCollection,
     getNftCollection,
     mintNFT,

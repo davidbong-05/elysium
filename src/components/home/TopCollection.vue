@@ -4,13 +4,8 @@
       <div class="font-weight-bold text-h4 mr-4">Top Collection</div>
       <v-btn color="primary" size="small" to="collections"> View All </v-btn>
     </div>
-    <v-row class="mt-5" v-if="isLoading || topCollections.length">
-      <v-col
-        cols="12"
-        md="4"
-        v-for="item in topCollections"
-        :key="item.address"
-      >
+    <v-row class="mt-5" v-if="isLoading || collections.length">
+      <v-col cols="12" md="4" v-for="item in collections" :key="item.address">
         <v-card class="mx-auto" max-width="344" color="black">
           <v-img :src="item.cover" height="200px"></v-img>
           <v-card-title class="text-h5">{{ item.name }}</v-card-title>
@@ -57,7 +52,6 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import ConsoleUtils from "@/utils/consoleUtils";
 
@@ -66,29 +60,19 @@ export default {
   setup() {
     const isExist = ref(true);
     const isLoading = ref(true);
-    const { getNftCollection } = useMarketStore();
-    const topCollections = ref([]);
-    const { get } = useApiStore();
+    const { getTopNftCollections } = useMarketStore();
+    const collections = ref([]);
 
     onMounted(async () => {
       try {
-        const res = await get("/api/collection/topCollection");
-
-        if (res.status === 200) {
-          for (const item of res.data) {
-            let collectionItem = await getNftCollection(item[0], true);
-            if (collectionItem == null || collectionItem.totalSupply == 0)
-              continue;
-            collectionItem.link = `/collection/${item[0]}`;
-            collectionItem.counts = item[1];
-            topCollections.value.push(collectionItem);
-          }
+        const topCollections = await getTopNftCollections();
+        if (topCollections.length > 0) {
+          collections.value = topCollections;
+        } else {
+          isExist.value = false;
         }
         isLoading.value = false;
       } catch (err) {
-        if (err.response.status === 404)
-          // TODO if no top collection, show something else
-          isExist.value = false;
         ConsoleUtils.displayError(err);
       }
     });
@@ -96,7 +80,7 @@ export default {
     return {
       isExist,
       isLoading,
-      topCollections,
+      collections,
     };
   },
 };

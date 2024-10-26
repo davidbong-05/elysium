@@ -69,6 +69,25 @@ export const useApiStore = defineStore("api", () => {
       return linkedCollections;
     }
   };
+
+  const getTopCollections = async () => {
+    let collections = [];
+    try {
+      const res = await apiClient.get("/api/collection/topCollection");
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        collections = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return collections;
+    }
+  };
   //#endregion nft collections
 
   //#region users
@@ -183,6 +202,7 @@ export const useApiStore = defineStore("api", () => {
     getAllCollections,
     getCollections,
     getLinkedCollections,
+    getTopCollections,
     getUsers,
     getUsername,
     postLogin,
