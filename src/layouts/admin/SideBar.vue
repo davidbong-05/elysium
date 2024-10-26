@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer class="me-0" theme="dark" expand-on-hover rail>
+  <v-navigation-drawer class="me-0" theme="dark" permanent>
     <v-list density="compact" nav>
       <v-list-item
         prepend-icon="mdi-view-dashboard"
@@ -25,4 +25,8 @@
   </v-navigation-drawer>
 </template>
 
-<script></script>
+<script>
+export default {
+  name: "SideBar",
+};
+</script>
