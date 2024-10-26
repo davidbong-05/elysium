@@ -4,6 +4,7 @@ import ApiTransaction from "@/models/transactions/apiTransaction";
 import BaseError from "@/models/errors/baseError";
 import ApiError from "@/models/errors/apiError";
 import User from "@/models/user";
+import ValidationUtils from "@/utils/validationUtils";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;
@@ -53,6 +54,14 @@ export const useApiStore = defineStore("api", () => {
 
   const getLinkedCollections = async (userAddress) => {
     let linkedCollections = [];
+    if (
+      !ValidationUtils.checkIfParameterIsNullOrUndefined(
+        "User address",
+        userAddress
+      )
+    ) {
+      return linkedCollections;
+    }
     try {
       const res = await apiClient.get("/api/collection/" + userAddress);
       const txn = ApiTransaction.parse(res);
@@ -116,6 +125,14 @@ export const useApiStore = defineStore("api", () => {
 
   const getUser = async (userAddress) => {
     let user = null;
+    if (
+      !ValidationUtils.checkIfParameterIsNullOrUndefined(
+        "User address",
+        userAddress
+      )
+    ) {
+      return user;
+    }
     try {
       const res = await apiClient.get(`/api/user/${userAddress}`);
       const txn = ApiTransaction.parse(res);
@@ -157,12 +174,13 @@ export const useApiStore = defineStore("api", () => {
   };
 
   const getUsername = async (userAddress) => {
-    if (!userAddress) {
-      return new BaseError(
-        "Client",
-        BaseError.CODE_UNDEFINED_PARAMETER,
-        "User address is not defined."
-      );
+    if (
+      !ValidationUtils.checkIfParameterIsNullOrUndefined(
+        "User address",
+        userAddress
+      )
+    ) {
+      return null;
     }
     try {
       const res = await apiClient.get("/api/user/name/" + userAddress);

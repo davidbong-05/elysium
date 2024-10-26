@@ -8,6 +8,7 @@ import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
 import NftCollection from "@/models/nftCollection";
 import BaseError from "@/models/errors/baseError";
+import ValidationUtils from "@/utils/validationUtils";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -25,7 +26,6 @@ export const useMarketStore = defineStore("user", () => {
     postLogin,
     postLogout,
     postPing,
-    get,
     post,
     put,
   } = useApiStore();
@@ -302,15 +302,16 @@ export const useMarketStore = defineStore("user", () => {
   };
 
   const getNftCollection = async (collectionAddress, isCoverNeeded) => {
-    if (!collectionAddress) {
-      new BaseError(
-        "Client",
-        BaseError.CODE_UNDEFINED_PARAMETER,
-        "Collection address is not defined."
-      );
-      return null;
-    }
     let nftCollection = null;
+
+    if (
+      !ValidationUtils.checkIfParameterIsNullOrUndefined(
+        "Collection address",
+        collectionAddress
+      )
+    ) {
+      return nftCollection;
+    }
     try {
       nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
     } catch (error) {

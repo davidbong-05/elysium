@@ -1,11 +1,13 @@
+import BaseError from "@/models/errors/baseError";
+
 class ValidationUtils {
-  static checkIfParamterIsNullOrUndefined(value) {
-    let isValid = true;
-    if (!value) {
-      return new BaseError(
+  static checkIfParameterIsNullOrUndefined(parameterName = "Parameter", value) {
+    const isValid = value !== null && value !== undefined;
+    if (!isValid) {
+      new BaseError(
         "Client",
         BaseError.CODE_UNDEFINED_PARAMETER,
-        "User address is not defined."
+        `${parameterName} is not defined.`
       );
     }
     return isValid;
