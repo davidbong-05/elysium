@@ -73,7 +73,7 @@ export const useApiStore = defineStore("api", () => {
   const getTopCollections = async () => {
     let collections = [];
     try {
-      const res = await apiClient.get("/api/collection/topCollection");
+      const res = await apiClient.get("/api/collection/top");
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         collections = txn.data;
@@ -94,7 +94,7 @@ export const useApiStore = defineStore("api", () => {
   const getTopUsers = async () => {
     let users = [];
     try {
-      const res = await apiClient.get("/api/user/topUser");
+      const res = await apiClient.get("/api/user/top");
       const txn = ApiTransaction.parse(res);
       if (txn.isSuccess) {
         users = await Promise.all(
