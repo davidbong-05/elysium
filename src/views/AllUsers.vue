@@ -42,7 +42,7 @@ import { ref, onMounted } from "vue";
 import { useApiStore } from "@/stores/api";
 export default {
   setup() {
-    const { get } = useApiStore();
+    const { getUsers } = useApiStore();
     const itemsPerPage = ref(5);
     const loading = ref(true);
     const search = ref("");
@@ -56,18 +56,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await get("/api/user/");
-        if (res) {
-          users.value = await Promise.all(
-            res.data.map(async (i) => {
-              let user = {
-                username: i.username,
-                address: i.address,
-              };
-              return user;
-            })
-          );
-        }
+        users.value = await getUsers();
         loading.value = false;
       } catch (error) {
         console.error(error);

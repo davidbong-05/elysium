@@ -3,6 +3,7 @@ import ApiClient from "@/services/apiClient";
 import ApiTransaction from "@/models/transactions/apiTransaction";
 import BaseError from "@/models/errors/baseError";
 import ApiError from "@/models/errors/apiError";
+import User from "@/models/user";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;
@@ -70,6 +71,30 @@ export const useApiStore = defineStore("api", () => {
   };
   //#endregion nft collections
 
+  //#region users
+  const getUsers = async () => {
+    let users = [];
+    try {
+      const res = await apiClient.get("/api/user/");
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        users = await Promise.all(
+          res.data.map(async (i) => {
+            return User.parse(i);
+          })
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return users;
+    }
+  };
+
   const getUsername = async (userAddress) => {
     if (!userAddress) {
       return new BaseError(
@@ -90,6 +115,7 @@ export const useApiStore = defineStore("api", () => {
       }
     }
   };
+  //#region users
 
   const postLogin = async (address) => {
     try {
@@ -157,6 +183,7 @@ export const useApiStore = defineStore("api", () => {
     getAllCollections,
     getCollections,
     getLinkedCollections,
+    getUsers,
     getUsername,
     postLogin,
     postLogout,
