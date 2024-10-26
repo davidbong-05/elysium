@@ -159,20 +159,6 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getAllLinkedCollection = async () => {
-    try {
-      const res = await get("/api/collection/");
-      if (res.status === 200) {
-        return res.data;
-      }
-    } catch (err) {
-      if (err.response.status === 404) {
-        return [];
-      }
-      ConsoleUtils.displayError(error);
-    }
-  };
-
   const unlinkCollection = async (user_address, tokenIndex) => {
     let newCollections = await getLinkedCollections(user_address);
     newCollections.splice(tokenIndex, 1);
@@ -613,7 +599,6 @@ export const useMarketStore = defineStore("user", () => {
     logout,
     ping,
     linkCollection,
-    getAllLinkedCollection,
     unlinkCollection,
     uploadFileToIPFS,
     uploadJSONToIPFS,
