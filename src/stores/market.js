@@ -6,6 +6,8 @@ import MetaMaskError from "@/models/errors/metaMaskError";
 import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
+import NftCollection from "@/models/nftCollection";
+import BaseError from "@/models/errors/baseError";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -16,6 +18,7 @@ export const useMarketStore = defineStore("user", () => {
   const account = ref(null);
   const loading = ref(false);
   const {
+    getAllCollections,
     getLinkedCollections,
     getUsername,
     postLogin,
@@ -247,12 +250,42 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const getNftCollections = async () => {
+    let nftCollections = [];
+    try {
+      const res = await getAllCollections();
+      if (res) {
+        nftCollections = await Promise.all(
+          res.map(async (i) => {
+            try {
+              const collection = await getNftCollection(i[0]);
+              return new NftCollection({ ...collection, follower: i[1] });
+            } catch (error) {
+              ConsoleUtils.displayError(error);
+            }
+          })
+        );
+      }
+    } catch (error) {
+      ConsoleUtils.displayError(error);
+    } finally {
+      return nftCollections;
+    }
+  };
+
   const getNftCollection = async (collectionAddress) => {
+    if (!collectionAddress) {
+      return new BaseError(
+        "Client",
+        BaseError.CODE_UNDEFINED_PARAMETER,
+        "Collection address is not defined."
+      );
+    }
     let nftCollection = null;
     try {
       nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
     } catch (error) {
-      console.warn(`Error while fetching${collectionAddress}`);
+      console.warn(`Error while fetching ${collectionAddress}`);
       MetaMaskError.parse(error);
     }
     if (nftCollection) {
@@ -603,6 +636,7 @@ export const useMarketStore = defineStore("user", () => {
     uploadFileToIPFS,
     uploadJSONToIPFS,
     createNFTCollection,
+    getNftCollections,
     getMyCollection,
     getNftCollection,
     mintNFT,

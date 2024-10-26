@@ -39,15 +39,12 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
-import NftCollection from "@/models/nftCollection";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
   setup() {
-    const { getNftCollection } = useMarketStore();
-    const { getAllCollections } = useApiStore();
+    const { getNftCollections } = useMarketStore();
 
     const breadcrumbItems = [
       {
@@ -84,19 +81,7 @@ export default {
     onMounted(async () => {
       try {
         loading.value = true;
-        const res = await getAllCollections();
-        if (res) {
-          collections.value = await Promise.all(
-            res.map(async (i) => {
-              try {
-                const collection = await getNftCollection(i[0]);
-                return new NftCollection({ ...collection, follower: i[1] });
-              } catch (error) {
-                ConsoleUtils.displayError(error);
-              }
-            })
-          );
-        }
+        collections.value = await getNftCollections();
         loading.value = false;
       } catch (error) {
         ConsoleUtils.displayError(error);
