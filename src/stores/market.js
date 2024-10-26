@@ -275,10 +275,12 @@ export const useMarketStore = defineStore("user", () => {
           const cover = await getCollectionCover(collectionAddress);
           nftCollection.setCover(cover);
         }
-        const res = await get(
-          "/api/user/name/" + nftCollection.royaltyRecipient
+        const royaltyRecipientNameRes = await getUsername(
+          nftCollection.royaltyRecipient
         );
-        nftCollection.setRoyaltyRecipientName(res.data);
+        if (royaltyRecipientNameRes.isSuccess) {
+          nftCollection.setRoyaltyRecipientName(royaltyRecipientNameRes.data);
+        }
       } catch (error) {
         ConsoleUtils.displayError(error);
       }
