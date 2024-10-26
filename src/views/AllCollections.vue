@@ -47,7 +47,7 @@ import ConsoleUtils from "@/utils/consoleUtils";
 export default {
   setup() {
     const { getNftCollection } = useMarketStore();
-    const { get } = useApiStore();
+    const { getAllCollections } = useApiStore();
 
     const breadcrumbItems = [
       {
@@ -84,11 +84,10 @@ export default {
     onMounted(async () => {
       try {
         loading.value = true;
-        const res = await get("/api/collection/all");
-
+        const res = await getAllCollections();
         if (res) {
           collections.value = await Promise.all(
-            res.data.map(async (i) => {
+            res.map(async (i) => {
               try {
                 const collection = await getNftCollection(i[0]);
                 return new NftCollection({ ...collection, follower: i[1] });

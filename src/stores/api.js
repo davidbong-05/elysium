@@ -11,6 +11,26 @@ const HASH = window.btoa(`${SERVER_API_KEY}:${SERVER_API_SECRET}`);
 export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
 
+  //#region nft collections
+  const getAllCollections = async () => {
+    let collections = [];
+    try {
+      const res = await apiClient.get("/api/collection/all");
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        collections = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return collections;
+    }
+  };
+
   const getCollections = async () => {
     let collections = [];
     try {
@@ -48,6 +68,7 @@ export const useApiStore = defineStore("api", () => {
       return linkedCollections;
     }
   };
+  //#endregion nft collections
 
   const getUsername = async (userAddress) => {
     if (!userAddress) {
@@ -133,6 +154,7 @@ export const useApiStore = defineStore("api", () => {
   };
 
   return {
+    getAllCollections,
     getCollections,
     getLinkedCollections,
     getUsername,
