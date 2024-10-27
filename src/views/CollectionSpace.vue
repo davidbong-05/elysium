@@ -63,7 +63,7 @@ import { NftsContainerView } from "@/models/enums";
 // import Activity from "@/components/collectionPage/activity.vue";
 
 export default {
-  name: "CollectionPage",
+  name: "Collection Space",
   components: {
     NftsContainer,
     // Activity,

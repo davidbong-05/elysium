@@ -49,10 +49,10 @@ const routes = [
       },
       {
         path: "/collection/:address",
-        name: "CollectionPage",
+        name: "CollectionSpace",
         component: () =>
           import(
-            /* webpackChunkName: "CollectionPage" */ "@/views/CollectionPage.vue"
+            /* webpackChunkName: "CollectionSpace" */ "@/views/CollectionSpace.vue"
           ),
       },
       {
