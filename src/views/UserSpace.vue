@@ -1,5 +1,26 @@
 <template>
-  <v-container fluid v-if="user">
+  <v-container
+    class="d-flex justify-center align-center"
+    style="height: 70vh"
+    v-if="isLoading"
+  >
+    <v-responsive class="mx-auto" height="200px">
+      <v-overlay
+        v-model="isLoading"
+        class="d-flex align-center justify-center"
+        contained
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="80"
+          width="8"
+        ></v-progress-circular>
+      </v-overlay>
+    </v-responsive>
+  </v-container>
+  <v-container fluid v-else-if="user">
     <v-alert
       class="mb-2"
       theme="dark"
@@ -68,6 +89,7 @@ export default {
   setup() {
     const tab = ref(1);
     const route = useRoute();
+    const isLoading = ref(true);
     const user = ref();
 
     const { getUser } = useApiStore();
@@ -95,6 +117,8 @@ export default {
         user.value = await getUser(userAddress);
       } catch (error) {
         ConsoleUtils.displayError(error);
+      } finally {
+        isLoading.value = false;
       }
     });
 
@@ -102,6 +126,7 @@ export default {
       NftsContainerView,
       alert,
       tab,
+      isLoading,
       user,
       newAlert,
     };
