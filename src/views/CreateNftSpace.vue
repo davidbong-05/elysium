@@ -355,7 +355,7 @@ export default {
       onSale.value = "No";
       price.value = "";
       freeMint.value = "No";
-      file.value = "";
+      file.value = null;
     };
 
     onMounted(async () => {
