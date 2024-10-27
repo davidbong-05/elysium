@@ -163,12 +163,12 @@
         <v-btn
           class="my-3 bg-primary text-white"
           variant="tonal"
-          block="true"
+          :block="true"
           @click="submit"
         >
           Mint
         </v-btn>
-        <v-btn variant="tonal" block="true" @click="reset"> Reset </v-btn>
+        <v-btn variant="tonal" :block="true" @click="reset"> Reset </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -208,7 +208,7 @@ export default {
     const onSale = ref("No");
     const price = ref();
     const freeMint = ref("No");
-    const file = ref("");
+    const file = ref();
 
     const alert = ref({
       show: false,
@@ -228,12 +228,18 @@ export default {
         return pattern.test(v) || "Invalid name.";
       },
       fileType: (v) => {
-        const pattern = /image/;
-        return pattern.test(v.type) || "Image only. (jpg, jpeg, png)";
+        if (v) {
+          const pattern = /image/;
+          return pattern.test(v.type) || "Image only. (jpg, jpeg, png)";
+        }
+        return false;
       },
 
       filesType: (v) => {
-        return rules.fileType(v[0]);
+        if (v) {
+          return rules.fileType(v[0]);
+        }
+        return false;
       },
       minPrice: (v) => v >= 0.001 || "Min 0.001 ETH",
     };
@@ -376,8 +382,7 @@ export default {
             };
             collections.value.push(collection);
           }
-          selectedCollection.value.address = collections.value[0].address;
-          selectedCollection.value.name = collections.value[0].name;
+          selectedCollection.value = collections.value[0];
           isLoading.value = false;
         }
         if (!isVerified) {
