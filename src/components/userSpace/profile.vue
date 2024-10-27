@@ -246,6 +246,9 @@ export default {
         const res = await putUnfollowUser(currentUser, targetAddress);
         if (res.isSuccess) {
           canFollow.value = true;
+          if (user.isFollowing(currentUser)) {
+            followBtnText.value = "FOLLOW BACK";
+          }
         }
       } catch (error) {
         ConsoleUtils.displayError(error);
@@ -261,14 +264,12 @@ export default {
       canEdit.value = user.isOwner(currentUser);
       try {
         if (!canEdit.value) {
-          const res2 = await postFollowUserCheck(currentUser, user.address);
-          if (res2.isSuccess) {
-            canFollow.value = !res2.data;
+          const res = await postFollowUserCheck(currentUser, user.address);
+          if (res.isSuccess) {
+            canFollow.value = !res.data;
             if (canFollow.value) {
               if (user.isFollowing(currentUser)) {
                 followBtnText.value = "FOLLOW BACK";
-              } else {
-                canFollow.value = true;
               }
             }
           }
