@@ -158,7 +158,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
-// import filterMenu from "@/components/mySpace/filterMenu.vue";
+// import filterMenu from "@/components/userSpace/filterMenu.vue";
 import NftDetailCard from "@/components/shared/NftDetailCard.vue";
 import ConsoleUtils from "@/utils/consoleUtils";
 import { NftsContainerView } from "@/models/enums";

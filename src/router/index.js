@@ -15,15 +15,15 @@ const routes = [
       },
       {
         path: "/user/:address?",
-        name: "MySpace",
+        name: "UserSpace",
         component: () =>
-          import(/* webpackChunkName: "MySpace" */ "@/views/MySpace.vue"),
+          import(/* webpackChunkName: "UserSpace" */ "@/views/UserSpace.vue"),
       },
       {
         path: "/users/",
         name: "AllUsers",
         component: () =>
-          import(/* webpackChunkName: "MySpace" */ "@/views/AllUsers.vue"),
+          import(/* webpackChunkName: "AllUsers" */ "@/views/AllUsers.vue"),
       },
       {
         path: "/user/collection/",

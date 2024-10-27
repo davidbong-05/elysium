@@ -152,8 +152,8 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import User from "@/models/user";
-import EditProfile from "@/components/mySpace/editProfile.vue";
-import changeProfilePic from "@/components/mySpace/changeProfilePic.vue";
+import EditProfile from "@/components/userSpace/editProfile.vue";
+import changeProfilePic from "@/components/userSpace/changeProfilePic.vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import Avatar from "vue-boring-avatars";

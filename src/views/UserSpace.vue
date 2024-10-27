@@ -57,15 +57,15 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import Profile from "@/components/mySpace/profile.vue";
+import Profile from "@/components/userSpace/profile.vue";
 import NftsContainer from "@/components/shared/NftsContainer.vue";
-// import Activity from "@/components/mySpace/activity.vue";
+// import Activity from "@/components/userSpace/activity.vue";
 import { useApiStore } from "@/stores/api";
 import ConsoleUtils from "@/utils/consoleUtils";
 import { NftsContainerView } from "@/models/enums";
 
 export default {
-  name: "MySpace",
+  name: "User Space",
   components: {
     Profile,
     NftsContainer,
