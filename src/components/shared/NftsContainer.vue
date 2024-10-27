@@ -50,7 +50,7 @@
         </v-btn-toggle>
       </v-col>
     </v-row>
-    <v-row v-if="selectedView == 'listView' && Nfts.length > 0">
+    <v-row v-if="selectedView == 'listView' && nfts.length > 0">
       <v-col cols="12">
         <v-table fixed-header height="300px" theme="dark">
           <thead>
@@ -62,7 +62,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in Nfts" :key="item.id">
+            <tr v-for="item in nfts" :key="item.id">
               <td><v-img height="80" :src="item.tokenUri"></v-img></td>
               <td>{{ item.tokenName }}</td>
               <td>{{ item.tokenDescription }}</td>
@@ -70,7 +70,7 @@
                 <v-btn
                   color="accent"
                   variant="tonal"
-                  @click="selectNft(Nfts.indexOf(item))"
+                  @click="selectNft(nfts.indexOf(item))"
                   >View</v-btn
                 >
               </td>
