@@ -30,6 +30,11 @@
         <v-card-subtitle> {{ nft.collectionName }}</v-card-subtitle>
         <v-card-subtitle> {{ nft.collection }}</v-card-subtitle>
       </div>
+      <div>
+        <v-card-text>Creator:</v-card-text>
+        <v-card-subtitle> {{ nft.collectionOwnerName }}</v-card-subtitle>
+        <v-card-subtitle> {{ nft.collectionOwner }}</v-card-subtitle>
+      </div>
       <v-card-text v-if="nft.price">{{ nft.price }} ETH</v-card-text>
       <v-card-text>Royalty: {{ nft.royalty }} %</v-card-text>
       <v-card-actions v-if="showForm">
@@ -112,8 +117,9 @@
       <v-btn
         v-if="showForm && !isUpdate && !isLoading"
         @click="showForm = false"
-        >Cancel</v-btn
       >
+        Cancel
+      </v-btn>
       <v-btn
         v-if="showForm && !isUpdate && !isLoading"
         color="primary"
@@ -132,13 +138,13 @@ import { useMarketStore } from "@/stores/market";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
-  name: "View NFT",
+  name: "Nft Detail Card",
   props: ["nft"],
   emits: ["onClose"],
   setup(props) {
-    const { post, put } = useApiStore();
-    const { setAlert, linkCollection, listNFT, unListNFT, buyNFT } =
-      useMarketStore();
+    const { setAlert, listNFT, unListNFT, buyNFT } = useMarketStore();
+    const { post, put, putLinkCollection } = useApiStore();
+
     const price = ref();
     const showForm = ref(false);
     const isLoading = ref(false);
@@ -198,11 +204,7 @@ export default {
     const unList = async (nftCollection, nftId) => {
       try {
         isLoading.value = true;
-        const res = await unListNFT(
-          nftCollection,
-          nftId,
-          price.value.toString()
-        );
+        const res = await unListNFT(nftCollection, nftId);
         if (res.isSuccess) {
           alert.value = setAlert("success", null, "NFT unlisted successfully!");
           isUpdate.value = true;
@@ -234,7 +236,7 @@ export default {
         isLoading.value = true;
         const res = await buyNFT(nftCollection, nftId, nftPrice);
         if (res.isSuccess) {
-          await linkCollection(
+          await putLinkCollection(
             sessionStorage.getItem("address"),
             nftCollection
           );
@@ -287,7 +289,7 @@ export default {
         if (!exist) {
           nfts.value.push({ collection: nftCollection, tokenId: nftId });
           try {
-            await put("/api/cart", {
+            const res = await put("/api/cart", {
               user_address: sessionStorage.getItem("address"),
               cart_content: nfts.value,
             });
@@ -312,6 +314,7 @@ export default {
     const refresh = () => {
       window.location.reload();
     };
+
     return {
       isOwner,
       isSeller,

@@ -155,7 +155,7 @@
     location-strategy="connected"
     class="d-flex justify-center align-center"
   >
-    <ViewNFT
+    <nft-detail-card
       v-if="showNFTDetail"
       :nft="listedNFTs[selectedNFT]"
       @onClose="() => (showNFTDetail = !showNFTDetail)"
@@ -167,7 +167,7 @@
 import { ref, computed, onMounted } from "vue";
 import filterMenu from "./filterMenu.vue";
 import { useMarketStore } from "@/stores/market";
-import ViewNFT from "@/components/mySpace/viewNFT.vue";
+import NftDetailCard from "@/components/shared/NftDetailCard.vue";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
@@ -175,7 +175,7 @@ export default {
   props: ["userAddress"],
   components: {
     filterMenu,
-    ViewNFT,
+    NftDetailCard,
   },
   setup(props) {
     const { getUserListedNFTs } = useMarketStore();

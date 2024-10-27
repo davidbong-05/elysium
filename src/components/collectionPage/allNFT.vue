@@ -138,7 +138,7 @@
     location-strategy="connected"
     class="d-flex justify-center align-center"
   >
-    <ViewNFT
+    <nft-detail-card
       v-if="showNFTDetail"
       :nft="allNFTs[selectedNFT]"
       @onClose="() => (showNFTDetail = !showNFTDetail)"
@@ -150,7 +150,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import filterMenu from "@/components/collectionPage/filterMenu.vue";
-import ViewNFT from "@/components/collectionPage/viewNFT.vue";
+import NftDetailCard from "@/components/shared/NftDetailCard.vue";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
@@ -158,7 +158,7 @@ export default {
   props: ["collectionAddress"],
   components: {
     filterMenu,
-    ViewNFT,
+    NftDetailCard,
   },
   setup(props) {
     const { getCollectionNFTs } = useMarketStore();
