@@ -23,10 +23,18 @@
       </v-tabs>
       <v-window v-model="tab">
         <v-window-item :value="1">
-          <AllNFT :collectionAddress="collectionAddress" />
+          <nfts-container
+            v-if="collectionAddress"
+            :view="NftsContainerView.VIEW_COLLECTION_ALL"
+            :address="collectionAddress"
+          />
         </v-window-item>
         <v-window-item :value="2">
-          <OnSale :collectionAddress="collectionAddress" />
+          <nfts-container
+            v-if="collectionAddress"
+            :view="NftsContainerView.VIEW_COLLECTION_LISTED"
+            :address="collectionAddress"
+          />
         </v-window-item>
         <!-- <v-window-item :value="3">
           <Activity />
@@ -48,17 +56,16 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
-import axios from "axios";
 import { useRoute } from "vue-router";
-import AllNFT from "@/components/collectionPage/allNFT.vue";
-import OnSale from "@/components/collectionPage/onSale.vue";
+import NftsContainer from "@/components/shared/NftsContainer.vue";
+import { NftsContainerView } from "@/models/enums";
+
 // import Activity from "@/components/collectionPage/activity.vue";
 
 export default {
   name: "CollectionPage",
   components: {
-    AllNFT,
-    OnSale,
+    NftsContainer,
     // Activity,
   },
   setup() {
@@ -78,6 +85,7 @@ export default {
     });
 
     return {
+      NftsContainerView,
       tab,
       collectionExist,
       collectionAddress,

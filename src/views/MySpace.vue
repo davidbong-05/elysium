@@ -12,7 +12,11 @@
       density="compact"
     ></v-alert>
     <v-card class="mx-auto" color="background">
-      <profile :userAddress="userAddress" @onAlert="newAlert" />
+      <profile
+        v-if="userAddress"
+        :userAddress="userAddress"
+        @onAlert="newAlert"
+      />
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">Owned</v-tab>
         <v-tab :value="2">On Sale</v-tab>
@@ -20,10 +24,18 @@
       </v-tabs>
       <v-window v-model="tab">
         <v-window-item :value="1">
-          <OwnedNFT :userAddress="userAddress" />
+          <nfts-container
+            v-if="userAddress"
+            :view="NftsContainerView.VIEW_USER_OWNED"
+            :address="userAddress"
+          />
         </v-window-item>
         <v-window-item :value="2">
-          <OnSale :userAddress="userAddress" />
+          <nfts-container
+            v-if="userAddress"
+            :view="NftsContainerView.VIEW_USER_LISTED"
+            :address="userAddress"
+          />
         </v-window-item>
         <!-- <v-window-item :value="3">
           <Activity />
@@ -46,26 +58,25 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Profile from "@/components/mySpace/profile.vue";
-import OwnedNFT from "@/components/mySpace/ownedNFT.vue";
-import OnSale from "@/components/mySpace/onSale.vue";
+import NftsContainer from "@/components/shared/NftsContainer.vue";
 // import Activity from "@/components/mySpace/activity.vue";
 import { useApiStore } from "@/stores/api";
 import ConsoleUtils from "@/utils/consoleUtils";
+import { NftsContainerView } from "@/models/enums";
 
 export default {
   name: "MySpace",
   components: {
     Profile,
-    OwnedNFT,
-    OnSale,
+    NftsContainer,
     // Activity,
   },
-  setup(prop) {
+  setup() {
     const tab = ref(1);
     const route = useRoute();
     const userExist = ref(true);
-    const userAddress =
-      route.params.address ?? sessionStorage.getItem("address");
+    const userAddress = ref("");
+
     const { getUser } = useApiStore();
 
     const alert = ref({
@@ -82,7 +93,12 @@ export default {
 
     onMounted(async () => {
       try {
-        const res = await getUser(userAddress);
+        if (!route.params.address || route.params.address === "") {
+          userAddress.value = sessionStorage.getItem("address");
+        } else {
+          userAddress.value = route.params.address;
+        }
+        const res = await getUser(userAddress.value);
         if (res) {
           userExist.value = true;
         } else {
@@ -94,6 +110,7 @@ export default {
     });
 
     return {
+      NftsContainerView,
       alert,
       tab,
       userExist,

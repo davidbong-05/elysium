@@ -50,7 +50,7 @@
         </v-btn-toggle>
       </v-col>
     </v-row>
-    <v-row v-if="selectedView == 'listView' && ownedNFTs.length > 0">
+    <v-row v-if="selectedView == 'listView' && Nfts.length > 0">
       <v-col cols="12">
         <v-table fixed-header height="300px" theme="dark">
           <thead>
@@ -62,7 +62,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in ownedNFTs" :key="item.id">
+            <tr v-for="item in Nfts" :key="item.id">
               <td><v-img height="80" :src="item.tokenUri"></v-img></td>
               <td>{{ item.tokenName }}</td>
               <td>{{ item.tokenDescription }}</td>
@@ -70,7 +70,7 @@
                 <v-btn
                   color="accent"
                   variant="tonal"
-                  @click="selectNFT(ownedNFTs.indexOf(item))"
+                  @click="selectNft(Nfts.indexOf(item))"
                   >View</v-btn
                 >
               </td>
@@ -83,10 +83,10 @@
       class="my-auto"
       v-else-if="
         (selectedView == 'smallIcon' || selectedView == 'largeIcon') &&
-        ownedNFTs.length > 0
+        Nfts.length > 0
       "
     >
-      <v-col v-for="item in ownedNFTs" :key="item.id" :md="iconSize" cols="12">
+      <v-col v-for="item in Nfts" :key="item.id" :md="iconSize" cols="12">
         <v-card class="mx-auto py-2" max-width="344" variant="tonal">
           <v-img height="194" :src="item.tokenUri"></v-img>
           <v-card-title>{{ item.tokenName }}</v-card-title>
@@ -96,7 +96,7 @@
               width="100%"
               color="accent"
               variant="tonal"
-              @click="selectNFT(ownedNFTs.indexOf(item))"
+              @click="selectNft(Nfts.indexOf(item))"
               >View</v-btn
             >
           </v-card-actions>
@@ -107,7 +107,7 @@
       <v-col cols="12" class="text-center">
         <h3 class="mt-4">There is no NFT here</h3>
         <p class="mt-2">
-          You can buy NFTs from the marketplace or create your own NFTs
+          You can buy NFTs from the marketplace or create your own Nfts
         </p>
         <v-btn color="accent" variant="text" class="mt-4" to="/">
           Buy NFT
@@ -143,14 +143,14 @@
     </v-row>
   </v-container>
   <v-overlay
-    v-model="showNFTDetail"
+    v-model="showNftDetail"
     location-strategy="connected"
     class="d-flex justify-center align-center"
   >
-    <nft-detail-card
-      v-if="showNFTDetail"
-      :nft="ownedNFTs[selectedNFT]"
-      @onClose="() => (showNFTDetail = !showNFTDetail)"
+    <Nft-detail-card
+      v-if="showNftDetail"
+      :Nft="Nfts[selectedNft]"
+      @onClose="() => (showNftDetail = !showNftDetail)"
     />
   </v-overlay>
 </template>
@@ -158,44 +158,68 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
-import filterMenu from "@/components/mySpace/filterMenu.vue";
+// import filterMenu from "@/components/mySpace/filterMenu.vue";
 import NftDetailCard from "@/components/shared/NftDetailCard.vue";
 import ConsoleUtils from "@/utils/consoleUtils";
+import { NftsContainerView } from "@/models/enums";
 
 export default {
-  name: "OwnedNFT",
-  props: ["userAddress"],
+  name: "Nfts Container",
+  props: {
+    view: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      default: true,
+    },
+  },
   components: {
-    filterMenu,
+    // filterMenu,
     NftDetailCard,
   },
   setup(props) {
-    const { getOwnedNFTs } = useMarketStore();
+    const {
+      getCollectionNFTs,
+      getListedNFTs,
+      getOwnedNFTs,
+      getUserListedNFTs,
+    } = useMarketStore();
     const menu = ref(false);
     const selectedView = ref("smallIcon");
-    const showNFTDetail = ref(false);
+    const showNftDetail = ref(false);
     const loading = ref(true);
-    var userAddress = props.userAddress;
 
     // computed
     const iconSize = computed(() =>
       selectedView.value == "largeIcon" ? 4 : 2
     );
 
-    const ownedNFTs = ref([]);
-    const selectedNFT = ref();
+    const Nfts = ref([]);
+    const selectedNft = ref();
 
-    const selectNFT = (loc) => {
-      showNFTDetail.value = !showNFTDetail.value;
-      selectedNFT.value = loc;
+    const selectNft = (loc) => {
+      showNftDetail.value = !showNftDetail.value;
+      selectedNft.value = loc;
     };
 
     onMounted(async () => {
       try {
-        if (!userAddress || userAddress === "") {
-          userAddress = sessionStorage.getItem("address");
+        switch (props.view) {
+          case NftsContainerView.VIEW_COLLECTION_ALL:
+            Nfts.value = await getCollectionNFTs(props.address);
+            break;
+          case NftsContainerView.VIEW_COLLECTION_LISTED:
+            Nfts.value = await getListedNFTs(props.address);
+            break;
+          case NftsContainerView.VIEW_USER_OWNED:
+            Nfts.value = await getOwnedNFTs(props.address);
+            break;
+          case NftsContainerView.VIEW_USER_LISTED:
+            Nfts.value = await getUserListedNFTs(props.address);
+            break;
         }
-        ownedNFTs.value = await getOwnedNFTs(userAddress);
         loading.value = false;
       } catch (err) {
         ConsoleUtils.displayError(err);
@@ -205,14 +229,14 @@ export default {
     return {
       menu,
       selectedView,
-      ownedNFTs,
-      showNFTDetail,
+      Nfts,
+      showNftDetail,
       loading,
-      selectedNFT,
+      selectedNft,
       //computed
       iconSize,
       //methods
-      selectNFT,
+      selectNft,
     };
   },
 };

@@ -25,6 +25,13 @@ export const MetaMaskResponseCode = Object.freeze({
   CODE_ACTION_REJECTED: "ACTION_REJECTED",
 });
 
+export const NftsContainerView = Object.freeze({
+  VIEW_COLLECTION_ALL: "collection-all",
+  VIEW_COLLECTION_LISTED: "collection-listed",
+  VIEW_USER_OWNED: "user-owned",
+  VIEW_USER_LISTED: "user-listed",
+});
+
 export const UserRole = Object.freeze({
   ADMIN: "admin",
   SUPER_ADMIN: "superadmin",
