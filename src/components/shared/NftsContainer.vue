@@ -161,7 +161,6 @@ import { useMarketStore } from "@/stores/market";
 // import filterMenu from "@/components/userSpace/filterMenu.vue";
 import NftDetailCard from "@/components/shared/NftDetailCard.vue";
 import ConsoleUtils from "@/utils/consoleUtils";
-import { NftsContainerView } from "@/models/enums";
 
 export default {
   name: "Nfts Container",
@@ -180,12 +179,7 @@ export default {
     NftDetailCard,
   },
   setup(props) {
-    const {
-      getCollectionNFTs,
-      getCollectionListedNFTs,
-      getUserNFTs,
-      getUserListedNFTs,
-    } = useMarketStore();
+    const { getNfts } = useMarketStore();
     const menu = ref(false);
     const selectedView = ref("smallIcon");
     const showNftDetail = ref(false);
@@ -206,20 +200,7 @@ export default {
 
     onMounted(async () => {
       try {
-        switch (props.view) {
-          case NftsContainerView.VIEW_COLLECTION_ALL:
-            nfts.value = await getCollectionNFTs(props.address);
-            break;
-          case NftsContainerView.VIEW_COLLECTION_LISTED:
-            nfts.value = await getCollectionListedNFTs(props.address);
-            break;
-          case NftsContainerView.VIEW_USER_OWNED:
-            nfts.value = await getUserNFTs(props.address);
-            break;
-          case NftsContainerView.VIEW_USER_LISTED:
-            nfts.value = await getUserListedNFTs(props.address);
-            break;
-        }
+        nfts.value = await getNfts(props.view, props.address);
         loading.value = false;
       } catch (err) {
         ConsoleUtils.displayError(err);

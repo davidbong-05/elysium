@@ -7,9 +7,9 @@ import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
 import ConsoleUtils from "@/utils/consoleUtils";
 import NftCollection from "@/models/nftCollection";
-import BaseError from "@/models/errors/baseError";
 import ValidationUtils from "@/utils/validationUtils";
 import { UserRole } from "@/models/enums";
+import { NftsContainerView } from "@/models/enums";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -28,8 +28,6 @@ export const useMarketStore = defineStore("user", () => {
     postLogin,
     postLogout,
     postPing,
-    post,
-    put,
   } = useApiStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
@@ -312,6 +310,19 @@ export const useMarketStore = defineStore("user", () => {
       );
     } catch (error) {
       return MetaMaskError.parse(error);
+    }
+  };
+
+  const getNfts = async (view, address) => {
+    switch (view) {
+      case NftsContainerView.VIEW_COLLECTION_ALL:
+        return await getCollectionNFTs(address);
+      case NftsContainerView.VIEW_COLLECTION_LISTED:
+        return await getCollectionListedNFTs(address);
+      case NftsContainerView.VIEW_USER_OWNED:
+        return await getUserNFTs(address);
+      case NftsContainerView.VIEW_USER_LISTED:
+        return await getUserListedNFTs(address);
     }
   };
 
@@ -622,13 +633,10 @@ export const useMarketStore = defineStore("user", () => {
     getMyCollection,
     getNftCollection,
     mintNFT,
-    getUserNFTs,
+    getNfts,
     getOwnedNFTsCount,
-    getCollectionNFTs,
     listNFT,
     unListNFT,
-    getCollectionListedNFTs,
-    getUserListedNFTs,
     getCartNFTs,
     buyNFT,
     checkoutNFTs,
