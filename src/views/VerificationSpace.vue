@@ -92,7 +92,7 @@ import { useApiStore } from "@/stores/api";
 import ConsoleUtils from "@/utils/consoleUtils";
 
 export default {
-  name: "VerificationPage",
+  name: "Verification Space",
   components: {},
   setup() {
     const route = useRoute();

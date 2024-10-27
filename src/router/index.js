@@ -38,7 +38,7 @@ const routes = [
         name: "Verify",
         component: () =>
           import(
-            /* webpackChunkName: "VerificationPage" */ "@/views/VerificationPage.vue"
+            /* webpackChunkName: "VerificationSpace" */ "@/views/VerificationSpace.vue"
           ),
       },
       {
