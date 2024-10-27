@@ -180,7 +180,7 @@ import { useMarketStore } from "@/stores/market";
 import { UserRole } from "@/models/enums";
 
 export default {
-  name: "CreateNFT",
+  name: "Create Nft Space",
   components: {},
   setup() {
     const {

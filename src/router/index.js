@@ -43,9 +43,11 @@ const routes = [
       },
       {
         path: "/create-nft",
-        name: "CreateNFT",
+        name: "CreateNft",
         component: () =>
-          import(/* webpackChunkName: "CreateNFT" */ "@/views/CreateNFT.vue"),
+          import(
+            /* webpackChunkName: "CreateNftSpace" */ "@/views/CreateNftSpace.vue"
+          ),
       },
       {
         path: "/collection/:address",
