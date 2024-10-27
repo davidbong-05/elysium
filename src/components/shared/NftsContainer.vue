@@ -83,10 +83,10 @@
       class="my-auto"
       v-else-if="
         (selectedView == 'smallIcon' || selectedView == 'largeIcon') &&
-        Nfts.length > 0
+        nfts.length > 0
       "
     >
-      <v-col v-for="item in Nfts" :key="item.id" :md="iconSize" cols="12">
+      <v-col v-for="item in nfts" :key="item.id" :md="iconSize" cols="12">
         <v-card class="mx-auto py-2" max-width="344" variant="tonal">
           <v-img height="194" :src="item.tokenUri"></v-img>
           <v-card-title>{{ item.tokenName }}</v-card-title>
@@ -96,7 +96,7 @@
               width="100%"
               color="accent"
               variant="tonal"
-              @click="selectNft(Nfts.indexOf(item))"
+              @click="selectNft(nfts.indexOf(item))"
               >View</v-btn
             >
           </v-card-actions>
@@ -147,9 +147,9 @@
     location-strategy="connected"
     class="d-flex justify-center align-center"
   >
-    <Nft-detail-card
+    <nft-detail-card
       v-if="showNftDetail"
-      :Nft="Nfts[selectedNft]"
+      :nft="nfts[selectedNft]"
       @onClose="() => (showNftDetail = !showNftDetail)"
     />
   </v-overlay>
@@ -196,7 +196,7 @@ export default {
       selectedView.value == "largeIcon" ? 4 : 2
     );
 
-    const Nfts = ref([]);
+    const nfts = ref([]);
     const selectedNft = ref();
 
     const selectNft = (loc) => {
@@ -208,16 +208,16 @@ export default {
       try {
         switch (props.view) {
           case NftsContainerView.VIEW_COLLECTION_ALL:
-            Nfts.value = await getCollectionNFTs(props.address);
+            nfts.value = await getCollectionNFTs(props.address);
             break;
           case NftsContainerView.VIEW_COLLECTION_LISTED:
-            Nfts.value = await getListedNFTs(props.address);
+            nfts.value = await getListedNFTs(props.address);
             break;
           case NftsContainerView.VIEW_USER_OWNED:
-            Nfts.value = await getOwnedNFTs(props.address);
+            nfts.value = await getOwnedNFTs(props.address);
             break;
           case NftsContainerView.VIEW_USER_LISTED:
-            Nfts.value = await getUserListedNFTs(props.address);
+            nfts.value = await getUserListedNFTs(props.address);
             break;
         }
         loading.value = false;
@@ -229,7 +229,7 @@ export default {
     return {
       menu,
       selectedView,
-      Nfts,
+      nfts,
       showNftDetail,
       loading,
       selectedNft,
