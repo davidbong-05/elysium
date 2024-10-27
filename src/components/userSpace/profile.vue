@@ -166,14 +166,13 @@ export default {
     EditProfile,
     changeProfilePic,
   },
-  props: ["userAddress"],
+  props: ["user"],
   emits: ["onAlert"],
   setup(props, { emit }) {
     const router = useRoute();
-    const user = ref(new User({ username: "Loading..." }));
+    const user = props.user;
     const showEditProfile = ref(false);
     const currentUser = sessionStorage.getItem("address");
-    var userAddress = props.userAddress;
     // const showUploadProfile = ref(false);
     const canEdit = ref(false);
     const canFollow = ref(true);
@@ -181,7 +180,6 @@ export default {
     const { getOwnedNFTsCount } = useMarketStore();
     const {
       postSendVerificationEmail,
-      getUser,
       postFollowUserCheck,
       putFollowUser,
       putUnfollowUser,
@@ -198,7 +196,7 @@ export default {
     const getVerified = async () => {
       try {
         //TODO use session email instead.
-        const res = await postSendVerificationEmail(user.value.email);
+        const res = await postSendVerificationEmail(user.email);
         if (res.isSuccess) {
           alert.value = {
             show: true,
@@ -255,35 +253,19 @@ export default {
     };
 
     const updateUser = (newDetail) => {
-      user.value.updateUser(newDetail.username, newDetail.description);
+      user.updateUser(newDetail.username, newDetail.description);
     };
 
     // onMounted async because it take time for the parent component to fetch data
     onMounted(async () => {
-      if (!userAddress || userAddress === "") {
-        userAddress = currentUser;
-      }
-
-      try {
-        const res = await getUser(userAddress);
-        if (res) {
-          user.value = res;
-          canEdit.value = user.value.isOwner(currentUser);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-
+      canEdit.value = user.isOwner(currentUser);
       try {
         if (!canEdit.value) {
-          const res2 = await postFollowUserCheck(
-            currentUser,
-            router.params.address
-          );
+          const res2 = await postFollowUserCheck(currentUser, user.address);
           if (res2.isSuccess) {
             canFollow.value = !res2.data;
             if (canFollow.value) {
-              if (user.value.isFollowing(currentUser)) {
+              if (user.isFollowing(currentUser)) {
                 followBtnText.value = "FOLLOW BACK";
               } else {
                 canFollow.value = true;
@@ -296,8 +278,8 @@ export default {
       }
 
       try {
-        var owned_nfts_count = await getOwnedNFTsCount(user.value.address);
-        user.value.setOwnedNftCount(owned_nfts_count);
+        var owned_nfts_count = await getOwnedNFTsCount(user.address);
+        user.setOwnedNftCount(owned_nfts_count);
       } catch (error) {
         console.error(error);
       }

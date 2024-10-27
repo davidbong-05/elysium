@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-if="userExist">
+  <v-container fluid v-if="user">
     <v-alert
       class="mb-2"
       theme="dark"
@@ -12,11 +12,7 @@
       density="compact"
     ></v-alert>
     <v-card class="mx-auto" color="background">
-      <profile
-        v-if="userAddress"
-        :userAddress="userAddress"
-        @onAlert="newAlert"
-      />
+      <profile :user="user" @onAlert="newAlert" />
       <v-tabs class="mt-10" v-model="tab" align-tabs="left">
         <v-tab :value="1">Owned</v-tab>
         <v-tab :value="2">On Sale</v-tab>
@@ -25,16 +21,14 @@
       <v-window v-model="tab">
         <v-window-item :value="1">
           <nfts-container
-            v-if="userAddress"
             :view="NftsContainerView.VIEW_USER_OWNED"
-            :address="userAddress"
+            :address="user.address"
           />
         </v-window-item>
         <v-window-item :value="2">
           <nfts-container
-            v-if="userAddress"
             :view="NftsContainerView.VIEW_USER_LISTED"
-            :address="userAddress"
+            :address="user.address"
           />
         </v-window-item>
         <!-- <v-window-item :value="3">
@@ -74,8 +68,7 @@ export default {
   setup() {
     const tab = ref(1);
     const route = useRoute();
-    const userExist = ref(true);
-    const userAddress = ref("");
+    const user = ref();
 
     const { getUser } = useApiStore();
 
@@ -93,17 +86,13 @@ export default {
 
     onMounted(async () => {
       try {
+        let userAddress = null;
         if (!route.params.address || route.params.address === "") {
-          userAddress.value = sessionStorage.getItem("address");
+          userAddress = sessionStorage.getItem("address");
         } else {
-          userAddress.value = route.params.address;
+          userAddress = route.params.address;
         }
-        const res = await getUser(userAddress.value);
-        if (res) {
-          userExist.value = true;
-        } else {
-          userExist.value = false;
-        }
+        user.value = await getUser(userAddress);
       } catch (error) {
         ConsoleUtils.displayError(error);
       }
@@ -113,8 +102,7 @@ export default {
       NftsContainerView,
       alert,
       tab,
-      userExist,
-      userAddress,
+      user,
       newAlert,
     };
   },
