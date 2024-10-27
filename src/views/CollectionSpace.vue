@@ -78,7 +78,10 @@ export default {
 
     onMounted(async () => {
       try {
-        collectionDetails.value = await getNftCollection(collectionAddress);
+        collectionDetails.value = await getNftCollection(
+          collectionAddress,
+          true
+        );
       } catch (error) {
         console.error(error);
       }

@@ -210,7 +210,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0]);
+              const collection = await getNftCollection(i[0], true);
               return new NftCollection({ ...collection, follower: i[1] });
             } catch (error) {
               ConsoleUtils.displayError(error);
@@ -233,7 +233,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0], true);
+              const collection = await getNftCollection(i[0], false, true);
               if (collection) {
                 return new NftCollection({ ...collection, follower: i[1] });
               } else {
@@ -252,7 +252,11 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getNftCollection = async (collectionAddress, isCoverNeeded) => {
+  const getNftCollection = async (
+    collectionAddress,
+    isRecipientNameNeeded = false,
+    isCoverNeeded = false
+  ) => {
     let nftCollection = null;
 
     if (
@@ -275,11 +279,14 @@ export const useMarketStore = defineStore("user", () => {
           const cover = await getCollectionCover(collectionAddress);
           nftCollection.setCover(cover);
         }
-        const royaltyRecipientNameRes = await getUsername(
-          nftCollection.royaltyRecipient
-        );
-        if (royaltyRecipientNameRes.isSuccess) {
-          nftCollection.setRoyaltyRecipientName(royaltyRecipientNameRes.data);
+
+        if (isRecipientNameNeeded) {
+          const royaltyRecipientNameRes = await getUsername(
+            nftCollection.royaltyRecipient
+          );
+          if (royaltyRecipientNameRes.isSuccess) {
+            nftCollection.setRoyaltyRecipientName(royaltyRecipientNameRes.data);
+          }
         }
       } catch (error) {
         ConsoleUtils.displayError(error);
