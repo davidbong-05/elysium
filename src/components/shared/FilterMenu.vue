@@ -98,7 +98,7 @@
 import { ref, computed } from "vue";
 
 export default {
-  name: "FilterMenu",
+  name: "Filter Menu",
   props: ["showStatus"],
   setup(props) {
     var menu = ref(false);

@@ -71,7 +71,7 @@
 import { ref } from "vue";
 
 export default {
-  name: "Activity",
+  name: "Nft Activities Container",
   setup() {
     var menu = ref(false);
     var selectedView = ref("chart");
