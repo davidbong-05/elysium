@@ -183,7 +183,7 @@ export default {
     const {
       getCollectionNFTs,
       getCollectionListedNFTs,
-      getOwnedNFTs,
+      getUserNFTs,
       getUserListedNFTs,
     } = useMarketStore();
     const menu = ref(false);
@@ -214,7 +214,7 @@ export default {
             nfts.value = await getCollectionListedNFTs(props.address);
             break;
           case NftsContainerView.VIEW_USER_OWNED:
-            nfts.value = await getOwnedNFTs(props.address);
+            nfts.value = await getUserNFTs(props.address);
             break;
           case NftsContainerView.VIEW_USER_LISTED:
             nfts.value = await getUserListedNFTs(props.address);

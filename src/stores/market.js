@@ -339,7 +339,7 @@ export const useMarketStore = defineStore("user", () => {
     return totalCount;
   };
 
-  const getOwnedNFTs = async (ownerAddress) => {
+  const getUserNFTs = async (ownerAddress) => {
     let nfts = [];
     let linkedCollection = [];
     try {
@@ -622,7 +622,7 @@ export const useMarketStore = defineStore("user", () => {
     getMyCollection,
     getNftCollection,
     mintNFT,
-    getOwnedNFTs,
+    getUserNFTs,
     getOwnedNFTsCount,
     getCollectionNFTs,
     listNFT,
