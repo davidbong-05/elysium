@@ -440,7 +440,7 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getListedNFTs = async (collectionAddress) => {
+  const getCollectionListedNFTs = async (collectionAddress) => {
     let nfts = [];
     let count = 0;
     try {
@@ -505,7 +505,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       const collectionAddress = await getLinkedCollections(address);
       for (const collection of collectionAddress) {
-        const res = await getListedNFTs(collection);
+        const res = await getCollectionListedNFTs(collection);
         if (res && res.length > 0) {
           allListedNfts = allListedNfts.concat(res);
         }
@@ -627,7 +627,7 @@ export const useMarketStore = defineStore("user", () => {
     getCollectionNFTs,
     listNFT,
     unListNFT,
-    getListedNFTs,
+    getCollectionListedNFTs,
     getUserListedNFTs,
     getCartNFTs,
     buyNFT,
