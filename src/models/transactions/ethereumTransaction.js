@@ -91,7 +91,6 @@ class EthereumTransaction extends BaseTransaction {
     return {
       isSuccess: this.isSuccess,
       status: this.status === 1 ? "Success" : "Failed",
-      transactionHash: this.hash,
       from: this.from,
       to: this.to,
       blockNumber: this.blockNumber,

@@ -6,7 +6,7 @@
         <strong>Transaction Hash:</strong>
       </v-col>
       <v-col cols="8">
-        <span>{{ transactionDetail.hash }}</span>
+        <span class="text-wrap"> {{ transactionDetail.hash }}</span>
       </v-col>
     </v-row>
     <v-row dense>
@@ -30,7 +30,7 @@
         <strong>From:</strong>
       </v-col>
       <v-col cols="8">
-        <span>{{ transactionDetail.from }}</span>
+        <span class="text-wrap">{{ transactionDetail.from }}</span>
       </v-col>
     </v-row>
     <v-row dense>
@@ -38,7 +38,7 @@
         <strong>To:</strong>
       </v-col>
       <v-col cols="8">
-        <span>{{ transactionDetail.to }}</span>
+        <span class="text-wrap">{{ transactionDetail.to }}</span>
       </v-col>
     </v-row>
     <v-row dense>
