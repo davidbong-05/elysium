@@ -64,6 +64,10 @@
         <h3 class="ms-3 d-inline-block">Loading transaction...</h3>
       </v-overlay>
     </v-responsive>
+    <transaction-receipt-card
+      v-if="transactionDetail"
+      :transactionDetail="transactionDetail"
+    />
     <v-card-actions class="d-flex justify-end">
       <v-btn
         v-if="isUpdate"
@@ -136,11 +140,13 @@ import { ref, computed } from "vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import ConsoleUtils from "@/utils/consoleUtils";
+import TransactionReceiptCard from "@/components/shared/TransactionReceiptCard.vue";
 
 export default {
   name: "Nft Detail Card",
   props: ["nft"],
   emits: ["onClose"],
+  components: { TransactionReceiptCard },
   setup(props) {
     const { setAlert, listNFT, unListNFT, buyNFT } = useMarketStore();
     const { post, put, putLinkCollection } = useApiStore();
@@ -149,6 +155,7 @@ export default {
     const showForm = ref(false);
     const isLoading = ref(false);
     const isUpdate = ref(false);
+    const transactionDetail = ref();
     const alert = ref({
       show: false,
       color: "",
@@ -176,6 +183,7 @@ export default {
         isLoading.value = true;
         const res = await listNFT(nftCollection, nftId, price.value.toString());
         if (res.isSuccess) {
+          transactionDetail.value = res;
           alert.value = setAlert("success", null, "NFT listed successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
@@ -206,6 +214,7 @@ export default {
         isLoading.value = true;
         const res = await unListNFT(nftCollection, nftId);
         if (res.isSuccess) {
+          transactionDetail.value = res;
           alert.value = setAlert("success", null, "NFT unlisted successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
@@ -320,6 +329,7 @@ export default {
       isSeller,
       isLoading,
       isUpdate,
+      transactionDetail,
       showForm,
       price,
       alert,

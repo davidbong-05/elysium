@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import BaseTransaction from "./baseTransaction";
 
 class EthereumTransaction extends BaseTransaction {
@@ -89,12 +90,15 @@ class EthereumTransaction extends BaseTransaction {
   getTransactionDetails() {
     return {
       isSuccess: this.isSuccess,
-      status: this.status,
+      status: this.status === 1 ? "Success" : "Failed",
+      transactionHash: this.hash,
       from: this.from,
       to: this.to,
+      blockNumber: this.blockNumber,
       hash: this.hash,
       gasUsed: this.gasUsed,
-      fee: this.fee,
+      gasPrice: ethers.formatUnits(this.gasPrice, "ether"),
+      fee: ethers.formatUnits(this.fee, "ether"),
     };
   }
 }

@@ -66,6 +66,10 @@
           required
         ></v-text-field>
       </v-card-text>
+      <transaction-receipt-card
+        v-if="transactionDetail"
+        :transactionDetail="transactionDetail"
+      />
       <v-card-actions class="d-flex justify-end">
         <v-btn color="error" variant="tonal" @click="reset"> Reset </v-btn>
         <v-btn color="primary" variant="tonal" @click="submit"> Create </v-btn>
@@ -91,10 +95,12 @@
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import { UserRole } from "@/models/enums";
+import TransactionReceiptCard from "@/components/shared/TransactionReceiptCard.vue";
 
 export default {
   name: "createCollection",
   emits: ["onShowForm"],
+  components: { TransactionReceiptCard },
   setup() {
     const { setAlert, createNFTCollection } = useMarketStore();
     // data
@@ -104,6 +110,7 @@ export default {
     const name = ref("");
     const symbol = ref("");
     const royalty = ref("");
+    const transactionDetail = ref();
 
     const alert = ref({
       show: false,
@@ -169,6 +176,7 @@ export default {
               null,
               "NFT created successfully!"
             );
+            transactionDetail.value = res;
           } else if (res.isUserRejected) {
             alert.value = setAlert(
               "info",
@@ -204,6 +212,7 @@ export default {
     return {
       isVerified,
       wallet,
+      transactionDetail,
       name,
       symbol,
       royalty,
