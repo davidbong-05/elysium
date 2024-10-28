@@ -64,7 +64,7 @@
         <h3 class="ms-3 d-inline-block">Loading transaction...</h3>
       </v-overlay>
     </v-responsive>
-    <transaction-receipt-card
+    <transaction-detail-card
       v-if="transactionDetail"
       :transactionDetail="transactionDetail"
     />
@@ -140,13 +140,13 @@ import { ref, computed } from "vue";
 import { useApiStore } from "@/stores/api";
 import { useMarketStore } from "@/stores/market";
 import ConsoleUtils from "@/utils/consoleUtils";
-import TransactionReceiptCard from "@/components/shared/TransactionReceiptCard.vue";
+import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
 
 export default {
   name: "Nft Detail Card",
   props: ["nft"],
   emits: ["onClose"],
-  components: { TransactionReceiptCard },
+  components: { TransactionDetailCard },
   setup(props) {
     const { setAlert, listNFT, unListNFT, buyNFT } = useMarketStore();
     const { post, put, putLinkCollection } = useApiStore();

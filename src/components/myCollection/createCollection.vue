@@ -66,7 +66,7 @@
           required
         ></v-text-field>
       </v-card-text>
-      <transaction-receipt-card
+      <transaction-detail-card
         v-if="transactionDetail"
         :transactionDetail="transactionDetail"
       />
@@ -95,12 +95,12 @@
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import { UserRole } from "@/models/enums";
-import TransactionReceiptCard from "@/components/shared/TransactionReceiptCard.vue";
+import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
 
 export default {
   name: "createCollection",
   emits: ["onShowForm"],
-  components: { TransactionReceiptCard },
+  components: { TransactionDetailCard },
   setup() {
     const { setAlert, createNFTCollection } = useMarketStore();
     // data
