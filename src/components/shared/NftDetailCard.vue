@@ -1,5 +1,5 @@
 <template>
-  <v-card theme="dark" width="350px" class="py-2 px-1">
+  <v-card theme="dark" width="35em" class="py-2 px-1">
     <v-alert
       v-if="alert.show"
       class="my-3 mx-6"
@@ -249,6 +249,7 @@ export default {
             sessionStorage.getItem("address"),
             nftCollection
           );
+          transactionDetail.value = res;
           alert.value = setAlert("success", null, "NFT bought successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
