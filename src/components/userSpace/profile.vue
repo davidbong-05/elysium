@@ -64,7 +64,7 @@
           size="s"
         ></v-icon>
       </v-card-title>
-      <v-card-subtitle>{{ user.truncated_address }}</v-card-subtitle>
+      <v-card-subtitle>{{ user.address.truncateAddress() }}</v-card-subtitle>
       <v-card-subtitle>{{ user.description }}</v-card-subtitle>
     </v-col>
     <v-col md="6" cols="12">

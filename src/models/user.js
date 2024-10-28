@@ -20,14 +20,6 @@ class User {
   }) {
     this.username = username;
     this.address = address;
-    if (address != null) {
-      var truncated_address1 = address?.substring(0, 5);
-      var truncated_address2 = address?.substring(
-        address.length - 4,
-        address.length
-      );
-      this.truncated_address = truncated_address1 + "..." + truncated_address2;
-    }
     this.role = role;
     this.email = email;
     this.profile_url = profile_url;

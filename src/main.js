@@ -14,6 +14,9 @@ import { createPinia } from "pinia";
 // Plugins
 import { registerPlugins } from "@/plugins";
 
+// Helpers
+import "./helpers/stringExtensions";
+
 const app = createApp(App);
 const pinia = createPinia();
 app.use(pinia);
