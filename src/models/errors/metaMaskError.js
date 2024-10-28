@@ -9,12 +9,16 @@ class MetaMaskError extends BaseError {
 
   static parse(jsonData) {
     try {
-      const data =
-        typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;
+      let data = typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;
+
+      const jsonMatch = String(jsonData).match(/info=({.*}), code/);
+      if (jsonMatch && jsonMatch[1]) {
+        data = JSON.parse(jsonMatch[1]);
+      }
 
       return new MetaMaskError({
-        code: data.code || "undefined_code",
-        message: data.message || null,
+        code: data.error?.code || data.code || "undefined_code",
+        message: data.error?.message || data.message || null,
       });
     } catch (error) {
       console.error("Failed to parse data:", error);
