@@ -307,7 +307,7 @@ export const useApiStore = defineStore("api", () => {
       return username;
     }
 
-    if (_usernames.length === 0) {
+    if (!_usernames.value) {
       _usernames.value = await getAllUserNames();
     }
     const user = _usernames.value.find((item) =>

@@ -28,7 +28,7 @@ export const useIpfsStore = defineStore("ipfs", () => {
       return tokenMeta;
     }
 
-    if (_tokenMetas.length === 0) {
+    if (!_tokenMetas.value) {
       _tokenMetas.value = await getAllTokenMetas();
     }
     const token = _tokenMetas?.value?.find((item) =>
