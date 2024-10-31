@@ -94,8 +94,9 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
-import { UserRole } from "@/models/enums";
+import { ErrorCode, UserRole } from "@/models/enums";
 import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
+import AlertUtils from "@/utils/AlertUtils";
 
 export default {
   name: "createCollection",
@@ -171,41 +172,34 @@ export default {
           );
 
           if (res.isSuccess) {
-            alert.value = setAlert(
-              "success",
-              null,
-              "NFT created successfully!"
-            );
+            alert.value = AlertUtils.buildSuccess("NFT created successfully!");
             transactionDetail.value = res;
           } else if (res.isUserRejected) {
-            alert.value = setAlert(
-              "info",
-              null,
+            alert.value = AlertUtils.buildInfo(
               "You had rejected the transaction."
             );
           } else {
-            alert.value = setAlert("error", res.code, res.message);
+            alert.value = AlertUtils.buildError(res.code, res.message);
           }
         } catch (err) {
-          alert.value = setAlert(
-            "error",
+          alert.value = AlertUtils.buildError(
             err.code,
-            "We are facing some issues please try again later..."
+            `We are facing some issues please try again later. ${err.message}`
           );
         }
       } else {
-        alert.value = setAlert(
-          "error",
-          null,
-          "Please check your input and try again"
+        alert.value = AlertUtils.buildError(
+          "Please check your input and try again."
         );
-        console.log("Invalid", valid.value);
       }
     };
 
     onMounted(async () => {
       if (!isVerified) {
-        alert.value = setAlert("error", "Please verify your email first.");
+        alert.value = AlertUtils.buildError(
+          "Please verify your email first.",
+          ErrorCode.CODE_UNVERIFIED
+        );
       }
     });
 

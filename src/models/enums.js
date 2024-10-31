@@ -11,6 +11,7 @@ export const ErrorCode = Object.freeze({
   CODE_ALREADY_LINKED: "ALREADY_LINKED",
   CODE_NOT_LINKED: "NOT_LINKED",
   CODE_UNDEFINED_PARAMETER: "UNDEFINED_PARAMETER",
+  CODE_UNVERIFIED: "UNVERIFIED",
 });
 
 export const ErrorSource = Object.freeze({
