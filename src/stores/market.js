@@ -201,7 +201,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0], true);
+              const collection = await getNftCollection(i[0]);
               return new NftCollection({ ...collection, follower: i[1] });
             } catch (error) {
               ConsoleUtils.displayError(error);
@@ -224,7 +224,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0], false, true);
+              const collection = await getNftCollection(i[0]);
               if (collection) {
                 return new NftCollection({ ...collection, follower: i[1] });
               } else {
@@ -243,13 +243,10 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getNftCollection = async (
-    collectionAddress,
-    isRecipientNameNeeded = false,
-    isCoverNeeded = false
-  ) => {
-    let nftCollection = null;
+  const _collections = [];
 
+  const getNftCollection = async (collectionAddress) => {
+    let nftCollection = null;
     if (
       !ValidationUtils.checkIfParameterIsNullOrUndefined(
         "Collection address",
@@ -258,29 +255,37 @@ export const useMarketStore = defineStore("user", () => {
     ) {
       return nftCollection;
     }
-    try {
-      nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
-    } catch (error) {
-      console.warn(`Error while fetching ${collectionAddress}`);
-      MetaMaskError.parse(error);
-    }
-    if (nftCollection) {
-      try {
-        if (nftCollection.totalSupply > 0 && isCoverNeeded) {
-          const cover = await getCollectionCover(collectionAddress);
-          nftCollection.setCover(cover);
-        }
 
-        if (isRecipientNameNeeded) {
+    nftCollection = _collections?.find((item) =>
+      item.address.ignoreCaseEqual(collectionAddress)
+    );
+
+    if (!nftCollection) {
+      try {
+        nftCollection = await metaMaskClient.getNftCollection(
+          collectionAddress
+        );
+      } catch (error) {
+        console.warn(`Error while fetching ${collectionAddress}`);
+        MetaMaskError.parse(error);
+      }
+      if (nftCollection) {
+        try {
+          if (nftCollection.totalSupply > 0) {
+            const cover = await getCollectionCover(collectionAddress);
+            nftCollection.setCover(cover);
+          }
+
           const royaltyRecipientName = await getUsername(
             nftCollection.royaltyRecipient
           );
           if (royaltyRecipientName) {
             nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
           }
+          _collections.push(nftCollection);
+        } catch (error) {
+          ConsoleUtils.displayError(error);
         }
-      } catch (error) {
-        ConsoleUtils.displayError(error);
       }
     }
     return nftCollection;

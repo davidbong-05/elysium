@@ -208,7 +208,7 @@ export default {
         let collections = [];
         const res = await getLinkedCollections(userAddress);
         for (const item of res) {
-          let collection = await getNftCollection(item, true);
+          let collection = await getNftCollection(item);
           if (collection != null) {
             collections.push(collection);
           }
@@ -226,7 +226,7 @@ export default {
         let collections = [];
         const res = await getMyCollection();
         for (const item of res) {
-          let collection = await getNftCollection(item, true);
+          let collection = await getNftCollection(item);
           if (collection != null) {
             collections.push(collection);
           }
@@ -243,7 +243,7 @@ export default {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      let collection = await getNftCollection(address, true);
+      let collection = await getNftCollection(address);
       if (!collection) {
         setAlert("error", "Collection doesn't exist.");
         isLoading.value = false;
