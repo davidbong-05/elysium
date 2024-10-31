@@ -31,6 +31,7 @@
                   <v-btn
                     color="red"
                     variant="tonal"
+                    prepend-icon="mdi-link-variant-off"
                     @click="unlink(item.address)"
                   >
                     Unlink
@@ -80,7 +81,18 @@
     </v-card>
 
     <v-card variant="outlined" theme="dark">
-      <v-card-title>Created Collection</v-card-title>
+      <v-card-title class="mt-4 d-flex justify-space-between"
+        >Created Collection
+        <v-btn
+          prepend-icon="mdi-sync"
+          color="white"
+          variant="outlined"
+          onhowe:
+          @click="linkAll()"
+        >
+          Link All
+        </v-btn></v-card-title
+      >
       <div v-if="!isLoading">
         <v-card-text v-if="createdCollection.length > 0">
           <v-table fixed-header height="300px" theme="dark">
@@ -99,6 +111,7 @@
                   <v-btn
                     color="accent"
                     variant="tonal"
+                    prepend-icon="mdi-link-variant"
                     @click="link(item.address)"
                   >
                     Link
@@ -239,6 +252,21 @@ export default {
       }
     };
 
+    const linkAll = async () => {
+      const createdCollectionAddresses = createdCollection.value.map(
+        (collection) => collection.address
+      );
+      const linkedCollectionAddressSet = new Set(
+        linkedCollection.value.map((collection) => collection.address)
+      );
+      const newCreatedCollectionAddresses = createdCollectionAddresses.filter(
+        (addr) => !linkedCollectionAddressSet.has(addr)
+      );
+      newCreatedCollectionAddresses.forEach((address) => {
+        link(address);
+      });
+    };
+
     const link = async (address) => {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
@@ -300,6 +328,7 @@ export default {
       linkedCollection,
       createdCollection,
       collectionAddress,
+      linkAll,
       link,
       unlink,
     };
