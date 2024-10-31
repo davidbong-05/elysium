@@ -240,26 +240,65 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const _usernames = [];
+
+  const getAllUserNames = async () => {
+    let usernames = [];
+    try {
+      const res = await apiClient.get(`/api/user/name/all`);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        usernames = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return usernames;
+    }
+  };
   const getUsername = async (userAddress) => {
+    let username = null;
+
     if (
       !ValidationUtils.checkIfParameterIsNullOrUndefined(
         "User address",
         userAddress
       )
     ) {
-      return null;
+      return username;
     }
-    try {
-      const res = await apiClient.get(`/api/user/name/${userAddress}`);
-      const txn = ApiTransaction.parse(res);
-      return txn.getTransactionDetails();
-    } catch (error) {
-      if (error.response) {
-        return ApiError.parse(error.response);
-      } else {
-        return BaseError.parse(error);
+
+    if (_usernames.length === 0) {
+      _usernames.value = await getAllUserNames();
+    }
+    const user = _usernames.value.find((item) =>
+      item.address.ignoreCaseEqual(userAddress)
+    );
+
+    if (user) {
+      username = user.username;
+    } else {
+      try {
+        const res = await apiClient.get(`/api/user/name/${userAddress}`);
+        const txn = ApiTransaction.parse(res);
+        const txnDetail = txn.getTransactionDetails();
+        if (txnDetail.isSuccess) {
+          username = txnDetail.data;
+        }
+      } catch (error) {
+        if (error.response) {
+          ApiError.parse(error.response);
+        } else {
+          BaseError.parse(error);
+        }
       }
     }
+
+    return username;
   };
 
   const postFollowUserCheck = async (userAddress, targetAddress) => {
