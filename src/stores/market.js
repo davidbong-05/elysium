@@ -396,27 +396,37 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const _tokens = [];
+
   const getNft = async (ownerAddress, collectionAddress, i) => {
     let nft = null;
     try {
-      nft = await metaMaskClient.getOwnedNft(
-        ownerAddress,
-        collectionAddress,
-        i
+      nft = _tokens?.find(
+        (item) =>
+          item.collection.ignoreCaseEqual(collectionAddress) &&
+          item.tokenId == i
       );
-      const meta = await getTokenMeta(nft.tokenHash);
-      let ownerName = await getUsername(nft.owner);
-      let collectionOwnerName = await getUsername(nft.collectionOwner);
-      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
-      nft = new Nft({
-        ...nft,
-        ownerName: ownerName,
-        collectionOwnerName: collectionOwnerName,
-        tokenName: meta.name,
-        tokenDescription: meta.description,
-        tokenUri: tokenUri,
-      });
-      nft.displayInfo();
+      if (!nft) {
+        nft = await metaMaskClient.getOwnedNft(
+          ownerAddress,
+          collectionAddress,
+          i
+        );
+        const meta = await getTokenMeta(nft.tokenHash);
+        let ownerName = await getUsername(nft.owner);
+        let collectionOwnerName = await getUsername(nft.collectionOwner);
+        const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
+        nft = new Nft({
+          ...nft,
+          ownerName: ownerName,
+          collectionOwnerName: collectionOwnerName,
+          tokenName: meta.name,
+          tokenDescription: meta.description,
+          tokenUri: tokenUri,
+        });
+        nft.displayInfo();
+        _tokens.push(nft);
+      }
     } catch (error) {
       ConsoleUtils.displayError(error);
     } finally {
