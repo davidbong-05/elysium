@@ -2,6 +2,7 @@ import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
 import { useApiStore } from "@/stores/api";
+import { useIpfsStore } from "@/stores/ipfs";
 import MetaMaskError from "@/models/errors/metaMaskError";
 import Nft from "@/models/nft";
 import MetaMaskClient from "@/services/metaMaskClient";
@@ -29,6 +30,7 @@ export const useMarketStore = defineStore("user", () => {
     postLogout,
     postPing,
   } = useApiStore();
+  const { getTokenMeta } = useIpfsStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
@@ -165,17 +167,6 @@ export const useMarketStore = defineStore("user", () => {
     return res.data;
   };
 
-  const getTokenMeta = async (tokenHash) => {
-    try {
-      const res = await axios.get(
-        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + tokenHash
-      );
-      return res.data;
-    } catch (error) {
-      ConsoleUtils.displayError(error);
-    }
-  };
-
   const createNFTCollection = async (
     name,
     symbol,
@@ -299,9 +290,9 @@ export const useMarketStore = defineStore("user", () => {
     try {
       const tokenHash = await metaMaskClient.getTokenHash(collectionAddress, 0);
       const meta = await getTokenMeta(tokenHash);
-      const imgHash = meta.image;
       return (
-        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
+        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+        meta.imageHash
       );
     } catch (error) {
       return MetaMaskError.parse(error);
@@ -414,10 +405,9 @@ export const useMarketStore = defineStore("user", () => {
         i
       );
       const meta = await getTokenMeta(nft.tokenHash);
-      const imgHash = meta.image;
       let ownerName = await getUsername(nft.owner);
       let collectionOwnerName = await getUsername(nft.collectionOwner);
-      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
       nft = new Nft({
         ...nft,
         ownerName: ownerName,
@@ -481,10 +471,9 @@ export const useMarketStore = defineStore("user", () => {
     try {
       nft = await metaMaskClient.getListedNft(collectionAddress, i);
       const meta = await getTokenMeta(nft.tokenHash);
-      const imgHash = meta.image;
       let sellerName = await getUsername(nft.seller);
       let collectionOwnerName = await getUsername(nft.collectionOwner);
-      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
       nft = new Nft({
         ...nft,
         sellerName: sellerName,

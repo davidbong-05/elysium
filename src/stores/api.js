@@ -14,6 +14,41 @@ const HASH = window.btoa(`${SERVER_API_KEY}:${SERVER_API_SECRET}`);
 export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
 
+  //#region token meta
+  const getAllTokenMetas = async () => {
+    let tokenMetas = [];
+    try {
+      const res = await apiClient.get(`/api/token/meta/all`);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        tokenMetas = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return tokenMetas;
+    }
+  };
+
+  const postTokenMeta = async (tokenMeta) => {
+    try {
+      const res = await apiClient.post(`/api/token/meta`, tokenMeta);
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+  //#endregion token meta
+
   //#region nft collections
   const getAllCollections = async () => {
     let collections = [];
@@ -438,6 +473,8 @@ export const useApiStore = defineStore("api", () => {
   };
 
   return {
+    getAllTokenMetas,
+    postTokenMeta,
     getAllCollections,
     getCollections,
     getLinkedCollections,
