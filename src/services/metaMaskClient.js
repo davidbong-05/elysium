@@ -308,7 +308,7 @@ class MetaMaskClient {
   };
 
   getOwnNftCollections = async () => {
-    `🧹 getting own NFT collections.`;
+    console.log(`🧹 getting own NFT collections.`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
@@ -320,7 +320,7 @@ class MetaMaskClient {
   };
 
   getNftCollection = async (collectionAddress) => {
-    `🧹 getting NFT collection detail from ${collectionAddress}.`;
+    console.log(`🧹 getting NFT collection detail from ${collectionAddress}.`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
