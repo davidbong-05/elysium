@@ -39,7 +39,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from "@/stores/api";
+import { useApiStore } from "@/stores/api.js";
 export default {
   setup() {
     const { getUsers } = useApiStore();

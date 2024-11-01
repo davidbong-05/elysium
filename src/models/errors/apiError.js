@@ -1,5 +1,5 @@
-import { ApiResponseCode } from "../enums";
-import BaseError from "./baseError";
+import { ApiResponseCode } from "../enums.js";
+import BaseError from "./baseError.js";
 
 class ApiError extends BaseError {
   constructor({ source, code, message }) {

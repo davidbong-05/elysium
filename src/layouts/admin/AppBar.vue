@@ -63,11 +63,10 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useApiStore } from "@/stores/api";
-import { useMarketStore } from "@/stores/market";
+import { useMarketStore } from "@/stores/market.js";
 import { storeToRefs } from "pinia";
 import Avatar from "vue-boring-avatars";
-import { UserRole } from "@/models/enums";
+import { UserRole } from "@/models/enums.js";
 
 export default {
   name: "AppBar",

@@ -55,10 +55,10 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
+import { useMarketStore } from "@/stores/market.js";
 import { useRoute } from "vue-router";
 import NftsContainer from "@/components/shared/NftsContainer.vue";
-import { NftsContainerView } from "@/models/enums";
+import { NftsContainerView } from "@/models/enums.js";
 
 // import Activity from "@/components/collectionPage/activity.vue";
 

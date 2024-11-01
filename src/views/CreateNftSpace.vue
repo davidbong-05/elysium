@@ -176,8 +176,8 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import { UserRole } from "@/models/enums";
+import { useMarketStore } from "@/stores/market.js";
+import { UserRole } from "@/models/enums.js";
 
 export default {
   name: "Create Nft Space",

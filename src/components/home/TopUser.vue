@@ -60,9 +60,9 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useApiStore } from "@/stores/api";
+import { useApiStore } from "@/stores/api.js";
 import Avatar from "vue-boring-avatars";
-import ConsoleUtils from "@/utils/consoleUtils";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   name: "TopUser",

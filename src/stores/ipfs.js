@@ -1,11 +1,11 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import ApiClient from "@/services/apiClient";
-import ApiTransaction from "@/models/transactions/apiTransaction";
-import BaseError from "@/models/errors/baseError";
-import ApiError from "@/models/errors/apiError";
-import ValidationUtils from "@/utils/validationUtils";
-import { useApiStore } from "@/stores/api";
-import TokenMeta from "@/models/tokenMeta";
+import ApiClient from "@/services/apiClient.js";
+import ApiTransaction from "@/models/transactions/apiTransaction.js";
+import BaseError from "@/models/errors/baseError.js";
+import ApiError from "@/models/errors/apiError.js";
+import ValidationUtils from "@/utils/validationUtils.js";
+import { useApiStore } from "@/stores/api.js";
+import TokenMeta from "@/models/tokenMeta.js";
 
 export const useIpfsStore = defineStore("ipfs", () => {
   const ipfsApiClient = new ApiClient(

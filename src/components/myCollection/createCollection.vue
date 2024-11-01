@@ -93,10 +93,10 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import { ErrorCode, UserRole } from "@/models/enums";
+import { useMarketStore } from "@/stores/market.js";
+import { ErrorCode, UserRole } from "@/models/enums.js";
 import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
-import Alert from "@/models/alert";
+import Alert from "@/models/alert.js";
 
 export default {
   name: "createCollection",

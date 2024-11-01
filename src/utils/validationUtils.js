@@ -1,5 +1,5 @@
-import { ErrorCode } from "@/models/enums";
-import BaseError from "@/models/errors/baseError";
+import { ErrorCode } from "@/models/enums.js";
+import BaseError from "@/models/errors/baseError.js";
 
 class ValidationUtils {
   static checkIfParameterIsNullOrUndefined(parameterName = "Parameter", value) {

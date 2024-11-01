@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import BaseTransaction from "./baseTransaction";
+import BaseTransaction from "./baseTransaction.js";
 
 class EthereumTransaction extends BaseTransaction {
   constructor({

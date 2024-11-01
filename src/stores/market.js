@@ -1,16 +1,15 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
-import { useApiStore } from "@/stores/api";
-import { useIpfsStore } from "@/stores/ipfs";
-import MetaMaskError from "@/models/errors/metaMaskError";
-import Nft from "@/models/nft";
-import MetaMaskClient from "@/services/metaMaskClient";
-import ConsoleUtils from "@/utils/consoleUtils";
-import NftCollection from "@/models/nftCollection";
-import ValidationUtils from "@/utils/validationUtils";
-import { UserRole } from "@/models/enums";
-import { NftsContainerView } from "@/models/enums";
+import { useApiStore } from "@/stores/api.js";
+import { useIpfsStore } from "@/stores/ipfs.js";
+import MetaMaskError from "@/models/errors/metaMaskError.js";
+import Nft from "@/models/nft.js";
+import MetaMaskClient from "@/services/metaMaskClient.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
+import NftCollection from "@/models/nftCollection.js";
+import ValidationUtils from "@/utils/validationUtils.js";
+import { UserRole, NftsContainerView } from "@/models/enums.js";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;

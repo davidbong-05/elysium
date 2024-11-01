@@ -88,8 +88,8 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useApiStore } from "@/stores/api";
-import ConsoleUtils from "@/utils/consoleUtils";
+import { useApiStore } from "@/stores/api.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   name: "Verification Space",

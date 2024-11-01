@@ -84,9 +84,9 @@
 </template>
 <script>
 import { ref, onMounted, computed } from "vue";
-import { useApiStore } from "@/stores/api";
-import { useMarketStore } from "@/stores/market";
-import ConsoleUtils from "@/utils/consoleUtils";
+import { useApiStore } from "@/stores/api.js";
+import { useMarketStore } from "@/stores/market.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   name: "MyCart",

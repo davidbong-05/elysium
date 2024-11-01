@@ -53,7 +53,7 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import { useApiStore } from "@/stores/api";
+import { useApiStore } from "@/stores/api.js";
 export default {
   name: "Edit Profile",
   props: ["user"],

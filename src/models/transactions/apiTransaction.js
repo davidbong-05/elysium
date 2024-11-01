@@ -1,5 +1,5 @@
-import { ApiResponseCode } from "../enums";
-import BaseTransaction from "./baseTransaction";
+import { ApiResponseCode } from "../enums.js";
+import BaseTransaction from "./baseTransaction.js";
 
 class ApiTransaction extends BaseTransaction {
   constructor({ status, statusText, data }) {

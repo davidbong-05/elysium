@@ -2,10 +2,10 @@ import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json"
 import marketContractABI from "../artifacts/contractABI/ElysiumNFTMarketplace.json";
 import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
 import { ethers } from "ethers";
-import MetaMaskReponse from "@/models/errors/metaMaskError";
-import EthereumTransaction from "@/models/transactions/ethereumTransaction";
-import Nft from "@/models/nft";
-import NftColletion from "@/models/nftCollection";
+import MetaMaskReponse from "@/models/errors/metaMaskError.js";
+import EthereumTransaction from "@/models/transactions/ethereumTransaction.js";
+import Nft from "@/models/nft.js";
+import NftColletion from "@/models/nftCollection.js";
 
 class MetaMaskClient {
   constructor(factoryContractAddress, marketContractAddress, setAlertFunc) {

@@ -75,9 +75,9 @@ import { useRoute } from "vue-router";
 import Profile from "@/components/userSpace/profile.vue";
 import NftsContainer from "@/components/shared/NftsContainer.vue";
 // import Activity from "@/components/userSpace/activity.vue";
-import { useApiStore } from "@/stores/api";
-import ConsoleUtils from "@/utils/consoleUtils";
-import { NftsContainerView } from "@/models/enums";
+import { useApiStore } from "@/stores/api.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
+import { NftsContainerView } from "@/models/enums.js";
 
 export default {
   name: "User Space",

@@ -1,11 +1,11 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import ApiClient from "@/services/apiClient";
-import ApiTransaction from "@/models/transactions/apiTransaction";
-import BaseError from "@/models/errors/baseError";
-import ApiError from "@/models/errors/apiError";
-import User from "@/models/user";
-import ValidationUtils from "@/utils/validationUtils";
-import { ApiResponseCode, ErrorCode, ErrorSource } from "@/models/enums";
+import ApiClient from "@/services/apiClient.js";
+import ApiTransaction from "@/models/transactions/apiTransaction.js";
+import BaseError from "@/models/errors/baseError.js";
+import ApiError from "@/models/errors/apiError.js";
+import User from "@/models/user.js";
+import ValidationUtils from "@/utils/validationUtils.js";
+import { ErrorCode, ErrorSource } from "@/models/enums.js";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;

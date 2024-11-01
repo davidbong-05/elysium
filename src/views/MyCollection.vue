@@ -155,8 +155,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import { useApiStore } from "@/stores/api";
+import { useMarketStore } from "@/stores/market.js";
+import { useApiStore } from "@/stores/api.js";
 import createCollection from "@/components/myCollection/createCollection.vue";
 
 export default {
