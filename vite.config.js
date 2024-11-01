@@ -38,5 +38,9 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
+    warmup: {
+      clientFiles: ["./src/components/home/TopCollection.vue"],
+      clientFiles: ["./src/components/shared/NftContainers.vue"],
+    },
   },
 });
