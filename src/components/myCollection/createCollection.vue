@@ -96,14 +96,14 @@ import { ref, computed, onMounted } from "vue";
 import { useMarketStore } from "@/stores/market";
 import { ErrorCode, UserRole } from "@/models/enums";
 import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
-import AlertUtils from "@/utils/AlertUtils";
+import Alert from "@/models/alert";
 
 export default {
   name: "createCollection",
   emits: ["onShowForm"],
   components: { TransactionDetailCard },
   setup() {
-    const { setAlert, createNFTCollection } = useMarketStore();
+    const { createNFTCollection } = useMarketStore();
     // data
     const wallet = sessionStorage.getItem("address");
     const isVerified =
@@ -113,13 +113,7 @@ export default {
     const royalty = ref("");
     const transactionDetail = ref();
 
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
 
     const rules = {
       required: (v) => !!v || "This field is required.",
@@ -172,31 +166,28 @@ export default {
           );
 
           if (res.isSuccess) {
-            alert.value = AlertUtils.buildSuccess("NFT created successfully!");
+            alert.value.setSuccess("NFT created successfully!");
             transactionDetail.value = res;
           } else if (res.isUserRejected) {
-            alert.value = AlertUtils.buildInfo(
-              "You had rejected the transaction."
-            );
+            alert.value.setInfo("You had rejected the transaction.");
           } else {
-            alert.value = AlertUtils.buildError(res.code, res.message);
+            alert.value.setError(res.code, res.message);
           }
         } catch (err) {
-          alert.value = AlertUtils.buildError(
+          alert.value.setError(
             err.code,
             `We are facing some issues please try again later. ${err.message}`
           );
         }
       } else {
-        alert.value = AlertUtils.buildError(
-          "Please check your input and try again."
-        );
+        alert.value.setError("Please check your input and try again.");
       }
     };
 
     onMounted(async () => {
+      alert.value = new Alert();
       if (!isVerified) {
-        alert.value = AlertUtils.buildError(
+        alert.value.setError(
           "Please verify your email first.",
           ErrorCode.CODE_UNVERIFIED
         );
