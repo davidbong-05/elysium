@@ -34,67 +34,16 @@ export const useMarketStore = defineStore("user", () => {
   //   console.log("setLoader", value);
   //   loading.value = value;
   // }
-  var alert = ref({
-    show: false,
-    color: "",
-    icon: "",
-    title: "",
-    code: "",
-    text: "",
-  });
-
-  const setAlert = (status, code, msg) => {
-    var alertDetail = {
-      code: code ? `[${code}]` : "",
-      text: msg ? `${msg}.` : "",
-    };
-    switch (status) {
-      case "error":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-        };
-        break;
-      case "success":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-        };
-        break;
-      case "info":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "info",
-          icon: "$info",
-          title: "Info",
-        };
-        break;
-      default:
-        alert = { show: false };
-        break;
-    }
-    console.log(`💬 (${alert.title}) ${alert.text} ${alert.code}`);
-    return alert;
-  };
 
   const metaMaskClient = new MetaMaskClient(
     FACTORY_CONTRACT_ADDRESS,
-    MARKET_CONTRACT_ADDRESS,
-    setAlert
+    MARKET_CONTRACT_ADDRESS
   );
 
   const connectWallet = async () => {
     try {
       account.value = await metaMaskClient.connectWallet();
     } catch (error) {
-      setAlert("error", error.code, error.message);
       ConsoleUtils.displayError(error);
     }
   };
@@ -614,7 +563,6 @@ export const useMarketStore = defineStore("user", () => {
     // setLoader,
     loading,
     // market,
-    setAlert,
     connectWallet,
     login,
     logout,

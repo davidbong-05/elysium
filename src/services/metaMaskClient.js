@@ -8,10 +8,9 @@ import Nft from "@/models/nft.js";
 import NftColletion from "@/models/nftCollection.js";
 
 class MetaMaskClient {
-  constructor(factoryContractAddress, marketContractAddress, setAlertFunc) {
+  constructor(factoryContractAddress, marketContractAddress) {
     this.factoryContractAddress = factoryContractAddress;
     this.marketContractAddress = marketContractAddress;
-    this.setAlertFunc = setAlertFunc;
     this.displayInfo();
   }
 
@@ -45,7 +44,6 @@ class MetaMaskClient {
   ensureMetaMaskIsInstalled = async () => {
     if (!window.ethereum) {
       console.log(`⚠️ MetaMask is either not installed or not connected.`);
-      this.setAlertFunc("error", "Must connect to MetaMask!");
     }
   };
 
@@ -55,7 +53,7 @@ class MetaMaskClient {
       method: "eth_chainId",
     });
     if (walletChainId != MetaMaskClient.POLYGON_NETWORK.chainId) {
-      await this.switchNetwork(this.setAlertFunc);
+      await this.switchNetwork();
     }
   };
 

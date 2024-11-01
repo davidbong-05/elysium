@@ -298,22 +298,20 @@ export default {
                   res,
                   price.value.toString()
                 );
-                if (res2 === "ACTION_REJECTED") {
-                  alert.value = setAlert(
-                    "info",
-                    res2.code,
-                    "You had rejected the transaction. Failed to listed on sales."
-                  );
+                if (res2.isSuccess) {
+                  alert.value.setSuccess("NFT Minted Successfully");
+                  reset();
+                } else if (res.isUserRejected) {
+                  alert.value.setInfo("You had rejected the transaction.");
+                } else {
+                  alert.value.setError(res.message, res.code);
                 }
-                console.log("listed on sale", res2);
               } catch (err) {
                 alert.value.setError(
                   "We are facing some issues please try again later."
                 );
               }
             }
-            alert.value.setSuccess("NFT Minted Successfully");
-            reset();
           } else if (res.isUserRejected) {
             alert.value.setInfo("You had rejected the transaction.");
           } else {

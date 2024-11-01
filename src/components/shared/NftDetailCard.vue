@@ -136,11 +136,12 @@
   </v-card>
 </template>
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useApiStore } from "@/stores/api.js";
 import { useMarketStore } from "@/stores/market.js";
 import ConsoleUtils from "@/utils/consoleUtils.js";
 import TransactionDetailCard from "@/components/shared/TransactionDetailCard.vue";
+import Alert from "@/models/alert.js";
 
 export default {
   name: "Nft Detail Card",
@@ -148,7 +149,7 @@ export default {
   emits: ["onClose"],
   components: { TransactionDetailCard },
   setup(props) {
-    const { setAlert, listNFT, unListNFT, buyNFT } = useMarketStore();
+    const { listNFT, unListNFT, buyNFT } = useMarketStore();
     const { post, put, putLinkCollection } = useApiStore();
 
     const price = ref();
@@ -156,13 +157,7 @@ export default {
     const isLoading = ref(false);
     const isUpdate = ref(false);
     const transactionDetail = ref();
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
 
     const isOwner = computed(() => {
       const nftOwner = props.nft.owner;
@@ -184,23 +179,18 @@ export default {
         const res = await listNFT(nftCollection, nftId, price.value.toString());
         if (res.isSuccess) {
           transactionDetail.value = res;
-          alert.value = setAlert("success", null, "NFT listed successfully!");
+          alert.value.setSuccess("NFT listed successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
-          alert.value = setAlert(
-            "info",
-            null,
-            "You had rejected the transaction."
-          );
+          alert.value.setInfo("You had rejected the transaction.");
         } else {
-          alert.value = setAlert("error", res.code, res.message);
+          alert.value.setError(res.message, res.code);
           isUpdate.value = true;
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          err.code,
-          "We are facing some issues please try again later..."
+        alert.value.setError(
+          "We are facing some issues please try again later.",
+          err.code
         );
         ConsoleUtils.displayError(err);
         isUpdate.value = true;
@@ -215,23 +205,18 @@ export default {
         const res = await unListNFT(nftCollection, nftId);
         if (res.isSuccess) {
           transactionDetail.value = res;
-          alert.value = setAlert("success", null, "NFT unlisted successfully!");
+          alert.value.setSuccess("NFT unlisted successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
-          alert.value = setAlert(
-            "info",
-            null,
-            "You had rejected the transaction."
-          );
+          alert.value.setInfo("You had rejected the transaction.");
         } else {
-          alert.value = setAlert("error", res.code, res.message);
+          alert.value.setError(res.message, res.code);
           isUpdate.value = true;
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          err.code,
-          "We are facing some issues please try again later..."
+        alert.value.setError(
+          "We are facing some issues please try again later.",
+          err.code
         );
         ConsoleUtils.displayError(err);
         isUpdate.value = true;
@@ -250,23 +235,18 @@ export default {
             nftCollection
           );
           transactionDetail.value = res;
-          alert.value = setAlert("success", null, "NFT bought successfully!");
+          alert.value.setSuccess("NFT bought successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
-          alert.value = setAlert(
-            "info",
-            null,
-            "You had rejected the transaction."
-          );
+          alert.value.setInfo("You had rejected the transaction.");
         } else {
-          alert.value = setAlert("error", res.code, res.message);
+          alert.value.setError(res.message, res.code);
           isUpdate.value = true;
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          err.code,
-          "We are facing some issues please try again later..."
+        alert.value.setError(
+          "We are facing some issues please try again later.",
+          err.code
         );
         ConsoleUtils.displayError(err);
         isUpdate.value = true;
@@ -290,8 +270,7 @@ export default {
               element.tokenId === nftId
             ) {
               exist = true;
-              alert.value = setAlert("error", "NFT already in cart... ");
-              console.log("NFT already in cart");
+              alert.value.setError("NFT already in cart.");
               break;
             }
           }
@@ -303,27 +282,29 @@ export default {
               user_address: sessionStorage.getItem("address"),
               cart_content: nfts.value,
             });
-            alert.value = setAlert("success", "Successfully added to cart!");
+            alert.value.setSuccess("Successfully added to cart!");
           } catch (err) {
-            alert.value = setAlert(
-              "error",
-              "We are facing some issues please try again later..."
+            alert.value.setError(
+              "We are facing some issues please try again later.",
+              err.code
             );
-            console.log(err);
           }
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          "We are facing some issues please try again later..."
+        alert.value.setError(
+          "We are facing some issues please try again later.",
+          err.code
         );
-        console.log(err);
       }
     };
 
     const refresh = () => {
       window.location.reload();
     };
+
+    onMounted(async () => {
+      alert.value = new Alert();
+    });
 
     return {
       isOwner,

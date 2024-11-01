@@ -87,22 +87,17 @@ import { ref, onMounted, computed } from "vue";
 import { useApiStore } from "@/stores/api.js";
 import { useMarketStore } from "@/stores/market.js";
 import ConsoleUtils from "@/utils/consoleUtils.js";
+import Alert from "@/models/alert.js";
 
 export default {
   name: "MyCart",
   emits: ["onShowCart"],
   setup() {
     const cartItems = ref([]);
-    const { setAlert, getCartNFTs, checkoutNFTs } = useMarketStore();
+    const { getCartNFTs, checkoutNFTs } = useMarketStore();
     const { post, put } = useApiStore();
 
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
 
     const totalPrice = computed(() => {
       let price = 0;
@@ -133,10 +128,9 @@ export default {
           user_address: sessionStorage.getItem("address"),
           cart_content: newCartContents,
         });
-        alert.value = setAlert("success", "Item removed from cart");
+        alert.value.setSuccess("Item removed from cart");
       } catch (err) {
-        alert.value = setAlert("error", "Oops... Something went wrong");
-        console.log(err);
+        alert.value.setError("Something went wrong", err.code);
       }
     };
 
@@ -146,10 +140,9 @@ export default {
           user_address: sessionStorage.getItem("address"),
         });
         cartItems.value = [];
-        alert.value = setAlert("success", "Cart cleared");
+        alert.value.setSuccess("Cart cleared");
       } catch (err) {
-        alert.value = setAlert("error", "Oops... Something went wrong");
-        console.log(err);
+        alert.value.setError("Something went wrong", err.code);
       }
     };
 
@@ -157,28 +150,16 @@ export default {
       try {
         const res = await checkoutNFTs(cartItems.value);
         if (res.isSuccess) {
-          alert.value = setAlert(
-            "success",
-            null,
-            "Cart checked out successfully!"
-          );
+          alert.value.setSuccess("Cart checked out successfully!");
           isUpdate.value = true;
         } else if (res.isUserRejected) {
-          alert.value = setAlert(
-            "info",
-            null,
-            "You had rejected the transaction."
-          );
+          alert.value.setInfo("You had rejected the transaction.");
         } else {
-          alert.value = setAlert("error", res.code, res.message);
+          alert.value.setError(res.message, res.code);
           isUpdate.value = true;
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          err.code,
-          "Oops... Something went wrong"
-        );
+        alert.value.setError("Something went wrong", err.code);
         ConsoleUtils.displayError(err);
         isUpdate.value = true;
       }
@@ -186,6 +167,7 @@ export default {
 
     onMounted(async () => {
       try {
+        alert.value = new Alert();
         const res = await post("/api/cart", {
           user_address: sessionStorage.getItem("address"),
         });
@@ -195,7 +177,7 @@ export default {
           cartItems.value = await getCartNFTs(res.data);
         }
       } catch (error) {
-        console.error(error);
+        alert.value.setError("Something went wrong", err.code);
       }
     });
 
