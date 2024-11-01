@@ -156,7 +156,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await put(`/api/collection/link/`, data);
+      const res = await apiClient.put(`/api/collection/link/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -189,7 +189,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await put(`/api/collection/unlink/`, data);
+      const res = await apiClient.put(`/api/collection/unlink/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -342,7 +342,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await post("/api/user/follow/check", data);
+      const res = await apiClient.post("/api/user/follow/check", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -359,7 +359,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await put("/api/user/follow", data);
+      const res = await apiClient.put("/api/user/follow", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -376,7 +376,26 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await put("/api/user/unfollow", data);
+      const res = await apiClient.put("/api/user/unfollow", data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const putUpdateUserProfile = async (newDetail) => {
+    try {
+      const data = {
+        email: newDetail.email,
+        address: newDetail.address,
+        username: newDetail.username,
+        description: newDetail.desciption,
+      };
+      const res = await apiClient.put("/api/user", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -447,7 +466,10 @@ export const useApiStore = defineStore("api", () => {
       const data = {
         email: email,
       };
-      const res = await post(`/api/auth/send-verification-email`, data);
+      const res = await apiClient.post(
+        `/api/auth/send-verification-email`,
+        data
+      );
       const txn = ApiTransaction.parse(res);
       return txn.getTransactionDetails();
     } catch (error) {
@@ -488,6 +510,7 @@ export const useApiStore = defineStore("api", () => {
     postFollowUserCheck,
     putFollowUser,
     putUnfollowUser,
+    putUpdateUserProfile,
     postLogin,
     postLogout,
     postPing,

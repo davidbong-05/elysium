@@ -60,17 +60,11 @@ export default {
   props: ["user"],
   emits: ["onEdit", "update:user"],
   setup(props, { emit }) {
-    const { put } = useApiStore();
+    const { putUpdateUserProfile } = useApiStore();
     const email = props.user.email;
     const username = ref(props.user.username);
     const bio = ref(props.user.description);
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
     const rules = {
       required: (v) => !!v || "This field is required.",
       username: (v) => {
@@ -101,8 +95,8 @@ export default {
           ) {
             alert.value.setInfo("Not changes.");
           } else {
-            const res = await put("/api/user", newDetail);
-            if (res.status == 200) {
+            const res = await putUpdateUserProfile(newDetail);
+            if (res.isSuccess) {
               emit("update:user", newDetail);
               alert.value.setSuccess("Profile Updated");
             } else {
@@ -111,7 +105,6 @@ export default {
           }
         } catch (err) {
           alert.value.setError("Something went wrong", err.code);
-          console.log(err.response.data.message);
         }
       } else {
         alert.value.setError("Please check your input and try again.");
