@@ -1,5 +1,5 @@
 // Composables
-import { UserRole } from "@/models/enums";
+import { UserRole } from "@/models/enums.js";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [

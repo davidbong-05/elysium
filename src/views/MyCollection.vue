@@ -168,9 +168,10 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import { useApiStore } from "@/stores/api";
+import { useMarketStore } from "@/stores/market.js";
+import { useApiStore } from "@/stores/api.js";
 import createCollection from "@/components/myCollection/createCollection.vue";
+import Alert from "@/models/alert.js";
 
 export default {
   name: "MyCollection",
@@ -183,45 +184,19 @@ export default {
     const loadingMsg = ref(
       "Trying to fetch your NFTs collections. This may take a while..."
     );
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
     const showForm = ref(false);
     const linkedCollection = ref([]);
     const createdCollection = ref([]);
     const collectionAddress = ref("");
     const userAddress = sessionStorage.getItem("address");
 
-    const setAlert = (status, msg) => {
-      if (status === "error") {
-        alert.value = {
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-          text: msg,
-        };
-      } else if (status === "success") {
-        alert.value = {
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-          text: msg,
-        };
-      }
-    };
-
     const loadLinkedCollection = async () => {
       try {
         let collections = [];
         const res = await getLinkedCollections(userAddress);
         for (const item of res) {
-          let collection = await getNftCollection(item, true);
+          let collection = await getNftCollection(item);
           if (collection != null) {
             collections.push(collection);
           }
@@ -239,7 +214,7 @@ export default {
         let collections = [];
         const res = await getMyCollection();
         for (const item of res) {
-          let collection = await getNftCollection(item, true);
+          let collection = await getNftCollection(item);
           if (collection != null) {
             collections.push(collection);
           }
@@ -271,9 +246,9 @@ export default {
       loadingMsg.value =
         "Trying to update your NFTs collections. This may take a while...";
       isLoading.value = true;
-      let collection = await getNftCollection(address, true);
+      let collection = await getNftCollection(address);
       if (!collection) {
-        setAlert("error", "Collection doesn't exist.");
+        alert.value.setError("Collection doesn't exist.");
         isLoading.value = false;
         return;
       }
@@ -283,10 +258,10 @@ export default {
         linkedCollection.value
       );
       if (res.isSuccess) {
-        setAlert("success", "Successfully linked");
+        alert.value.setSuccess("Successfully linked.");
         linkedCollection.value.push(collection);
       } else {
-        setAlert("error", res.message);
+        alert.value.setError(res.message);
       }
       isLoading.value = false;
     };
@@ -301,17 +276,18 @@ export default {
         linkedCollection.value
       );
       if (res.isSuccess) {
-        setAlert("success", "Successfully linked");
+        alert.value.setSuccess("Successfully unlinked.");
         linkedCollection.value = linkedCollection.value.filter(
           (linkedCollection) => linkedCollection.address !== address
         );
       } else {
-        setAlert("error", res.message);
+        alert.value.setError(res.message);
       }
       isLoading.value = false;
     };
 
     onMounted(async () => {
+      alert.value = new Alert();
       loadingMsg.value =
         "Trying to fetch your NFTs collections. This may take a while...";
       await loadLinkedCollection();

@@ -1,5 +1,5 @@
-import { MetaMaskResponseCode } from "../enums";
-import BaseError from "./baseError";
+import { MetaMaskResponseCode } from "../enums.js";
+import BaseError from "./baseError.js";
 
 class MetaMaskError extends BaseError {
   constructor({ code, message }) {

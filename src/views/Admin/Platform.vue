@@ -94,7 +94,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
+import { useMarketStore } from "@/stores/market.js";
 
 export default {
   setup() {

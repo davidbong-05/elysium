@@ -176,15 +176,15 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import { UserRole } from "@/models/enums";
+import { useMarketStore } from "@/stores/market.js";
+import { UserRole } from "@/models/enums.js";
+import Alert from "@/models/alert.js";
 
 export default {
   name: "Create Nft Space",
   components: {},
   setup() {
     const {
-      setAlert,
       uploadFileToIPFS,
       uploadJSONToIPFS,
       getMyCollection,
@@ -210,13 +210,7 @@ export default {
     const freeMint = ref("No");
     const file = ref();
 
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
 
     const rules = {
       required: (value) => !!value || "This field is required.",
@@ -304,48 +298,33 @@ export default {
                   res,
                   price.value.toString()
                 );
-                if (res2 === "ACTION_REJECTED") {
-                  alert.value = setAlert(
-                    "info",
-                    res2.code,
-                    "You had rejected the transaction. Failed to listed on sales."
-                  );
+                if (res2.isSuccess) {
+                  alert.value.setSuccess("NFT Minted Successfully");
+                  reset();
+                } else if (res.isUserRejected) {
+                  alert.value.setInfo("You had rejected the transaction.");
+                } else {
+                  alert.value.setError(res.message, res.code);
                 }
-                console.log("listed on sale", res2);
               } catch (err) {
-                alert.value = setAlert(
-                  "error",
-                  err.code,
-                  "We are facing some issues please try again later..."
+                alert.value.setError(
+                  "We are facing some issues please try again later."
                 );
               }
             }
-            alert.value = setAlert("success", null, "NFT Minted Successfully");
-            reset();
           } else if (res.isUserRejected) {
-            alert.value = setAlert(
-              "info",
-              res.code,
-              "You had rejected the transaction."
-            );
+            alert.value.setInfo("You had rejected the transaction.");
           } else {
-            alert.value = setAlert("error", res.code, res.message);
+            alert.value.setError(res.message, res.code);
           }
         } catch (err) {
-          alert.value = setAlert(
-            "error",
-            err.code,
+          alert.value.setError(
             "We are facing some issues please try again later..."
           );
         }
         isLoading.value = false;
       } else {
-        alert.value = setAlert(
-          "error",
-          null,
-          "Please check your input and try again"
-        );
-        console.log("Invalid", valid.value);
+        alert.value.setError("Please check your input and try again.");
       }
     };
 
@@ -356,16 +335,18 @@ export default {
       price.value = "";
       freeMint.value = "No";
       file.value = null;
+      alert.value.hide();
     };
 
     onMounted(async () => {
       try {
+        alert.value = new Alert();
         isLoading.value = true;
         loadingMsg.value = "Fetching your collections...";
         const res = await getMyCollection();
+
         if (res.length === 0) {
-          alert.value = setAlert(
-            "error",
+          alert.value.setError(
             "You don't have any collection. Please create one first."
           );
           loadingMsg.value = "Redirecting to create collection page...";
@@ -386,14 +367,12 @@ export default {
           isLoading.value = false;
         }
         if (!isVerified) {
-          alert.value = setAlert("error", "Please verify your email first.");
+          alert.value.setError("Please verify your email first.");
         }
       } catch (err) {
-        alert.value = setAlert(
-          "error",
-          "We are facing some issues please try again later..."
+        alert.value.setError(
+          "We are facing some issues please try again later."
         );
-        console.log(err);
       }
     });
 

@@ -85,9 +85,9 @@
 </template>
 <script>
 import { ref, computed } from "vue";
-import { useApiStore } from "@/stores/api";
+import { useApiStore } from "@/stores/api.js";
 
-import { useMarketStore } from "@/stores/market";
+import { useMarketStore } from "@/stores/market.js";
 
 export default {
   name: "SignUp",

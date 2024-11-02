@@ -1,15 +1,15 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
-import { useApiStore } from "@/stores/api";
-import MetaMaskError from "@/models/errors/metaMaskError";
-import Nft from "@/models/nft";
-import MetaMaskClient from "@/services/metaMaskClient";
-import ConsoleUtils from "@/utils/consoleUtils";
-import NftCollection from "@/models/nftCollection";
-import ValidationUtils from "@/utils/validationUtils";
-import { UserRole } from "@/models/enums";
-import { NftsContainerView } from "@/models/enums";
+import { useApiStore } from "@/stores/api.js";
+import { useIpfsStore } from "@/stores/ipfs.js";
+import MetaMaskError from "@/models/errors/metaMaskError.js";
+import Nft from "@/models/nft.js";
+import MetaMaskClient from "@/services/metaMaskClient.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
+import NftCollection from "@/models/nftCollection.js";
+import ValidationUtils from "@/utils/validationUtils.js";
+import { UserRole, NftsContainerView } from "@/models/enums.js";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -29,71 +29,21 @@ export const useMarketStore = defineStore("user", () => {
     postLogout,
     postPing,
   } = useApiStore();
+  const { getTokenMeta } = useIpfsStore();
   // function setLoader(boolean) {
   //   console.log("setLoader", value);
   //   loading.value = value;
   // }
-  var alert = ref({
-    show: false,
-    color: "",
-    icon: "",
-    title: "",
-    code: "",
-    text: "",
-  });
-
-  const setAlert = (status, code, msg) => {
-    var alertDetail = {
-      code: code ? `[${code}]` : "",
-      text: msg ? `${msg}.` : "",
-    };
-    switch (status) {
-      case "error":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "error",
-          icon: "$error",
-          title: "Oops...",
-        };
-        break;
-      case "success":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "success",
-          icon: "$success",
-          title: "Success",
-        };
-        break;
-      case "info":
-        alert = {
-          ...alertDetail,
-          show: true,
-          color: "info",
-          icon: "$info",
-          title: "Info",
-        };
-        break;
-      default:
-        alert = { show: false };
-        break;
-    }
-    console.log(`💬 (${alert.title}) ${alert.text} ${alert.code}`);
-    return alert;
-  };
 
   const metaMaskClient = new MetaMaskClient(
     FACTORY_CONTRACT_ADDRESS,
-    MARKET_CONTRACT_ADDRESS,
-    setAlert
+    MARKET_CONTRACT_ADDRESS
   );
 
   const connectWallet = async () => {
     try {
       account.value = await metaMaskClient.connectWallet();
     } catch (error) {
-      setAlert("error", error.code, error.message);
       ConsoleUtils.displayError(error);
     }
   };
@@ -165,17 +115,6 @@ export const useMarketStore = defineStore("user", () => {
     return res.data;
   };
 
-  const getTokenMeta = async (tokenHash) => {
-    try {
-      const res = await axios.get(
-        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + tokenHash
-      );
-      return res.data;
-    } catch (error) {
-      ConsoleUtils.displayError(error);
-    }
-  };
-
   const createNFTCollection = async (
     name,
     symbol,
@@ -210,7 +149,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0], true);
+              const collection = await getNftCollection(i[0]);
               return new NftCollection({ ...collection, follower: i[1] });
             } catch (error) {
               ConsoleUtils.displayError(error);
@@ -233,7 +172,7 @@ export const useMarketStore = defineStore("user", () => {
         nftCollections = await Promise.all(
           res.map(async (i) => {
             try {
-              const collection = await getNftCollection(i[0], false, true);
+              const collection = await getNftCollection(i[0]);
               if (collection) {
                 return new NftCollection({ ...collection, follower: i[1] });
               } else {
@@ -252,13 +191,10 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
-  const getNftCollection = async (
-    collectionAddress,
-    isRecipientNameNeeded = false,
-    isCoverNeeded = false
-  ) => {
-    let nftCollection = null;
+  const _collections = [];
 
+  const getNftCollection = async (collectionAddress) => {
+    let nftCollection = null;
     if (
       !ValidationUtils.checkIfParameterIsNullOrUndefined(
         "Collection address",
@@ -267,29 +203,37 @@ export const useMarketStore = defineStore("user", () => {
     ) {
       return nftCollection;
     }
-    try {
-      nftCollection = await metaMaskClient.getNftCollection(collectionAddress);
-    } catch (error) {
-      console.warn(`Error while fetching ${collectionAddress}`);
-      MetaMaskError.parse(error);
-    }
-    if (nftCollection) {
-      try {
-        if (nftCollection.totalSupply > 0 && isCoverNeeded) {
-          const cover = await getCollectionCover(collectionAddress);
-          nftCollection.setCover(cover);
-        }
 
-        if (isRecipientNameNeeded) {
-          const royaltyRecipientNameRes = await getUsername(
+    nftCollection = _collections?.find((item) =>
+      item.address.ignoreCaseEqual(collectionAddress)
+    );
+
+    if (!nftCollection) {
+      try {
+        nftCollection = await metaMaskClient.getNftCollection(
+          collectionAddress
+        );
+      } catch (error) {
+        console.warn(`Error while fetching ${collectionAddress}`);
+        MetaMaskError.parse(error);
+      }
+      if (nftCollection) {
+        try {
+          if (nftCollection.totalSupply > 0) {
+            const cover = await getCollectionCover(collectionAddress);
+            nftCollection.setCover(cover);
+          }
+
+          const royaltyRecipientName = await getUsername(
             nftCollection.royaltyRecipient
           );
-          if (royaltyRecipientNameRes.isSuccess) {
-            nftCollection.setRoyaltyRecipientName(royaltyRecipientNameRes.data);
+          if (royaltyRecipientName) {
+            nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
           }
+          _collections.push(nftCollection);
+        } catch (error) {
+          ConsoleUtils.displayError(error);
         }
-      } catch (error) {
-        ConsoleUtils.displayError(error);
       }
     }
     return nftCollection;
@@ -299,9 +243,9 @@ export const useMarketStore = defineStore("user", () => {
     try {
       const tokenHash = await metaMaskClient.getTokenHash(collectionAddress, 0);
       const meta = await getTokenMeta(tokenHash);
-      const imgHash = meta.image;
       return (
-        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" + imgHash
+        "https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/" +
+        meta.imageHash
       );
     } catch (error) {
       return MetaMaskError.parse(error);
@@ -405,36 +349,37 @@ export const useMarketStore = defineStore("user", () => {
     }
   };
 
+  const _tokens = [];
+
   const getNft = async (ownerAddress, collectionAddress, i) => {
     let nft = null;
     try {
-      nft = await metaMaskClient.getOwnedNft(
-        ownerAddress,
-        collectionAddress,
-        i
+      nft = _tokens?.find(
+        (item) =>
+          item.collection.ignoreCaseEqual(collectionAddress) &&
+          item.tokenId == i
       );
-      const meta = await getTokenMeta(nft.tokenHash);
-      const imgHash = meta.image;
-      let ownerName = null;
-      let collectionOwnerName = null;
-      const ownerNameRes = await getUsername(nft.owner);
-      if (ownerNameRes.isSuccess) {
-        ownerName = ownerNameRes.data;
+      if (!nft) {
+        nft = await metaMaskClient.getOwnedNft(
+          ownerAddress,
+          collectionAddress,
+          i
+        );
+        const meta = await getTokenMeta(nft.tokenHash);
+        let ownerName = await getUsername(nft.owner);
+        let collectionOwnerName = await getUsername(nft.collectionOwner);
+        const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
+        nft = new Nft({
+          ...nft,
+          ownerName: ownerName,
+          collectionOwnerName: collectionOwnerName,
+          tokenName: meta.name,
+          tokenDescription: meta.description,
+          tokenUri: tokenUri,
+        });
+        nft.displayInfo();
+        _tokens.push(nft);
       }
-      const collectionOwnerNameRes = await getUsername(nft.collectionOwner);
-      if (collectionOwnerNameRes.isSuccess) {
-        collectionOwnerName = collectionOwnerNameRes.data;
-      }
-      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
-      nft = new Nft({
-        ...nft,
-        ownerName: ownerName,
-        collectionOwnerName: collectionOwnerName,
-        tokenName: meta.name,
-        tokenDescription: meta.description,
-        tokenUri: tokenUri,
-      });
-      nft.displayInfo();
     } catch (error) {
       ConsoleUtils.displayError(error);
     } finally {
@@ -489,18 +434,9 @@ export const useMarketStore = defineStore("user", () => {
     try {
       nft = await metaMaskClient.getListedNft(collectionAddress, i);
       const meta = await getTokenMeta(nft.tokenHash);
-      const imgHash = meta.image;
-      let sellerName = null;
-      const sellerNameRes = await getUsername(nft.seller);
-      if (sellerNameRes.isSuccess) {
-        sellerName = sellerNameRes.data;
-      }
-      let collectionOwnerName = null;
-      const collectionOwnerNameRes = await getUsername(nft.collectionOwner);
-      if (collectionOwnerNameRes.isSuccess) {
-        collectionOwnerName = collectionOwnerNameRes.data;
-      }
-      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${imgHash}`;
+      let sellerName = await getUsername(nft.seller);
+      let collectionOwnerName = await getUsername(nft.collectionOwner);
+      const tokenUri = `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs/${meta.imageHash}`;
       nft = new Nft({
         ...nft,
         sellerName: sellerName,
@@ -627,7 +563,6 @@ export const useMarketStore = defineStore("user", () => {
     // setLoader,
     loading,
     // market,
-    setAlert,
     connectWallet,
     login,
     logout,

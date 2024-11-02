@@ -154,10 +154,10 @@ import { useRoute } from "vue-router";
 import User from "@/models/user";
 import EditProfile from "@/components/userSpace/editProfile.vue";
 import changeProfilePic from "@/components/userSpace/changeProfilePic.vue";
-import { useApiStore } from "@/stores/api";
-import { useMarketStore } from "@/stores/market";
+import { useApiStore } from "@/stores/api.js";
+import { useMarketStore } from "@/stores/market.js";
 import Avatar from "vue-boring-avatars";
-import ConsoleUtils from "@/utils/consoleUtils";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   name: "Profile",

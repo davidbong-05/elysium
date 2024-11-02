@@ -157,10 +157,10 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
+import { useMarketStore } from "@/stores/market.js";
 // import filterMenu from "@/components/userSpace/filterMenu.vue";
 import NftDetailCard from "@/components/shared/NftDetailCard.vue";
-import ConsoleUtils from "@/utils/consoleUtils";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   name: "Nfts Container",

@@ -52,24 +52,19 @@
   </v-card>
 </template>
 <script>
-import { ref, computed } from "vue";
-import { useApiStore } from "@/stores/api";
+import { ref, computed, onMounted } from "vue";
+import { useApiStore } from "@/stores/api.js";
+import Alert from "@/models/alert.js";
 export default {
   name: "Edit Profile",
   props: ["user"],
   emits: ["onEdit", "update:user"],
   setup(props, { emit }) {
-    const { put } = useApiStore();
+    const { putUpdateUserProfile } = useApiStore();
     const email = props.user.email;
     const username = ref(props.user.username);
     const bio = ref(props.user.description);
-    const alert = ref({
-      show: false,
-      color: "",
-      icon: "",
-      title: "",
-      text: "",
-    });
+    const alert = ref({});
     const rules = {
       required: (v) => !!v || "This field is required.",
       username: (v) => {
@@ -93,39 +88,32 @@ export default {
             username: username.value,
             description: bio.value,
           };
-          const res = await put("/api/user", newDetail);
-          if (res.status == 200) {
-            emit("update:user", newDetail);
-            alert.value = {
-              show: true,
-              color: "success",
-              icon: "$success",
-              title: "Success",
-              text: "Profile Updated",
-            };
+          if (
+            props.user.email === email &&
+            props.user.username === username.value &&
+            props.user.description === bio.value
+          ) {
+            alert.value.setInfo("Not changes.");
           } else {
-            alert.value = {
-              show: true,
-              color: "error",
-              icon: "$error",
-              title: "Oops...",
-              text: res.message,
-            };
+            const res = await putUpdateUserProfile(newDetail);
+            if (res.isSuccess) {
+              emit("update:user", newDetail);
+              alert.value.setSuccess("Profile Updated");
+            } else {
+              alert.value.setError(res.message);
+            }
           }
-          console.log(res);
         } catch (err) {
-          alert.value = {
-            show: true,
-            color: "error",
-            icon: "$error",
-            title: "Oops...",
-            text: "We are facing some issues please try again later...",
-          };
-          console.log(err);
-          console.log(err.response.data.message);
+          alert.value.setError("Something went wrong", err.code);
         }
+      } else {
+        alert.value.setError("Please check your input and try again.");
       }
     };
+
+    onMounted(async () => {
+      alert.value = new Alert();
+    });
 
     return {
       alert,

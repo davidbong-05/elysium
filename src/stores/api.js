@@ -1,11 +1,11 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import ApiClient from "@/services/apiClient";
-import ApiTransaction from "@/models/transactions/apiTransaction";
-import BaseError from "@/models/errors/baseError";
-import ApiError from "@/models/errors/apiError";
-import User from "@/models/user";
-import ValidationUtils from "@/utils/validationUtils";
-import { ApiResponseCode, ErrorCode, ErrorSource } from "@/models/enums";
+import ApiClient from "@/services/apiClient.js";
+import ApiTransaction from "@/models/transactions/apiTransaction.js";
+import BaseError from "@/models/errors/baseError.js";
+import ApiError from "@/models/errors/apiError.js";
+import User from "@/models/user.js";
+import ValidationUtils from "@/utils/validationUtils.js";
+import { ErrorCode, ErrorSource } from "@/models/enums.js";
 
 const SERVER_API_KEY = import.meta.env.VITE_ELYSIUM_API_KEY;
 const SERVER_API_SECRET = import.meta.env.VITE_ELYSIUM_API_SECRET;
@@ -13,6 +13,41 @@ const HASH = window.btoa(`${SERVER_API_KEY}:${SERVER_API_SECRET}`);
 
 export const useApiStore = defineStore("api", () => {
   const apiClient = new ApiClient(null, { Authorization: `Basic ${HASH}` });
+
+  //#region token meta
+  const getAllTokenMetas = async () => {
+    let tokenMetas = [];
+    try {
+      const res = await apiClient.get(`/api/token/meta/all`);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        tokenMetas = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return tokenMetas;
+    }
+  };
+
+  const postTokenMeta = async (tokenMeta) => {
+    try {
+      const res = await apiClient.post(`/api/token/meta`, tokenMeta);
+      const txn = ApiTransaction.parse(res);
+      return txn.getTransactionDetails();
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+  //#endregion token meta
 
   //#region nft collections
   const getAllCollections = async () => {
@@ -121,7 +156,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await put(`/api/collection/link/`, data);
+      const res = await apiClient.put(`/api/collection/link/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -154,7 +189,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         collection_address: collectionAddress,
       };
-      const res = await put(`/api/collection/unlink/`, data);
+      const res = await apiClient.put(`/api/collection/unlink/`, data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -240,26 +275,65 @@ export const useApiStore = defineStore("api", () => {
     }
   };
 
+  const _usernames = [];
+
+  const getAllUserNames = async () => {
+    let usernames = [];
+    try {
+      const res = await apiClient.get(`/api/user/name/all`);
+      const txn = ApiTransaction.parse(res);
+      if (txn.isSuccess) {
+        usernames = txn.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        ApiError.parse(error.response);
+      } else {
+        BaseError.parse(error);
+      }
+    } finally {
+      return usernames;
+    }
+  };
   const getUsername = async (userAddress) => {
+    let username = null;
+
     if (
       !ValidationUtils.checkIfParameterIsNullOrUndefined(
         "User address",
         userAddress
       )
     ) {
-      return null;
+      return username;
     }
-    try {
-      const res = await apiClient.get(`/api/user/name/${userAddress}`);
-      const txn = ApiTransaction.parse(res);
-      return txn.getTransactionDetails();
-    } catch (error) {
-      if (error.response) {
-        return ApiError.parse(error.response);
-      } else {
-        return BaseError.parse(error);
+
+    if (!_usernames.value) {
+      _usernames.value = await getAllUserNames();
+    }
+    const user = _usernames.value.find((item) =>
+      item.address.ignoreCaseEqual(userAddress)
+    );
+
+    if (user) {
+      username = user.username;
+    } else {
+      try {
+        const res = await apiClient.get(`/api/user/name/${userAddress}`);
+        const txn = ApiTransaction.parse(res);
+        const txnDetail = txn.getTransactionDetails();
+        if (txnDetail.isSuccess) {
+          username = txnDetail.data;
+        }
+      } catch (error) {
+        if (error.response) {
+          ApiError.parse(error.response);
+        } else {
+          BaseError.parse(error);
+        }
       }
     }
+
+    return username;
   };
 
   const postFollowUserCheck = async (userAddress, targetAddress) => {
@@ -268,7 +342,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await post("/api/user/follow/check", data);
+      const res = await apiClient.post("/api/user/follow/check", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -285,7 +359,7 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await put("/api/user/follow", data);
+      const res = await apiClient.put("/api/user/follow", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -302,7 +376,26 @@ export const useApiStore = defineStore("api", () => {
         user_address: userAddress,
         target_address: targetAddress,
       };
-      const res = await put("/api/user/unfollow", data);
+      const res = await apiClient.put("/api/user/unfollow", data);
+      return ApiTransaction.parse(res);
+    } catch (error) {
+      if (error.response) {
+        return ApiError.parse(error.response);
+      } else {
+        return BaseError.parse(error);
+      }
+    }
+  };
+
+  const putUpdateUserProfile = async (newDetail) => {
+    try {
+      const data = {
+        email: newDetail.email,
+        address: newDetail.address,
+        username: newDetail.username,
+        description: newDetail.desciption,
+      };
+      const res = await apiClient.put("/api/user", data);
       return ApiTransaction.parse(res);
     } catch (error) {
       if (error.response) {
@@ -373,7 +466,10 @@ export const useApiStore = defineStore("api", () => {
       const data = {
         email: email,
       };
-      const res = await post(`/api/auth/send-verification-email`, data);
+      const res = await apiClient.post(
+        `/api/auth/send-verification-email`,
+        data
+      );
       const txn = ApiTransaction.parse(res);
       return txn.getTransactionDetails();
     } catch (error) {
@@ -399,6 +495,8 @@ export const useApiStore = defineStore("api", () => {
   };
 
   return {
+    getAllTokenMetas,
+    postTokenMeta,
     getAllCollections,
     getCollections,
     getLinkedCollections,
@@ -412,6 +510,7 @@ export const useApiStore = defineStore("api", () => {
     postFollowUserCheck,
     putFollowUser,
     putUnfollowUser,
+    putUpdateUserProfile,
     postLogin,
     postLogout,
     postPing,

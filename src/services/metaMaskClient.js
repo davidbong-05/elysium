@@ -3,16 +3,15 @@ import factoryArtifacts from "../artifacts/ElysiumTokenFactory.json";
 import marketArtifacts from "../artifacts/ElysiumTokenMarketplace.json";
 
 import { ethers } from "ethers";
-import MetaMaskReponse from "@/models/errors/metaMaskError";
-import EthereumTransaction from "@/models/transactions/ethereumTransaction";
-import Nft from "@/models/nft";
-import NftColletion from "@/models/nftCollection";
+import MetaMaskReponse from "@/models/errors/metaMaskError.js";
+import EthereumTransaction from "@/models/transactions/ethereumTransaction.js";
+import Nft from "@/models/nft.js";
+import NftColletion from "@/models/nftCollection.js";
 
 class MetaMaskClient {
-  constructor(factoryContractAddress, marketContractAddress, setAlertFunc) {
+  constructor(factoryContractAddress, marketContractAddress) {
     this.factoryContractAddress = factoryContractAddress;
     this.marketContractAddress = marketContractAddress;
-    this.setAlertFunc = setAlertFunc;
     this.displayInfo();
   }
 
@@ -46,7 +45,6 @@ class MetaMaskClient {
   ensureMetaMaskIsInstalled = async () => {
     if (!window.ethereum) {
       console.log(`⚠️ MetaMask is either not installed or not connected.`);
-      this.setAlertFunc("error", "Must connect to MetaMask!");
     }
   };
 
@@ -56,7 +54,7 @@ class MetaMaskClient {
       method: "eth_chainId",
     });
     if (walletChainId != MetaMaskClient.POLYGON_NETWORK.chainId) {
-      await this.switchNetwork(this.setAlertFunc);
+      await this.switchNetwork();
     }
   };
 
@@ -313,7 +311,7 @@ class MetaMaskClient {
   };
 
   getOwnNftCollections = async () => {
-    `🧹 getting own NFT collections.`;
+    console.log(`🧹 getting own NFT collections.`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
@@ -325,7 +323,7 @@ class MetaMaskClient {
   };
 
   getNftCollection = async (collectionAddress) => {
-    `🧹 getting NFT collection detail from ${collectionAddress}.`;
+    console.log(`🧹 getting NFT collection detail from ${collectionAddress}.`);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,

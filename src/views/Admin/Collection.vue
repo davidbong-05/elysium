@@ -41,8 +41,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useMarketStore } from "@/stores/market";
-import ConsoleUtils from "@/utils/consoleUtils";
+import { useMarketStore } from "@/stores/market.js";
+import ConsoleUtils from "@/utils/consoleUtils.js";
 
 export default {
   setup() {

@@ -1,5 +1,3 @@
-import ConsoleUtils from "@/utils/consoleUtils";
-
 class NftColletion {
   constructor({
     address,

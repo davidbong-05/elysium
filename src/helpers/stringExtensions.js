@@ -6,3 +6,7 @@ String.prototype.truncateAddress = function () {
   }
   return this.toString();
 };
+
+String.prototype.ignoreCaseEqual = function (str2) {
+  return this.toLocaleLowerCase() === str2.toLocaleLowerCase();
+};

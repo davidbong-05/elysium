@@ -2,7 +2,7 @@ import axios from "axios";
 
 class ApiClient {
   constructor(baseUrl, headers) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = baseUrl || "";
     this.headers = headers;
   }
 
@@ -12,13 +12,13 @@ class ApiClient {
       ...additionalHeaders,
     };
 
-    return await axios.get(`${url}`, {
+    return await axios.get(`${this.baseUrl}${url}`, {
       headers,
     });
   };
 
   post = async (url, data, headers) => {
-    return await axios.post(url, data, {
+    return await axios.post(`${this.baseUrl}${url}`, data, {
       headers: {
         ...this.headers,
         headers,
@@ -27,7 +27,7 @@ class ApiClient {
   };
 
   put = async (url, data, headers) => {
-    return await axios.put(url, data, {
+    return await axios.put(`${this.baseUrl}${url}`, data, {
       headers: {
         ...this.headers,
         headers,
