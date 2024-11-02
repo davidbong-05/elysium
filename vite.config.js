@@ -39,8 +39,10 @@ export default defineConfig({
       },
     },
     warmup: {
-      clientFiles: ["./src/components/home/TopCollection.vue"],
-      clientFiles: ["./src/components/shared/NftContainers.vue"],
+      clientFiles: [
+        "./src/components/home/TopCollection.vue",
+        "./src/components/shared/NftContainers.vue",
+      ],
     },
   },
 });
