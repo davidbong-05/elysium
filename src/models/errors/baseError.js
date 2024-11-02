@@ -1,9 +1,9 @@
-class BaseError {
+class BaseError extends Error {
   constructor(source, code, message) {
+    super(message);
     this.isSuccess = false;
     this.source = source;
     this.code = code;
-    this.message = message;
     this.displayInfo();
   }
 
@@ -24,9 +24,10 @@ class BaseError {
   }
 
   displayInfo() {
-    console.log(`⚠️ Source:   ${this.source}.`);
-    console.log(`⚠️ Code:     ${this.code}.`);
-    console.log(`⚠️ Message:  ${this.message}`);
+    console.warn(`Source:   ${this.source}.`);
+    console.warn(`Code:     ${this.code}.`);
+    console.warn(`Message:  ${this.message}`);
+    // console.warn(this); for debugging purpose.
   }
 }
 
