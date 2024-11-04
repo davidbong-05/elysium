@@ -71,8 +71,14 @@ export default {
         const pattern = /^[a-zA-Z0-9_]+$/;
         return pattern.test(username.value) || "Invalid username.";
       },
-      maxUsername: (v) => v.length <= 25 || "Max 25 characters.",
-      maxBio: (v) => v.length <= 150 || "Max 150 characters.",
+      maxUsername: (v) => {
+        if (typeof v !== "string") return "Invalid input.";
+        return v.length <= 25 || "Max 25 characters.";
+      },
+      maxBio: (v) => {
+        if (typeof v !== "string") return "Invalid input.";
+        return v.length <= 150 || "Max 150 characters.";
+      },
     };
 
     const valid = computed(() => {
