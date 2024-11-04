@@ -6,11 +6,14 @@ import ApiError from "@/models/errors/apiError.js";
 import ValidationUtils from "@/utils/validationUtils.js";
 import { useApiStore } from "@/stores/api.js";
 import TokenMeta from "@/models/tokenMeta.js";
+import TokenMetaIndexDbService from "@/services/tokenMetaIndexDbService";
 
 export const useIpfsStore = defineStore("ipfs", () => {
   const ipfsApiClient = new ApiClient(
     `https://silver-outrageous-macaw-788.mypinata.cloud/ipfs`
   );
+
+  const tokenMetaIndexDbService = new TokenMetaIndexDbService();
 
   const { getAllTokenMetas, postTokenMeta } = useApiStore();
 
@@ -29,7 +32,7 @@ export const useIpfsStore = defineStore("ipfs", () => {
     }
 
     if (!_tokenMetas.value) {
-      _tokenMetas.value = await getAllTokenMetas();
+      _tokenMetas.value = await tokenMetaIndexDbService.getAllTokenMetas();
     }
     const token = _tokenMetas?.value?.find((item) =>
       item.hash.ignoreCaseEqual(tokenHash)
@@ -44,8 +47,7 @@ export const useIpfsStore = defineStore("ipfs", () => {
         if (txnDetail.isSuccess) {
           tokenMeta = TokenMeta.parse(txnDetail.data);
           tokenMeta.setTokenHash(tokenHash);
-          const res2 = await postTokenMeta(tokenMeta);
-          console.log(res2);
+          await tokenMetaIndexDbService.addTokenMeta(tokenMeta);
         }
       } catch (error) {
         if (error.response) {
