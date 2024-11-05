@@ -9,8 +9,9 @@ import MetaMaskClient from "@/services/metaMaskClient.js";
 import ConsoleUtils from "@/utils/consoleUtils.js";
 import NftCollection from "@/models/nftCollection.js";
 import ValidationUtils from "@/utils/validationUtils.js";
-import { UserRole, NftsContainerView } from "@/models/enums.js";
+import { UserRole, NftsContainerView, ErrorCode } from "@/models/enums.js";
 import CollectionIndexDbService from "@/services/collectionIndexDbService";
+import BaseError from "@/models/errors/baseError";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -153,9 +154,19 @@ export const useMarketStore = defineStore("user", () => {
           res.map(async (i) => {
             try {
               const collection = await getNftCollection(i[0]);
-              return new NftCollection({ ...collection, follower: i[1] });
+              if (collection) {
+                return new NftCollection({ ...collection, follower: i[1] });
+              } else {
+                throw new BaseError(
+                  "Client",
+                  ErrorCode.CODE_NOT_FOUND,
+                  `Collection ${i[0]} not found.`
+                );
+              }
             } catch (error) {
-              ConsoleUtils.displayError(error);
+              if (!(error instanceof BaseError)) {
+                ConsoleUtils.displayError(error);
+              }
             }
           })
         );
@@ -163,7 +174,7 @@ export const useMarketStore = defineStore("user", () => {
     } catch (error) {
       ConsoleUtils.displayError(error);
     } finally {
-      return nftCollections;
+      return nftCollections.filter((collection) => collection != null);
     }
   };
 
@@ -253,7 +264,6 @@ export const useMarketStore = defineStore("user", () => {
         }
       }
     }
-
     return nftCollection;
   };
 
