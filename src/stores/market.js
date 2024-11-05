@@ -215,8 +215,10 @@ export const useMarketStore = defineStore("user", () => {
       nftCollection = await collectionIndexDbService.getCollection(
         collectionAddress
       );
-      nftCollection.totalSupply =
-        await metaMaskClient.getNftCollectionTotalSupply(collectionAddress);
+      if (nftCollection) {
+        nftCollection.totalSupply =
+          await metaMaskClient.getNftCollectionTotalSupply(collectionAddress);
+      }
     }
 
     if (!nftCollection) {
