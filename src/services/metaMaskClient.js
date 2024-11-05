@@ -317,6 +317,18 @@ class MetaMaskClient {
     return await factoryContract.getOwnCollections();
   };
 
+  getNftCollectionTotalSupply = async (collectionAddress) => {
+    console.log(`🧹 getting NFT collection detail from ${collectionAddress}.`);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const nftContract = new ethers.Contract(
+      collectionAddress,
+      nftContractABI.abi,
+      provider
+    );
+
+    return await nftContract.totalSupply();
+  };
+
   getNftCollection = async (collectionAddress) => {
     console.log(`🧹 getting NFT collection detail from ${collectionAddress}.`);
     const provider = new ethers.BrowserProvider(window.ethereum);

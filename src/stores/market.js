@@ -10,6 +10,7 @@ import ConsoleUtils from "@/utils/consoleUtils.js";
 import NftCollection from "@/models/nftCollection.js";
 import ValidationUtils from "@/utils/validationUtils.js";
 import { UserRole, NftsContainerView } from "@/models/enums.js";
+import CollectionIndexDbService from "@/services/collectionIndexDbService";
 
 const MARKET_CONTRACT_ADDRESS = import.meta.env.VITE_MARKET_CONTRACT_ADDRESS;
 const FACTORY_CONTRACT_ADDRESS = import.meta.env.VITE_FACTORY_CONTRACT_ADDRESS;
@@ -39,6 +40,8 @@ export const useMarketStore = defineStore("user", () => {
     FACTORY_CONTRACT_ADDRESS,
     MARKET_CONTRACT_ADDRESS
   );
+
+  const collectionIndexDbService = new CollectionIndexDbService();
 
   const connectWallet = async () => {
     try {
@@ -209,14 +212,25 @@ export const useMarketStore = defineStore("user", () => {
     );
 
     if (!nftCollection) {
-      try {
-        nftCollection = await metaMaskClient.getNftCollection(
-          collectionAddress
-        );
-      } catch (error) {
-        console.warn(`Error while fetching ${collectionAddress}`);
-        MetaMaskError.parse(error);
+      nftCollection = await collectionIndexDbService.getCollection(
+        collectionAddress
+      );
+      nftCollection.totalSupply =
+        await metaMaskClient.getNftCollectionTotalSupply(collectionAddress);
+    }
+
+    if (!nftCollection) {
+      if (!nftCollection) {
+        try {
+          nftCollection = await metaMaskClient.getNftCollection(
+            collectionAddress
+          );
+        } catch (error) {
+          console.warn(`Error while fetching ${collectionAddress}`);
+          MetaMaskError.parse(error);
+        }
       }
+
       if (nftCollection) {
         try {
           if (nftCollection.totalSupply > 0) {
@@ -230,12 +244,14 @@ export const useMarketStore = defineStore("user", () => {
           if (royaltyRecipientName) {
             nftCollection.setRoyaltyRecipientName(royaltyRecipientName);
           }
+          await collectionIndexDbService.addCollection(nftCollection);
           _collections.push(nftCollection);
         } catch (error) {
           ConsoleUtils.displayError(error);
         }
       }
     }
+
     return nftCollection;
   };
 
