@@ -298,13 +298,14 @@ export default {
                   res,
                   price.value.toString()
                 );
-                if (res2.isSuccess) {
-                  alert.value.setSuccess("NFT Minted Successfully");
-                  reset();
-                } else if (res.isUserRejected) {
-                  alert.value.setInfo("You had rejected the transaction.");
-                } else {
-                  alert.value.setError(res.message, res.code);
+                if (!res2.isSuccess) {
+                  if (res.isUserRejected) {
+                    alert.value.setInfo(
+                      "You had rejected the listing transaction."
+                    );
+                  } else {
+                    alert.value.setError(res.message, res.code);
+                  }
                 }
               } catch (err) {
                 alert.value.setError(
@@ -312,6 +313,8 @@ export default {
                 );
               }
             }
+            alert.value.setSuccess("NFT Minted Successfully");
+            reset();
           } else if (res.isUserRejected) {
             alert.value.setInfo("You had rejected the transaction.");
           } else {
