@@ -1,6 +1,7 @@
-import factoryContractABI from "../artifacts/contractABI/ElysiumNFTFactory.json";
-import marketContractABI from "../artifacts/contractABI/ElysiumNFTMarketplace.json";
-import nftContractABI from "../artifacts/contractABI/ElysiumNFT.json";
+import tokenArtifacts from "../artifacts/ElysiumToken.json";
+import factoryArtifacts from "../artifacts/ElysiumTokenFactory.json";
+import marketArtifacts from "../artifacts/ElysiumTokenMarketplace.json";
+
 import { ethers } from "ethers";
 import MetaMaskReponse from "@/models/errors/metaMaskError.js";
 import EthereumTransaction from "@/models/transactions/ethereumTransaction.js";
@@ -99,11 +100,11 @@ class MetaMaskClient {
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
       this.factoryContractAddress,
-      factoryContractABI.abi,
+      factoryArtifacts.abi,
       signer
     );
 
-    const collectionTxn = await factoryContract.createNFTCollection(
+    const collectionTxn = await factoryContract.createCollection(
       name,
       symbol,
       royaltyFee,
@@ -126,7 +127,7 @@ class MetaMaskClient {
     const signer = await provider.getSigner();
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       signer
     );
 
@@ -165,12 +166,12 @@ class MetaMaskClient {
 
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       signer
     );
 
@@ -185,7 +186,7 @@ class MetaMaskClient {
     console.log("✅ Approval transaction confirmed!");
 
     console.log("🔨 Listing NFT on marketplace.");
-    const listingTxn = await marketContract.listNft(
+    const listingTxn = await marketContract.listToken(
       collectionAddress,
       tokenId,
       ethers.parseUnits(price, "ether")
@@ -199,7 +200,7 @@ class MetaMaskClient {
     return txn.getTransactionDetails();
   };
 
-  unlistNft = async (collectionAddress, tokenId) => {
+  unlistToken = async (collectionAddress, tokenId) => {
     console.log(`📝 Unlisting NFT from marketplace:`);
     console.log(`------------------------------`);
     console.log(`🏛️ Collection Address: ${collectionAddress}`);
@@ -210,12 +211,12 @@ class MetaMaskClient {
 
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
 
     console.log("🔨 Unlisting NFT on marketplace.");
-    const cancellingTxn = await marketContract.cancelListNFT(
+    const cancellingTxn = await marketContract.unlistToken(
       collectionAddress,
       tokenId
     );
@@ -240,15 +241,19 @@ class MetaMaskClient {
 
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
     const tokenPrice = ethers.parseUnits(price, "ether");
 
     console.log("💵 Buying NFT on marketplace.");
-    const buyingTxn = await marketContract.buyNFT(collectionAddress, tokenId, {
-      value: tokenPrice,
-    });
+    const buyingTxn = await marketContract.buyToken(
+      collectionAddress,
+      tokenId,
+      {
+        value: tokenPrice,
+      }
+    );
 
     console.log("⏳ Buying transaction sent.");
     const res = await buyingTxn.wait();
@@ -283,13 +288,13 @@ class MetaMaskClient {
 
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
     const price = ethers.parseUnits(totalPrice.toString(), "ether");
 
     console.log(`💰 Proceeding with the purchase...`);
-    const tokenTxn = await marketContract.buyBulkNFTs(
+    const tokenTxn = await marketContract.buyTokens(
       collectionAddresses,
       tokenIds,
       {
@@ -311,10 +316,10 @@ class MetaMaskClient {
     const signer = await provider.getSigner();
     const factoryContract = new ethers.Contract(
       this.factoryContractAddress,
-      factoryContractABI.abi,
-      signer
+      factoryArtifacts.abi,
+      provider
     );
-    return await factoryContract.getOwnCollections();
+    return await factoryContract.getUserCollections(signer);
   };
 
   getNftCollectionTotalSupply = async (collectionAddress) => {
@@ -334,7 +339,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       provider
     );
 
@@ -360,7 +365,7 @@ class MetaMaskClient {
     try {
       const nftContract = new ethers.Contract(
         collectionAddress,
-        nftContractABI.abi,
+        tokenArtifacts.abi,
         provider
       );
 
@@ -383,7 +388,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       provider
     );
     let tokenId = -1;
@@ -411,13 +416,13 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       provider
     );
 
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       provider
     );
 
@@ -426,7 +431,7 @@ class MetaMaskClient {
       index
     );
 
-    const marketItem = await marketContract.getListedNFT(
+    const marketItem = await marketContract.getListedToken(
       collectionAddress,
       tokenId
     );
@@ -452,7 +457,7 @@ class MetaMaskClient {
     try {
       const nftContract = new ethers.Contract(
         collectionAddress,
-        nftContractABI.abi,
+        tokenArtifacts.abi,
         provider
       );
       const totalSupply = await nftContract.totalSupply();
@@ -474,7 +479,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       provider
     );
     const tokenId = await nftContract.tokenByIndex(index);
@@ -486,7 +491,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       provider
     );
     return await marketContract.owner();
@@ -496,7 +501,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       provider
     );
     const fee = await marketContract.getPlatformFee();
@@ -507,7 +512,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       provider
     );
     return await marketContract.getFeeRecipient();
@@ -521,7 +526,7 @@ class MetaMaskClient {
     const signer = await provider.getSigner();
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
     const newFee = ethers.parseUnits(newPlatformFee.toString(), "ether");
@@ -545,12 +550,12 @@ class MetaMaskClient {
     const signer = await provider.getSigner();
     const marketContract = new ethers.Contract(
       this.marketContractAddress,
-      marketContractABI.abi,
+      marketArtifacts.abi,
       signer
     );
 
     console.log("🔨 Submiting new fee recipient.");
-    const updatingTxn = await marketContract.changeFeeRecipient(
+    const updatingTxn = await marketContract.updateFeeRecipient(
       newFeeRecipient
     );
 

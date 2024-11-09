@@ -425,7 +425,7 @@ export const useMarketStore = defineStore("user", () => {
 
   const unListNFT = async (collectionAddress, tokenId) => {
     try {
-      return await metaMaskClient.unlistNft(collectionAddress, tokenId);
+      return await metaMaskClient.unlistToken(collectionAddress, tokenId);
     } catch (error) {
       return MetaMaskError.parse(error);
     }
