@@ -327,7 +327,7 @@ class MetaMaskClient {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const nftContract = new ethers.Contract(
       collectionAddress,
-      nftContractABI.abi,
+      tokenArtifacts.abi,
       provider
     );
 
