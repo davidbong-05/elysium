@@ -384,8 +384,7 @@ export const useMarketStore = defineStore("user", () => {
     try {
       nft = _tokens?.find(
         (item) =>
-          item.collection.ignoreCaseEqual(collectionAddress) &&
-          item.tokenId == i
+          item.collection.ignoreCaseEqual(collectionAddress) && item.index === i
       );
       if (!nft) {
         nft = await metaMaskClient.getOwnedNft(

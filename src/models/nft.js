@@ -1,5 +1,6 @@
 class Nft {
   constructor({
+    index,
     owner,
     ownerName,
     seller,
@@ -16,6 +17,7 @@ class Nft {
     royalty,
     price,
   }) {
+    this.index = index;
     this.owner = owner;
     this.ownerName = ownerName;
     this.seller = seller;
@@ -57,6 +59,7 @@ class Nft {
   static parse(jsonData) {
     const data = typeof jsonData === "string" ? JSON.parse(jsonData) : jsonData;
     return new Nft({
+      index: data.index ?? 0,
       owner: data.owner || null,
       ownerName: data.ownerName || null,
       seller: data.seller || null,

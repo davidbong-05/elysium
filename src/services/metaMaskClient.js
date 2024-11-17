@@ -401,6 +401,7 @@ class MetaMaskClient {
     }
 
     return Nft.parse({
+      index: index,
       owner: ownerAddress,
       collection: collectionAddress,
       collectionOwner: await nftContract.getRoyaltyRecipient(),
