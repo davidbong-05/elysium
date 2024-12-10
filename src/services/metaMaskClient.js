@@ -175,15 +175,18 @@ class MetaMaskClient {
       signer
     );
 
-    console.log("🔑 Approving marketplace to handle NFT.");
-    const approveTxn = await nftContract.approve(
-      this.marketContractAddress,
-      tokenId
-    );
+    const appovedAddress = await nftContract.getApproved(tokenId);
+    if (appovedAddress !== this.marketContractAddress) {
+      console.log("🔑 Approving marketplace to handle NFT.");
+      const approveTxn = await nftContract.approve(
+        this.marketContractAddress,
+        tokenId
+      );
 
-    console.log("⏳ Approving transaction sent.");
-    await approveTxn.wait();
-    console.log("✅ Approval transaction confirmed!");
+      console.log("⏳ Approving transaction sent.");
+      await approveTxn.wait();
+      console.log("✅ Approval transaction confirmed!");
+    }
 
     console.log("🔨 Listing NFT on marketplace.");
     const listingTxn = await marketContract.listToken(
